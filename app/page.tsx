@@ -152,11 +152,11 @@ export default function Home() {
                             <div className="text-xl md:text-3xl text-center">
                                 What would you like to learn about today?
                             </div>
-                            <PromptSuggestionRow
+                            {/* <PromptSuggestionRow
                                 prompts={suggestions}
                                 onPromptClick={handlePrompt}
                                 setCategory={setCategory}
-                            />
+                            /> */}
                         </div>
                     )}
                 </div>
