@@ -24,6 +24,12 @@ export default function Home() {
         e.preventDefault();
         setIsLoading(true);
         setmessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
+        if (input.trim()) {
+            setinput("");
+            const assistantResponse = await fetchData(input);
+            setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
+            setIsLoading(false);
+        }
     };
 
     const fetchData = async (inputValue: string, stream = false) => {
