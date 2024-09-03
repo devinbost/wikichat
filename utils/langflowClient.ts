@@ -40,14 +40,15 @@ export class LangflowClient {
 
     public async initiateSession(
         flowId: string,
-        langflowId: string,
+        //langflowId: string,
         inputValue: string,
         inputType: string = "chat",
         outputType: string = "chat",
         stream: boolean = false,
         tweaks: Record<string, any> = {},
     ): Promise<any> {
-        const endpoint = `/lf/${langflowId}/api/v1/run/${flowId}?stream=${stream}`;
+        // const endpoint = `/lf/${langflowId}/api/v1/run/${flowId}?stream=${stream}`;
+        const endpoint = `/api/v1/run/${flowId}?stream=${stream}`;
         return this.post(endpoint, {
             input_value: inputValue,
             input_type: inputType,
@@ -58,7 +59,7 @@ export class LangflowClient {
 
     public async runFlow(
         flowIdOrName: string,
-        langflowId: string,
+        //langflowId: string,
         inputValue: string,
         inputType: string = "chat",
         outputType: string = "chat",
@@ -68,7 +69,7 @@ export class LangflowClient {
         try {
             const initResponse = await this.initiateSession(
                 flowIdOrName,
-                langflowId,
+                //langflowId,
                 inputValue,
                 inputType,
                 outputType,

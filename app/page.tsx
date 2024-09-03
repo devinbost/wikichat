@@ -14,7 +14,7 @@ export default function Home() {
     const [initialData, setInitialData] = useState<string>("");
     const [messages, setmessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setinput] = useState<string>("");
-    const initialPrompt = "Hello Langflow";
+    const initialPrompt = "8888888888";
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setinput(e.target.value);

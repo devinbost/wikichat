@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
         const langflowId = process.env.LANGFLOW_ID || "";
         const response = await langflowClient.runFlow(
             flowIdOrName,
-            langflowId,
-            inputValue || "hello",
+            //langflowId,
+            inputValue || "8888888888",
             inputType || "chat",
             outputType || "chat",
             {},
