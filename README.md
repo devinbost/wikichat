@@ -31,6 +31,15 @@ This project is a starter for creating a chatbot using Astra DB. It's designed t
     - `LANGCHAIN_TRACING_V2` (optional): Set to `true` to enable tracing
     - `LANGCHAIN_SESSION` (optional): The LangSmith project that will receive traced runs.
     - `LANGCHAIN_API_KEY` (optional): LangSmith API key
+    - `LANGFLOW_APPLICATION_TOKEN` (required for Astra): Langflow application token. (It should start with AstraCS:)
+    - `FLOW_ID_OR_NAME`: ID of LangFlow flow
+    - `LANGFLOW_ID` (required for Astra): ID of the LangFlow instance
+    - `LANGFLOW_BASE_URL`: e.g. http://127.0.0.1:7860 for local.
+
+    Many of these variables are provided by the code generated in LangFlow, like here: 
+    ![image of Python API example in LangFlow](langflow_api.png)
+    In Astra, the token for LangFlow can be generated on that same screen.
+
 4. Populate your database by following the instructions [here](https://github.com/datastax/wikichat/blob/main/scripts/README.md)
 
 ### Running the Project
