@@ -14,7 +14,7 @@ export default function Home() {
     const [initialData, setInitialData] = useState<string>("");
     const [messages, setmessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setinput] = useState<string>("");
-    const initialPrompt = "8888888888";
+    const initialPrompt = '{"initialInvocation": "true", "input": "8888888888"}';
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setinput(e.target.value);
@@ -26,7 +26,16 @@ export default function Home() {
         setmessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
         if (input.trim()) {
             setinput("");
-            const assistantResponse = await fetchData(input);
+
+            // Create the updated input object
+            const updatedInput = JSON.stringify({
+                initialInvocation: "false",
+                input: input
+            });
+
+            // Pass the updated input object to fetchData
+            const assistantResponse = await fetchData(updatedInput);
+            
             setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
             setIsLoading(false);
         }

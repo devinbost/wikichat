@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         const response = await langflowClient.runFlow(
             flowIdOrName,
             //langflowId,
-            inputValue || "8888888888",
+            inputValue || '{"initialInvocation": "true", "input": "8888888888"}',
             inputType || "chat",
             outputType || "chat",
             {},
