@@ -72,18 +72,7 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme }: Props): JSX.Element 
 
         <button id="app-tooltip" className="peer border rounded-full bg-body hover:bg-bg-1 w-10 h-10">?</button>
         <Tooltip anchorSelect="#app-tooltip" place="bottom-end" clickable className="max-w-sm md:max-w-2xl rounded-2xl z-30">
-          Chatting with WikiChat is a breeze!
-          Simply type your questions or requests in a clear and concise manner.
-          Responses are sourced from{' '}
-          <a
-              className='text-link'
-              href="https://en.wikipedia.org/wiki/Wikipedia:Popular_pages#Top-100_list"
-              rel="noreferrer noopener"
-              target="_blank"
-          >
-              Wikipedia&apos;s most popular pages
-          </a>
-          {' '}and a link to further reading is provided.
+        Chatting with KrisFlyer Agent is a breeze! Simply type your questions or requests in a clear and concise manner. Responses are sourced from real-time integrations with your data.
         </Tooltip>
       </div>
   </nav>

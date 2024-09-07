@@ -114,10 +114,10 @@ export default function Home() {
                         </div>
                     ) : (
                         <div className="flex flex-col gap-6 md:gap-16 mt-auto mb-6">
-                            <div className="text-xl md:text-3xl text-center">
-                                What would you like to learn about today?
+                            <div className="text-l md:text-2xl text-left">
+                                Please wait as we retrieve your information...
                             </div>
-                            <div className="text-md md:text-lg text-center">
+                            <div className="text-md md:text-lg text-left">
                                 <ReactMarkdown>{initialData}</ReactMarkdown>
                             </div>
                         </div>
