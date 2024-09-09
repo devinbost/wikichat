@@ -21,7 +21,7 @@ export default function Home() {
     const setUser = async (user: string) => {
         setUserId(user)
         setIsLoading(true);
-        setmessages(prevMessages => [{ role: "assistant", content: "loading user's data" }]);
+        setmessages(prevMessages => [{ role: "assistant", content: "Loading user's data. It will take a minute." }]);
         // Create the updated input object
         const updatedInput = JSON.stringify({
             initialInvocation: "true",
