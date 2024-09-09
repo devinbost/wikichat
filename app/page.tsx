@@ -14,8 +14,27 @@ export default function Home() {
     const [initialData, setInitialData] = useState<string>("");
     const [messages, setmessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setinput] = useState<string>("");
+    const [userId, setUserId] = useState<string>('{"initialInvocation": "true", "input": "8888888888"}');
     const initialPrompt = '{"initialInvocation": "true", "input": "8888888888"}';
 
+    // Function to update only the 'input' part of userId
+    const setUser = async (user: string) => {
+        setUserId(user)
+        setIsLoading(true);
+        setmessages(prevMessages => [{ role: "assistant", content: "loading user's data" }]);
+        // Create the updated input object
+        const updatedInput = JSON.stringify({
+            initialInvocation: "true",
+            input: userId
+        });
+
+        // Pass the updated input object to fetchData
+        const assistantResponse = await fetchData(updatedInput);
+        
+        setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
+        setIsLoading(false);
+       
+    };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setinput(e.target.value);
     };
@@ -98,7 +117,7 @@ export default function Home() {
     return (
         <main className={`${category} flex h-screen flex-col items-center justify-center py-6`}>
             <section className="flex flex-col bg-body origin:w-[1200px] w-full origin:h-[800px] h-full rounded-3xl border overflow-y-auto scrollbar">
-                <Navbar llm={llm} setConfiguration={setConfiguration} theme={theme} setTheme={setTheme} />
+                <Navbar llm={llm} setConfiguration={setConfiguration} theme={theme} setTheme={setTheme} setUser={setUser}  />
                 <div className="flex flex-col flex-auto mx-6 md:mx-16">
                     {messages && messages.length > 0 ? (
                         <div className="flex flex-col gap-6 py-6">
