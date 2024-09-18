@@ -14,7 +14,7 @@ export default function Home() {
     const [initialData, setInitialData] = useState<string>("");
     const [messages, setmessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setinput] = useState<string>("");
-    const initialPrompt = '{"initialInvocation": "true", "input": "8888888888"}';
+    const initialPrompt = '{"user_question": "What is my mileage?", "user_id": "8888888888"}';
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setinput(e.target.value);
@@ -29,8 +29,8 @@ export default function Home() {
 
             // Create the updated input object
             const updatedInput = JSON.stringify({
-                initialInvocation: "false",
-                input: input
+                user_id: "8888888888",
+                user_question: input
             });
 
             // Pass the updated input object to fetchData
