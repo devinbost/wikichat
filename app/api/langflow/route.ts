@@ -26,7 +26,7 @@ function decodeBase62(str: string): number {
 // Function to pad the Base62 string to resemble a UUID
 function padToUUID(base62Str: string): string {
     // Pad or truncate the Base62 string to match UUID length
-    const paddedStr = base62Str.padStart(32, "0"); // Ensure it’s 32 characters long
+    const paddedStr = base62Str.padStart(32, "0"); // Ensure it's 32 characters long
     return paddedStr.replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, "$1-$2-$3-$4-$5");
 }
 
@@ -39,7 +39,7 @@ function hashSessionId(sessionId) {
 
 export async function POST(req: NextRequest) {
     try {
-        const { inputValue, inputType, outputType, stream } = await req.json();
+        const { inputValue, inputType, outputType, session_id, stream } = await req.json();
 
         const langflowClient = new LangflowClient({
             baseURL: process.env.LANGFLOW_BASE_URL || "",
@@ -47,6 +47,8 @@ export async function POST(req: NextRequest) {
         });
         const flowIdOrName = process.env.FLOW_ID_OR_NAME || "";
         const langflowId = process.env.LANGFLOW_ID || "";
+        const UUID_SessionId = hashSessionId(session_id);
+        console.log("🚀 ~ POST ~ UUID_SessionId:", UUID_SessionId);
         const response = await langflowClient.runFlow(
             flowIdOrName,
             inputValue || '{"initialInvocation": "true", "input": "8888888888"}',

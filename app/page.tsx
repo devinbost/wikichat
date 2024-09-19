@@ -72,6 +72,7 @@ export default function Home() {
                     inputValue: JSON.stringify(inputValue),
                     inputType: "chat",
                     outputType: "chat",
+                    session_id: inputValue.user_id,
                     stream: stream,
                 }),
             });
