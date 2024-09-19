@@ -3,81 +3,132 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --processing-dot-size: 4px;
+    :root {
+        --processing-dot-size: 4px;
 
-    --white: #FFFFFF;
-    --neutral-0: #F7F7F7;
-    --neutral-50: #EDEEEE;
-    --neutral-100: #E3E4E5;
-    --neutral-200: #CED0D2;
-    --neutral-300: #A6AAAE;
-    --neutral-400: #898D91;
-    --neutral-500: #6B6F73;
-    --neutral-600: #5A5D60;
-    --neutral-700: #494A4D;
-    --neutral-800: #232324;
-    --neutral-900: #090909;
+        --white: #ffffff;
+        --neutral-0: #f7f7f7;
+        --neutral-50: #edeeee;
+        --neutral-100: #e3e4e5;
+        --neutral-200: #ced0d2;
+        --neutral-300: #a6aaae;
+        --neutral-400: #898d91;
+        --neutral-500: #6b6f73;
+        --neutral-600: #5a5d60;
+        --neutral-700: #494a4d;
+        --neutral-800: #232324;
+        --neutral-900: #090909;
 
-    --background-body: var(--white);
-    --background-level1: var(--neutral-0);
-    --background-level2: var(--neutral-50);
-    --primary: #1D4886; /* Singapore Airlines Blue */
-    --primary-hover: #16346A; /* Darker shade of primary */
-    --tertiary: #FCB130; /* Singapore Airlines Yellow-Orange */
-    --inverse: var(--white);
+        --background-body: var(--white);
+        --background-level1: var(--neutral-0);
+        --background-level2: var(--neutral-50);
+        --primary: #1d4886; /* Singapore Airlines Blue */
+        --primary-hover: #16346a; /* Darker shade of primary */
+        --tertiary: #fcb130; /* Singapore Airlines Yellow-Orange */
+        --inverse: var(--white);
 
-    --sky: #C2D7FE;
-    --bubblegum: #F7BED2;
-    --turf: #C0E472;
-    --lemon: var(--tertiary); /* Updated to reflect brand yellow */
-    --poppy: #FFB5AB;
-    --surf: #92ECD5;
-    --mushroom: #B388FF;
-    --gray: #E3E4E5;
+        --sky: #c2d7fe;
+        --bubblegum: #f7bed2;
+        --turf: #c0e472;
+        --lemon: var(--tertiary); /* Updated to reflect brand yellow */
+        --poppy: #ffb5ab;
+        --surf: #92ecd5;
+        --mushroom: #b388ff;
+        --gray: #e3e4e5;
 
-    --link: var(--primary);
-  }
+        --link: var(--primary);
+    }
 
-  :root.dark {
-    --background-body: var(--neutral-900);
-    --background-level1: var(--neutral-800);
-    --background-level2: var(--neutral-700);
-    --primary: #FCB130; /* Yellow-Orange for contrast in dark mode */
-    --primary-hover: #E69B28; /* Slightly darker shade of primary for hover */
-    --tertiary: #1D4886; /* Blue as a secondary color in dark mode */
-    --inverse: var(--neutral-900);
+    :root.dark {
+        --background-body: var(--neutral-900);
+        --background-level1: var(--neutral-800);
+        --background-level2: var(--neutral-700);
+        --primary: #fcb130; /* Yellow-Orange for contrast in dark mode */
+        --primary-hover: #e69b28; /* Slightly darker shade of primary for hover */
+        --tertiary: #1d4886; /* Blue as a secondary color in dark mode */
+        --inverse: var(--neutral-900);
 
-    --sky: #384BCA;
-    --bubblegum: #804785;
-    --turf: #127D36;
-    --lemon: var(--primary); /* Updated to reflect brand yellow */
-    --poppy: #B53A29;
-    --surf: #006270;
-    --mushroom: #58209B;
-    --gray: #171818;
-  }
+        --sky: #384bca;
+        --bubblegum: #804785;
+        --turf: #127d36;
+        --lemon: var(--primary); /* Updated to reflect brand yellow */
+        --poppy: #b53a29;
+        --surf: #006270;
+        --mushroom: #58209b;
+        --gray: #171818;
+    }
 
-  *,
-  ::before,
-  ::after {
-    border-color: var(--primary)
-  }
+    *,
+    ::before,
+    ::after {
+        border-color: var(--primary);
+    }
 
-  body {
-    font-family: 'Singapore Sling', sans-serif;
-    background: var(--background-body);
-    color: var(--primary);
-  }
+    body {
+        font-family: "Singapore Sling", sans-serif;
+        background: var(--background-body);
+        color: var(--primary);
+    }
 
-  .input {
-    background-color: var(--background-body);
-  }
+    .input {
+        background-color: var(--background-body);
+    }
 
-  .dot-flashing {
+    /* .dot-flashing {
     background-color: var(--tertiary);
-  }
+  } */
 
-  /* Other styles remain the same */
+    .dot-flashing {
+        position: relative;
+        width: var(--processing-dot-size);
+        height: var(--processing-dot-size);
+        border-radius: 100%;
+        background-color: var(--tertiary);
+        color: var(--tertiary);
+        animation: dot-flashing 1s infinite linear alternate;
+        animation-delay: 0.5s;
+    }
 
+    .dot-flashing::before,
+    .dot-flashing::after {
+        content: "";
+        display: inline-block;
+        position: absolute;
+        top: 0;
+    }
+
+    .dot-flashing::before {
+        left: -6px;
+        width: var(--processing-dot-size);
+        height: var(--processing-dot-size);
+        border-radius: 100%;
+        background-color: var(--tertiary);
+        color: var(--tertiary);
+        animation: dot-flashing 1s infinite alternate;
+        animation-delay: 0s;
+    }
+
+    .dot-flashing::after {
+        left: 6px;
+        width: var(--processing-dot-size);
+        height: var(--processing-dot-size);
+        border-radius: 100%;
+        background-color: var(--tertiary);
+        color: var(--tertiary);
+        animation: dot-flashing 1s infinite alternate;
+        animation-delay: 1s;
+    }
+
+    @keyframes dot-flashing {
+        0% {
+            background-color: var(--tertiary);
+        }
+
+        50%,
+        100% {
+            background-color: rgba(152, 128, 255, 0.2);
+        }
+    }
+
+    /* Other styles remain the same */
 }

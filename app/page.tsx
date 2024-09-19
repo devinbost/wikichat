@@ -9,32 +9,37 @@ import LoadingBubble from "../components/LoadingBubble";
 import Navbar from "../components/Navbar";
 import ReactMarkdown from "react-markdown";
 
+type UserState = {
+    user_id: string;
+    user_question: string;
+};
+
 export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [initialData, setInitialData] = useState<string>("");
     const [messages, setmessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setinput] = useState<string>("");
-    const [userId, setUserId] = useState<string>('{"initialInvocation": "true", "input": "8888888888"}');
-    const initialPrompt = '{"initialInvocation": "true", "input": "8888888888"}';
+    const [user, setUser] = useState<UserState>({
+        user_id: "8888888888",
+        user_question: "What is my mileage?",
+    });
 
-    // Function to update only the 'input' part of userId
-    const setUser = async (user: string) => {
-        setUserId(user)
+    // Function to update only the 'input' part of user
+    const setuser = async (Customer: string) => {
+        setUser(prevState => ({
+            ...prevState,
+            user_id: Customer,
+        }));
         setIsLoading(true);
-        setmessages(prevMessages => [{ role: "assistant", content: "Loading user's data. It will take a minute." }]);
-        // Create the updated input object
-        const updatedInput = JSON.stringify({
-            initialInvocation: "true",
-            input: userId
+        setmessages([{ role: "assistant", content: "Loading user's data. It will take a minute." }]);
+        const assistantResponse = await fetchData({
+            ...user, // Spread the previous state to keep other values
+            user_id: Customer,
         });
-
-        // Pass the updated input object to fetchData
-        const assistantResponse = await fetchData(updatedInput);
-        
         setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
         setIsLoading(false);
-       
     };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setinput(e.target.value);
     };
@@ -45,22 +50,18 @@ export default function Home() {
         setmessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
         if (input.trim()) {
             setinput("");
-
-            // Create the updated input object
-            const updatedInput = JSON.stringify({
-                initialInvocation: "false",
-                input: input
+            // Pass the updated input object to fetchData
+            const assistantResponse = await fetchData({
+                ...user, // Spread the previous state to keep other values
+                user_question: input,
             });
 
-            // Pass the updated input object to fetchData
-            const assistantResponse = await fetchData(updatedInput);
-            
             setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
             setIsLoading(false);
         }
     };
 
-    const fetchData = async (inputValue: string, stream = false) => {
+    const fetchData = async (inputValue: UserState, stream = false) => {
         try {
             const response = await fetch("/api/langflow", {
                 method: "POST",
@@ -68,7 +69,7 @@ export default function Home() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    inputValue: inputValue,
+                    inputValue: JSON.stringify(inputValue),
                     inputType: "chat",
                     outputType: "chat",
                     stream: stream,
@@ -87,8 +88,6 @@ export default function Home() {
         } catch (error) {
             console.error("Error fetching initial data:", error);
             setInitialData("Error fetching data.");
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -102,7 +101,7 @@ export default function Home() {
     };
 
     useEffect(() => {
-        fetchData(initialPrompt);
+        fetchData(user);
     }, []);
 
     useEffect(() => {
@@ -117,7 +116,13 @@ export default function Home() {
     return (
         <main className={`${category} flex h-screen flex-col items-center justify-center py-6`}>
             <section className="flex flex-col bg-body origin:w-[1200px] w-full origin:h-[800px] h-full rounded-3xl border overflow-y-auto scrollbar">
-                <Navbar llm={llm} setConfiguration={setConfiguration} theme={theme} setTheme={setTheme} setUser={setUser}  />
+                <Navbar
+                    llm={llm}
+                    setConfiguration={setConfiguration}
+                    theme={theme}
+                    setTheme={setTheme}
+                    setUser={setuser}
+                />
                 <div className="flex flex-col flex-auto mx-6 md:mx-16">
                     {messages && messages.length > 0 ? (
                         <div className="flex flex-col gap-6 py-6">
