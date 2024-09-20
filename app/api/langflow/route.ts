@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
             inputValue || '{"initialInvocation": "true", "input": "8888888888"}',
             inputType || "chat",
             outputType || "chat",
+            UUID_SessionId,
             {},
             stream,
         );

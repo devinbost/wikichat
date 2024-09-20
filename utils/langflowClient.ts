@@ -44,6 +44,7 @@ export class LangflowClient {
         inputValue: string,
         inputType: string = "chat",
         outputType: string = "chat",
+        session_id: string,
         stream: boolean = false,
         tweaks: Record<string, any> = {},
     ): Promise<any> {
@@ -53,6 +54,7 @@ export class LangflowClient {
             input_value: inputValue,
             input_type: inputType,
             output_type: outputType,
+            session_id: session_id,
             tweaks: tweaks,
         });
     }
@@ -63,6 +65,7 @@ export class LangflowClient {
         inputValue: string,
         inputType: string = "chat",
         outputType: string = "chat",
+        session_id: string,
         tweaks: Record<string, any> = {},
         stream: boolean = false,
     ): Promise<any | undefined> {
@@ -73,13 +76,13 @@ export class LangflowClient {
                 inputValue,
                 inputType,
                 outputType,
+                session_id,
                 stream,
                 tweaks,
             );
 
             if (stream && initResponse?.outputs?.[0]?.outputs?.[0]?.artifacts?.stream_url) {
                 const streamUrl = initResponse.outputs[0].outputs[0].artifacts.stream_url;
-                console.log("🚀 ~ LangflowClient ~ streamUrl:", streamUrl);
 
                 return { streamUrl };
             } else if (!stream && initResponse && initResponse.outputs) {
