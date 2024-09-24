@@ -105,16 +105,15 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
                     place="bottom-end"
                     clickable
                     className="max-w-sm md:max-w-2xl rounded-2xl z-30">
-                    Chatting with WikiChat is a breeze! Simply type your questions or requests in a clear and concise
-                    manner. Responses are sourced from{" "}
+                    Chatting with SingaPore Airlines is a breeze! Simply type your questions or requests in a clear and
+                    concise manner. Responses are sourced from{" "}
                     <a
                         className="text-link"
-                        href="https://en.wikipedia.org/wiki/Wikipedia:Popular_pages#Top-100_list"
+                        href="https://www.google.com/aclk?sa=l&ai=DChcSEwiIwtuUzNuIAxWXZEECHUlyCGMYABAAGgJ3cw&co=1&ase=2&gclid=Cj0KCQjwxsm3BhDrARIsAMtVz6PYuBwwCVPW9OByVdavGt6_txSh_UE1FFOKVMHA-_4uAWJxlRBDUdEaAtN9EALw_wcB&sig=AOD64_39Zw3XUj44Yl6peNkLVC8sgvaegg&q&nis=4&adurl&ved=2ahUKEwj14deUzNuIAxV_SKQEHQdZOwAQ0Qx6BAgJEAE"
                         rel="noreferrer noopener"
                         target="_blank">
-                        Wikipedia&apos;s most popular pages
-                    </a>{" "}
-                    and a link to further reading is provided.
+                        SingaPore airline&apos;s
+                    </a>
                 </Tooltip>
             </div>
         </nav>

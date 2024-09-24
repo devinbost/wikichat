@@ -17,51 +17,137 @@ type UserState = {
 export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [initialData, setInitialData] = useState<string>("");
-    const [messages, setmessages] = useState<{ role: string; content: string }[]>([]);
-    const [input, setinput] = useState<string>("");
+    const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+    const [input, setInput] = useState<string>("");
     const [user, setUser] = useState<UserState>({
         user_id: "8888888888",
         user_question: "What is my mileage?",
     });
 
-    // Function to update only the 'input' part of user
+    // Function to handle streaming using axios
+    const handleStream = async (
+        streamUrl: string,
+        onUpdate: (data: any) => void,
+        onClose: (message: string) => void,
+        onError: (error: any) => void,
+    ) => {
+        let hasReceivedFirstChunk = false;
+        try {
+            const eventSource = new EventSource(streamUrl);
+
+            eventSource.onopen = () => {
+                console.log("Stream connection opened.");
+            };
+            eventSource.onmessage = event => {
+                const parsedData = JSON.parse(event.data);
+                if (!hasReceivedFirstChunk) {
+                    hasReceivedFirstChunk = true;
+                    setMessages(prevMessages => [...prevMessages, { role: "assistant", content: "" }]);
+                    setIsLoading(false);
+                }
+
+                if (parsedData.chunk) {
+                    // Update the UI with the received chunk
+                    onUpdate(parsedData.chunk);
+                } else if (parsedData.message) {
+                    console.log(parsedData.message); // Log any additional messages
+                }
+            };
+
+            eventSource.onerror = error => {
+                console.error("Stream Error:", error);
+                onError(error);
+                eventSource.close();
+            };
+
+            eventSource.addEventListener("close", event => {
+                console.log("Stream closed:", event);
+                onClose("Stream closed");
+                eventSource.close();
+            });
+        } catch (error) {
+            console.error("Error during streaming:", error);
+            onError(error);
+        }
+    };
+
+    const callFetchData = async (user: UserState, stream = true) => {
+        await fetchData(
+            user,
+            stream,
+            chunk => {
+                setMessages(prevMessages => {
+                    const lastIndex = prevMessages.length - 1;
+                    const lastMessage = prevMessages[lastIndex];
+                    if (lastMessage.role === "assistant") {
+                        const updatedMessage = {
+                            ...lastMessage,
+                            content: lastMessage.content + chunk,
+                        };
+                        return [...prevMessages.slice(0, lastIndex), updatedMessage];
+                    } else {
+                        return prevMessages;
+                    }
+                });
+            },
+            fullMessage => {
+                console.log("Stream Closed:", fullMessage);
+            },
+            error => {
+                console.error("Stream Error:", error);
+            },
+        );
+    };
+
     const setuser = async (Customer: string) => {
+        setIsLoading(true);
+        setInitialData("");
+        setMessages([]);
         setUser(prevState => ({
             ...prevState,
             user_id: Customer,
         }));
-        setIsLoading(true);
-        setmessages([{ role: "assistant", content: "Loading user's data. It will take a minute." }]);
-        const assistantResponse = await fetchData({
-            ...user, // Spread the previous state to keep other values
-            user_id: Customer,
-        });
-        setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
+        await callFetchData(
+            {
+                ...user,
+                user_id: Customer,
+            },
+            false,
+        );
         setIsLoading(false);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setinput(e.target.value);
+        setInput(e.target.value);
     };
 
     const handleSendnew = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
-        setmessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
         if (input.trim()) {
-            setinput("");
-            // Pass the updated input object to fetchData
-            const assistantResponse = await fetchData({
-                ...user, // Spread the previous state to keep other values
+            setMessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
+
+            setInput("");
+
+            setUser(prevState => ({
+                ...prevState,
+                user_question: input,
+            }));
+            setIsLoading(true);
+            await callFetchData({
+                ...user,
                 user_question: input,
             });
-
-            setmessages(prevMessages => [...prevMessages, { role: "assistant", content: assistantResponse }]);
-            setIsLoading(false);
         }
     };
 
-    const fetchData = async (inputValue: UserState, stream = false) => {
+    const fetchData = async (
+        inputValue: UserState,
+        stream: boolean,
+        onUpdate: (data: any) => void,
+        onClose: (message: string) => void,
+        onError: (error: any) => void,
+    ) => {
         try {
             const response = await fetch("/api/langflow", {
                 method: "POST",
@@ -82,13 +168,17 @@ export default function Home() {
             }
 
             const data = await response.json();
-            if (initialData.length > 0) {
-                return data.message?.text;
+
+            if (stream && data.streamUrl) {
+                const streamUrl = data.streamUrl;
+                await handleStream(process.env.NEXT_PUBLIC_LANGFLOW_BASE_URL + streamUrl, onUpdate, onClose, onError);
+            } else {
+                setInitialData(data.message?.text || "No data found.");
+                setMessages(prevMessages => [...prevMessages, { role: "assistant", content: data.message?.text }]);
             }
-            setInitialData(data.message?.text || "No data found.");
         } catch (error) {
-            console.error("Error fetching initial data:", error);
-            setInitialData("Error fetching data.");
+            console.error("Error fetching data:", error);
+            setInitialData("Error fetching data");
         }
     };
 
@@ -102,7 +192,7 @@ export default function Home() {
     };
 
     useEffect(() => {
-        fetchData(user);
+        callFetchData(user, false);
     }, []);
 
     useEffect(() => {
@@ -110,13 +200,13 @@ export default function Home() {
     }, [messages.length]);
 
     const handleReset = () => {
-        setmessages([]);
+        setMessages([]);
         setCategory("custom");
     };
 
     return (
         <main className={`${category} flex h-screen flex-col items-center justify-center py-6`}>
-            <section className="flex flex-col bg-body origin:w-[1200px] w-full origin:h-[800px] h-full rounded-3xl border overflow-y-auto scrollbar">
+            <section className="flex flex-col bg-body origin:w-[1200px] w-full origin:h-[800px] h-full rounded-3xl border overflow-y-auto scrollbar-none">
                 <Navbar
                     llm={llm}
                     setConfiguration={setConfiguration}
@@ -125,7 +215,7 @@ export default function Home() {
                     setUser={setuser}
                 />
                 <div className="flex flex-col flex-auto mx-6 md:mx-16">
-                    {messages && messages.length > 0 ? (
+                    {messages && messages.length > 2 ? (
                         <div className="flex flex-col gap-6 py-6">
                             {messages.map((message, index) => (
                                 <Bubble
@@ -135,7 +225,7 @@ export default function Home() {
                                     category={category}
                                 />
                             ))}
-                            {isLoading && messages?.length % 2 !== 0 && <LoadingBubble ref={messagesEndRef} />}
+                            {isLoading && <LoadingBubble ref={messagesEndRef} />}
                         </div>
                     ) : (
                         <div className="flex flex-col gap-6 md:gap-16 mt-auto mb-6">

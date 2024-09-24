@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         const { inputValue, inputType, outputType, session_id, stream } = await req.json();
 
         const langflowClient = new LangflowClient({
-            baseURL: process.env.LANGFLOW_BASE_URL || "",
+            baseURL: process.env.NEXT_PUBLIC_LANGFLOW_BASE_URL || "",
             applicationToken: process.env.LANGFLOW_APPLICATION_TOKEN || "",
         });
         const flowIdOrName = process.env.FLOW_ID_OR_NAME || "";
