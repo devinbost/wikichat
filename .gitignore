@@ -161,3 +161,10 @@ cython_debug/
 
 node_modules
 .next
+
+.env*
+.vscode/*
+.vscode
+.DS_Store
+app/.DS_Store
+app/api/.DS_Store
