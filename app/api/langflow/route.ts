@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
           };
         const response = await langflowClient.runFlow(
             flowIdOrName,
-            inputValue || '{"user_question": "What is my mileage?", "user_id": "8888888888"}',
+            inputValue || '{"user_question": "What is my event summary?", "user_id": "8888888888"}',
             inputType || "chat",
             outputType || "chat",
             UUID_SessionId,

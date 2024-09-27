@@ -21,7 +21,7 @@ export default function Home() {
     const [input, setInput] = useState<string>("");
     const [user, setUser] = useState<UserState>({
         user_id: "8888888888",
-        user_question: "What is my mileage?",
+        user_question: "What is my event summary?",
     });
 
     // Function to handle streaming using axios
