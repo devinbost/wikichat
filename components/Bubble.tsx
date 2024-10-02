@@ -66,17 +66,22 @@ const Bubble: JSXElementConstructor<any> = forwardRef(function Bubble({ content,
                 remarkPlugins={[remarkGfm]}
                 components={{
                     a({ href, children }) {
-                        setHasSource(true);
-                        return (
-                            <Link
-                                className={`${category} absolute flex px-2 gap-1 items-center mt-5 rounded-b-lg rounded-tr-lg border no-wrap end-0`}
-                                href={href}
-                                rel="noreferrer noopener"
-                                target="_blank">
-                                <LinkIcon />
-                                {children}
-                            </Link>
-                        );
+                        if (href.startsWith('mailto:')) {
+                            // Render email address as plain text
+                            return <span>{children}</span>;
+                        } else {
+                            setHasSource(true);
+                            return (
+                                <Link
+                                    className={`${category} absolute flex px-2 gap-1 items-center mt-5 rounded-b-lg rounded-tr-lg border no-wrap end-0`}
+                                    href={href}
+                                    rel="noreferrer noopener"
+                                    target="_blank">
+                                    <LinkIcon />
+                                    {children}
+                                </Link>
+                            );
+                        }
                     },
                     code({ node, children, ...props }) {
                         return <code {...props}>{children}</code>;

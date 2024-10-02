@@ -18,7 +18,7 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
         { label: "GPT 4 Turbo", value: "gpt-4-1106-preview" },
     ];
 
-    const [selectedUserId, setSelectedUserId] = useState("8888888888");
+    const [selectedUserId, setSelectedUserId] = useState("8991147774");
 
     const [selectedLlm, setSelectedLlm] = useState(llmOptions.find(opt => opt.value === llm));
 

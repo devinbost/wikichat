@@ -20,81 +20,45 @@ export default function Home() {
     const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setInput] = useState<string>("");
     const [user, setUser] = useState<UserState>({
-        user_id: "8888888888",
-        user_question: "What is my event summary?",
+        user_id: "8991147774",
+        user_question: "What is my mileage?",
     });
 
-    // Function to handle streaming using axios
-    const handleStream = async (
-        streamUrl: string,
-        onUpdate: (data: any) => void,
-        onClose: (message: string) => void,
-        onError: (error: any) => void,
-    ) => {
-        let hasReceivedFirstChunk = false;
-        try {
-            const eventSource = new EventSource(streamUrl);
-
-            eventSource.onopen = () => {
-                console.log("Stream connection opened.");
-            };
-            eventSource.onmessage = event => {
-                const parsedData = JSON.parse(event.data);
-                if (!hasReceivedFirstChunk) {
-                    hasReceivedFirstChunk = true;
-                    setMessages(prevMessages => [...prevMessages, { role: "assistant", content: "" }]);
-                    setIsLoading(false);
-                }
-
-                if (parsedData.chunk) {
-                    // Update the UI with the received chunk
-                    onUpdate(parsedData.chunk);
-                } else if (parsedData.message) {
-                    console.log(parsedData.message); // Log any additional messages
-                }
-            };
-
-            eventSource.onerror = error => {
-                console.error("Stream Error:", error);
-                onError(error);
-                eventSource.close();
-            };
-
-            eventSource.addEventListener("close", event => {
-                console.log("Stream closed:", event);
-                onClose("Stream closed");
-                eventSource.close();
-            });
-        } catch (error) {
-            console.error("Error during streaming:", error);
-            onError(error);
-        }
-    };
-
     const callFetchData = async (user: UserState, stream = true) => {
+        let hasReceivedFirstChunk = false;
         await fetchData(
             user,
             stream,
             chunk => {
+                if (!hasReceivedFirstChunk) {
+                    hasReceivedFirstChunk = true;
+                    // Add an initial assistant message with empty content
+                    setMessages(prevMessages => [...prevMessages, { role: "assistant", content: "" }]);
+                    setIsLoading(false);
+                }
                 setMessages(prevMessages => {
+                    console.log(prevMessages);
                     const lastIndex = prevMessages.length - 1;
                     const lastMessage = prevMessages[lastIndex];
-                    if (lastMessage.role === "assistant") {
+                    if (lastMessage && lastMessage.role === "assistant") {
                         const updatedMessage = {
                             ...lastMessage,
                             content: lastMessage.content + chunk,
                         };
                         return [...prevMessages.slice(0, lastIndex), updatedMessage];
                     } else {
-                        return prevMessages;
+                        // If no assistant message exists, add one
+                        return [...prevMessages, { role: "assistant", content: chunk }];
                     }
                 });
             },
             fullMessage => {
                 console.log("Stream Closed:", fullMessage);
+                setIsLoading(false);
             },
             error => {
                 console.error("Stream Error:", error);
+                setIsLoading(false);
             },
         );
     };
@@ -167,18 +131,62 @@ export default function Home() {
                 throw new Error(`Failed to fetch data: ${response.statusText}`);
             }
 
-            const data = await response.json();
+            if (stream) {
+                if (!response.body) {
+                    throw new Error('ReadableStream not yet supported in this browser.');
+                }
+    
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+    
+                let buffer = '';
+                let done = false;
 
-            if (stream && data.streamUrl) {
-                const streamUrl = data.streamUrl;
-                await handleStream(process.env.NEXT_PUBLIC_LANGFLOW_BASE_URL + streamUrl, onUpdate, onClose, onError);
+                while (!done) {
+                    const { value, done: doneReading } = await reader.read();
+                    done = doneReading;
+                    if (value) {
+                        buffer += decoder.decode(value, { stream: true });
+
+                        let lines = buffer.split('\n');
+                        buffer = lines.pop() || ''; // Keep the incomplete line for next time
+
+                        for (const line of lines) {
+                            if (line.startsWith('event: ')) {
+                                // Handle event name if needed
+                                const eventName = line.slice(7).trim();
+                                // You can store eventName if necessary
+                            } else if (line.startsWith('data: ')) {
+                                const data = line.slice(6).trim();
+                                if (data) {
+                                    try {
+                                        const parsedData = JSON.parse(data);
+                                        if (parsedData.chunk) {
+                                            onUpdate(parsedData.chunk);
+                                        } else if (parsedData.message) {
+                                            console.log(parsedData.message);
+                                        }
+                                    } catch (err) {
+                                        console.error('Failed to parse JSON:', err);
+                                    }
+                                }
+                            } else if (line === '') {
+                                // Empty line indicates end of one message in SSE
+                                // You can reset variables or handle any necessary actions here
+                            }
+                        }
+                    }
+                }
+                onClose('Stream closed');
             } else {
-                setInitialData(data.message?.text || "No data found.");
+                const data = await response.json();
                 setMessages(prevMessages => [...prevMessages, { role: "assistant", content: data.message?.text }]);
+                setIsLoading(false); // Ensure loading state is reset
             }
         } catch (error) {
             console.error("Error fetching data:", error);
             setInitialData("Error fetching data");
+            setIsLoading(false); // Ensure loading state is reset
         }
     };
 
@@ -191,9 +199,9 @@ export default function Home() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    useEffect(() => {
-        callFetchData(user, false);
-    }, []);
+    // useEffect(() => {
+    //     callFetchData(user, false);
+    // }, []);
 
     useEffect(() => {
         scrollToBottom();
@@ -215,7 +223,7 @@ export default function Home() {
                     setUser={setuser}
                 />
                 <div className="flex flex-col flex-auto mx-6 md:mx-16">
-                    {messages && messages.length > 2 ? (
+                    {messages && messages.length > 0 ? (
                         <div className="flex flex-col gap-6 py-6">
                             {messages.map((message, index) => (
                                 <Bubble
@@ -230,7 +238,7 @@ export default function Home() {
                     ) : (
                         <div className="flex flex-col gap-6 md:gap-16 mt-auto mb-6">
                             <div className="text-l md:text-2xl text-left">
-                                Please wait as we retrieve your information...
+                                Welcome. Please ask a question below.
                             </div>
                             <div className="text-md md:text-lg text-left">
                                 <ReactMarkdown>{initialData}</ReactMarkdown>

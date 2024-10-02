@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "env-cmd -f .env.docker -- next dev",
+    "devlocal": "env-cmd -f .env.non-docker -- next dev",
+    "buildlocal": "env-cmd -f .env.non-docker -- next build",
+    "build": "env-cmd -f .env.docker -- next build",
+    "start": "env-cmd -f .env.docker -- next start",
+    "startlocal": "env-cmd -f .env.non-docker -- next start",
     "seed": "ts-node ./scripts/populateDb.ts",
     "lint": "next lint"
   },
@@ -19,6 +22,7 @@
     "@langchain/openai": "^0.0.12",
     "@types/node": "^20.8.10",
     "ai": "^2.2.25",
+    "env-cmd": "^10.1.0",
     "geist": "^1.1.0",
     "next": "14.0.1",
     "openai": "^4.20.0",

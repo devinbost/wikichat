@@ -20,6 +20,12 @@ export class LangflowClient {
     ): Promise<any> {
         headers["Authorization"] = `Bearer ${this.applicationToken}`;
         const url = `${this.baseURL}${endpoint}`;
+        // Log the request details
+        console.log("POST Request:", {
+            url,
+            headers,
+            body,
+        });
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -45,9 +51,18 @@ export class LangflowClient {
         inputType: string = "chat",
         outputType: string = "chat",
         session_id: string,
-        stream: boolean = false,
         tweaks: Record<string, any> = {},
+        stream: boolean = false,
     ): Promise<any> {
+        console.log("InitiateSession Parameters:", {
+            flowId,
+            inputValue,
+            inputType,
+            outputType,
+            session_id,
+            tweaks,
+            stream,
+        });
         // const endpoint = `/lf/${langflowId}/api/v1/run/${flowId}?stream=${stream}`;
         const endpoint = `/api/v1/run/${flowId}?stream=${stream}`;
         return this.post(endpoint, {
@@ -77,12 +92,14 @@ export class LangflowClient {
                 inputType,
                 outputType,
                 session_id,
-                stream,
                 tweaks,
+                stream,
             );
 
             if (stream && initResponse?.outputs?.[0]?.outputs?.[0]?.artifacts?.stream_url) {
                 const streamUrl = initResponse.outputs[0].outputs[0].artifacts.stream_url;
+                //this.handleStream(streamUrl, onUpdate, onClose, onError);
+                console.log("Stream URL:", streamUrl);
 
                 return { streamUrl };
             } else if (!stream && initResponse && initResponse.outputs) {
