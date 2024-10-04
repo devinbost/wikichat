@@ -1,0 +1,15 @@
+FROM ollama/ollama:latest
+
+ENV OLLAMA_HOME=/root/.ollama
+
+# Create necessary directories
+RUN mkdir -p $OLLAMA_HOME/models
+
+# Copy models into the image
+COPY models/ $OLLAMA_HOME/models/
+
+# Expose port
+EXPOSE 11434
+
+# Set entrypoint
+ENTRYPOINT ["ollama", "serve"]

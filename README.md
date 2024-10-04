@@ -60,6 +60,22 @@ Remember to set your environment variables to the values obtained when setting u
 ---
 
 ## Initial setup:
+
+
+### Setup ollama
+Install ollama from the main website
+
+Run:
+`ollama pull llama3.1:latest`
+from your terminal.
+This downloads the model that we will bundle into the docker deployment. 
+
+Running the Ollama docker image requires following these instructions on the host machine to support the Nvidia drivers (for GPU support): https://hub.docker.com/r/ollama/ollama
+
+Then, run `cp -r ~/.ollama/models/* ./models`
+(There's an empty models directory created for you.)
+
+### Environment variables:
 Create two env files:
 
 - `.env.non-docker` (for local development & testing)
@@ -124,3 +140,5 @@ Then, run:
 To test the docker deployment, run this:
 `docker-compose down; clear; docker-compose up --build 2>&1 | tee output.log`
 Then, go to localhost:3000 to access the app.
+
+
