@@ -170,4 +170,4 @@ app/.DS_Store
 app/api/.DS_Store
 package-lock.json
 
-models/*
+mysql-init/*

@@ -61,6 +61,9 @@ Remember to set your environment variables to the values obtained when setting u
 
 ## Initial setup:
 
+Add the MySQL database setup script (that creates the required tables and populates them) in `./mysql-init/`
+This script will be invoked to populate the database automatically when starting `docker-compose`
+Note that since this MySQL database has plain text credentials stored in the compose file, it should only be used for testing.
 
 ### Setup ollama
 Install ollama from the main website
@@ -74,6 +77,18 @@ Running the Ollama docker image requires following these instructions on the hos
 
 Then, run `cp -r ~/.ollama/models/* ./models`
 (There's an empty models directory created for you.)
+
+### HuggingFace setup
+Run steps to download huggingface model to `huggingface/(model name)` like:
+`huggingface/all-MiniLM-L12-v2` into the root directory.
+```
+from sentence_transformers import SentenceTransformer
+modelPath = "path/to/app/huggingface/all-MiniLM-L12-v2"
+
+model = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
+model.save(modelPath)
+```
+This is the directory that will be used in the env file for docker.
 
 ### Environment variables:
 Create two env files:
@@ -101,7 +116,9 @@ OPENAI_API_KEY=sk-proj-9H...
 #Langflow Calling
 LANGFLOW_APPLICATION_TOKEN=AstraCS:g...
 # SIA v2 chat:
-FLOW_ID_OR_NAME=newflow
+FLOW_ID_OR_NAME=openai_flow
+# To run the huggingface/ollama flow, use:
+# FLOW_ID_OR_NAME=local_flow
 LANGFLOW_ID=453...
 LANGFLOW_BASE_URL=http://127.0.0.1:7860
 NEXT_PUBLIC_LANGFLOW_BASE_URL=http://127.0.0.1:7860
@@ -119,6 +136,8 @@ MYSQL_HOST=localhost
 DEBUG=-next:jsconfig-paths-plugin,* npm run dev
 
 OLLAMA_HOST=http://localhost:11434
+
+HUGGINGFACE_MODEL_PATH=sentence-transformers/all-MiniLM-L12-v2
 ```
 
 
@@ -128,6 +147,8 @@ In the `.env.docker` version, use these values instead:
 LANGFLOW_BASE_URL=http://langflow:7860
 NEXT_PUBLIC_LANGFLOW_BASE_URL=http://langflow:7860
 MYSQL_HOST=host.docker.internal (if mysql is running on host machine)
+
+HUGGINGFACE_MODEL_PATH=/app/huggingface/all-MiniLM-L12-v2
 ```
 
 ## Local testing:

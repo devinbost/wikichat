@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
                 "bulk_insert_batch_concurrency": null,
                 "bulk_insert_overwrite_concurrency": null,
                 "collection_indexing_policy": "",
-                "collection_name": "questions",
+                "collection_name": "questions_hf",
                 "metadata_indexing_exclude": "",
                 "metadata_indexing_include": "",
                 "metric": "",
@@ -202,6 +202,9 @@ export async function POST(req: NextRequest) {
                 "stream": false,
                 "system_message": "",
                 "temperature": 0.1
+              },
+              "HuggingFaceInferenceAPIEmbeddings-x7O7p": {
+                "model_path": "HUGGINGFACE_MODEL_PATH"
               }
             };
             if (stream) {
