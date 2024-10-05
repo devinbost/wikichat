@@ -13,8 +13,6 @@ services:
       - "7860:7860"
     depends_on:
       - postgres
-      - ollama
-      - mysql
     environment:
       - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
       - LANGFLOW_LANGCHAIN_CACHE=InMemoryCache
@@ -59,9 +57,6 @@ services:
       - "3000:3000"
     depends_on:
       - langflow
-      - mysql
-      - ollama
-      - postgres
     networks:
       - langflow-network
   ollama:
