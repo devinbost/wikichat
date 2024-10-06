@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { useEffect, useRef, useState } from "react";
 import { ArrowCounterclockwise, Tools, Send } from "react-bootstrap-icons";
 import Bubble from "../components/Bubble";
@@ -17,6 +18,7 @@ type UserState = {
 export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [initialData, setInitialData] = useState<string>("");
+    const [initialQuestion, setInitialQuestion] = useState<string>("What is my mileage?");
     const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setInput] = useState<string>("");
     const [user, setUser] = useState<UserState>({
@@ -103,13 +105,13 @@ export default function Home() {
         setIsLoading(true);
         setInitialData("");
         setMessages([]);
-        setUser(prevState => ({
-            ...prevState,
+        setUser({
             user_id: Customer,
-        }));
+            user_question: initialQuestion,
+        });
         await callFetchData(
             {
-                ...user,
+                user_question: initialQuestion,
                 user_id: Customer,
             },
             false,
@@ -155,7 +157,7 @@ export default function Home() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    inputValue: JSON.stringify(inputValue),
+                    inputValue: JSON.stringify(inputValue.user_question),
                     inputType: "chat",
                     outputType: "chat",
                     session_id: inputValue.user_id,
@@ -228,13 +230,19 @@ export default function Home() {
                             {isLoading && <LoadingBubble ref={messagesEndRef} />}
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-6 md:gap-16 mt-auto mb-6">
-                            <div className="text-l md:text-2xl text-left">
-                                Please wait as we retrieve your information...
-                            </div>
-                            <div className="text-md md:text-lg text-left">
-                                <ReactMarkdown>{initialData}</ReactMarkdown>
-                            </div>
+                        <div className="flex flex-col gap-6 md:gap-8 mt-auto mb-6">
+                            {!initialData ? (
+                                <div className="text-l md:text-2xl text-left">
+                                    Please wait as we retrieve your information...
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="text-l md:text-2xl text-left">WELCOME</div>
+                                    <div className="text-md md:text-lg text-left">
+                                        <ReactMarkdown>{initialData}</ReactMarkdown>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>

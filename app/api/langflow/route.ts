@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LangflowClient } from "../../../utils/langflowClient";
+import { tweaks } from "../../../utils/consts";
 
 // Define the characters for Base62 encoding
 const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -55,9 +56,13 @@ export async function POST(req: NextRequest) {
             inputType || "chat",
             outputType || "chat",
             UUID_SessionId,
-            {},
+            tweaks,
             stream,
         );
+        if (stream) {
+            const res = { streamUrl: response.streamUrl + `?session_id=${UUID_SessionId}` };
+            return NextResponse.json(res);
+        }
         return NextResponse.json(response);
     } catch (error) {
         console.error("Error running flow: in langflow api route", error);
