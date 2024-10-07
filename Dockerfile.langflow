@@ -26,8 +26,6 @@ WORKDIR /app
 
 COPY flows /app/flows
 
-COPY .env.docker /app/.env
-
 RUN pip install -U langflow cassio mysql-connector-python oracledb sentence-transformers langchain-huggingface
 
 ENV LANGFLOW_LOAD_FLOWS_PATH=/app/flows

@@ -23,6 +23,7 @@ services:
     volumes:
       - langflow-data:/app/langflow
       - ./huggingface:/app/huggingface
+      - ./.env:/app/.env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
       interval: 30s
@@ -60,13 +61,16 @@ services:
     networks:
       - langflow-network
   ollama:
-    build:
-      context: .
-      dockerfile: Dockerfile.ollama
+    image: ollama/ollama:latest
     ports:
       - "11434:11434"
+    environment:
+      - OLLAMA_HOME=/root/.ollama
+    volumes:
+      - ./models:/root/.ollama/models
     networks:
       - langflow-network
+    entrypoint: ["ollama", "serve"]  
   mysql:
     image: mysql:8.0
     environment:
