@@ -1,0 +1,93 @@
+version: "0.4.12"
+
+networks:
+  langflow-network:
+    driver: bridge
+
+services:
+  langflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.langflow
+    ports:
+      - "7860:7860"
+    depends_on:
+      - postgres
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      - LANGFLOW_LANGCHAIN_CACHE=InMemoryCache
+      - LANGFLOW_WORKERS=1
+      - LANGFLOW_BACKEND_ONLY=true
+      - LANGFLOW_STORE_ENVIRONMENT_VARIABLES=true
+      - LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=ASTRA_DB_TOKEN,ASTRA_DB_DATABASE_ID,OPENAI_KEY,OPENAI_API_KEY,OPEN_API_KEY,ASTRA_ENDPOINT,MYSQL_USER,MYSQL_PASSWORD,MYSQL_DB,MYSQL_HOST,LANGCHAIN_TRACING_V2,LANGCHAIN_SESSION,LANGCHAIN_API_KEY,OLLAMA_HOST,HUGGINGFACE_MODEL_PATH
+    volumes:
+      - langflow-data:/app/langflow
+      - ./huggingface:/app/huggingface
+      - ./.env.docker:/app/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - langflow-network
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: langflow
+      POSTGRES_PASSWORD: langflow
+      POSTGRES_DB: langflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - langflow-postgres:/var/lib/postgresql/data
+    networks:
+      - langflow-network
+
+  nextjs-app:
+    environment:
+    - HOST=0.0.0.0
+    - PORT=3000
+    - DEBUG=next:*
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - langflow
+    networks:
+      - langflow-network
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOME=/root/.ollama
+    volumes:
+      - ./models:/root/.ollama/models
+    networks:
+      - langflow-network
+    entrypoint: ["ollama", "serve"]  
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "Mysql!@#"
+      MYSQL_DATABASE: "MYSQL"
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - langflow-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  langflow-postgres:
+  langflow-data:
