@@ -171,3 +171,8 @@ app/api/.DS_Store
 package-lock.json
 
 mysql-init/*
+
+huggingface
+models
+huggingface.zip
+models.zip
