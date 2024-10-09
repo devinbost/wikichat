@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LangflowClient } from "../../../utils/langflowClient";
+import { tweaks } from "../../../utils/consts";
 
 // Define the characters for Base62 encoding
 const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -220,7 +221,7 @@ export async function POST(req: NextRequest) {
                 );
     
                 const streamUrl = initResponse.outputs[0].outputs[0].artifacts.stream_url;
-                const fullStreamUrl = `${process.env.LANGFLOW_BASE_URL}${streamUrl}`;
+                const fullStreamUrl = `${process.env.LANGFLOW_BASE_URL}${streamUrl}?session_id=${UUID_SessionId}`;
     
                 // Fetch the streaming response from LangFlow
                 const responseStream = await fetch(fullStreamUrl, {

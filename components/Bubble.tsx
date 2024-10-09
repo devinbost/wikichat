@@ -8,13 +8,11 @@ import {
     HandThumbsDownFill,
 } from "react-bootstrap-icons";
 import Markdown from "react-markdown";
-import Link from "next/link";
 import remarkGfm from "remark-gfm";
 
 const Bubble: JSXElementConstructor<any> = forwardRef(function Bubble({ content, category }, ref) {
     const { role } = content;
     const isUser = role === "user";
-    const [hasSource, setHasSource] = useState(false);
 
     const [likeStatus, setLikeStatus] = useState<"liked" | "disliked" | null>(null);
 
@@ -62,26 +60,11 @@ const Bubble: JSXElementConstructor<any> = forwardRef(function Bubble({ content,
             <Markdown
                 className={`border p-3 max-w-fit rounded-t-xl ${
                     isUser ? "ml-auto bg-bg-2 rounded-bl-xl" : "mr-auto rounded-br-xl"
-                }${hasSource ? " mb-8" : ""}`}
+                }`}
                 remarkPlugins={[remarkGfm]}
                 components={{
-                    a({ href, children }) {
-                        if (href.startsWith('mailto:')) {
-                            // Render email address as plain text
-                            return <span>{children}</span>;
-                        } else {
-                            setHasSource(true);
-                            return (
-                                <Link
-                                    className={`${category} absolute flex px-2 gap-1 items-center mt-5 rounded-b-lg rounded-tr-lg border no-wrap end-0`}
-                                    href={href}
-                                    rel="noreferrer noopener"
-                                    target="_blank">
-                                    <LinkIcon />
-                                    {children}
-                                </Link>
-                            );
-                        }
+                    a() {
+                        return null;
                     },
                     code({ node, children, ...props }) {
                         return <code {...props}>{children}</code>;
