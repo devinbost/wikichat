@@ -23,7 +23,7 @@ services:
     volumes:
       - langflow-data:/app/langflow
       - ./huggingface:/app/huggingface
-      - ./.env:/app/.env
+      - ./.env.docker:/app/.env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
       interval: 30s

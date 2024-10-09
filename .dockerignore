@@ -6,4 +6,3 @@ mysql-init
 huggingface
 models
 .env
-.env.*
