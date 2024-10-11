@@ -4,11 +4,12 @@ import getCassandraClient from "../../../lib/db";
 import bcrypt from "bcryptjs";
 
 const JWT_SECRET = process.env.JWT_SECRET || "JWT secret";
+  
 
 async function queryCQLDatabase(email: string) {
     try {
         const cassandraClient = await getCassandraClient();
-        const query = "SELECT * FROM default_namespace.users WHERE email = ? ALLOW FILTERING";
+        const query = "SELECT * FROM default_namespace.users WHERE email = ?";
         const result = await cassandraClient.execute(query, [email], { prepare: true });
         if (result.rows.length > 0) {
             return result.rows[0];
