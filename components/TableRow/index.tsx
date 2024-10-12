@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Trash3, PencilSquare } from "react-bootstrap-icons";
-import MyModal from "../Modal";
+import LLMInstructionModal from "../InstructionModal";
 
 interface TableRowProps {
     question_id: number;
@@ -154,7 +154,7 @@ const TableRow: React.FC<TableRowProps> = ({
                 </td>
             </tr>
             {isModalOpen && (
-                <MyModal
+                <LLMInstructionModal
                     onClose={closeModal}
                     question={question}
                     query={query}

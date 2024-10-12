@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 
-interface MyModalProps {
+interface LLMInstructionModalProps {
     question_id?: number;
     question?: string;
     query?: string;
@@ -15,7 +15,7 @@ interface MyModalProps {
     onRefresh: () => void;
 }
 
-const MyModal: React.FC<MyModalProps> = ({
+const LLMInstructionModal: React.FC<LLMInstructionModalProps> = ({
     question_id,
     question,
     query,
@@ -182,4 +182,4 @@ const MyModal: React.FC<MyModalProps> = ({
         </>
     );
 };
-export default MyModal;
+export default LLMInstructionModal;

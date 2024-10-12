@@ -51,6 +51,8 @@ services:
     - HOST=0.0.0.0
     - PORT=3000
     - DEBUG=next:*
+    - DEFAULT_ADMIN_PASSWORD="Test1234@#"
+    - DEFAULT_ADMIN_EMAIL=superadmin@localhost.com
     build:
       context: .
       dockerfile: Dockerfile.app

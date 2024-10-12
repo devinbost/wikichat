@@ -163,3 +163,23 @@ To test the docker deployment, run this:
 Then, go to localhost:3000 to access the app.
 
 
+## Secure connection bundle
+You will need to download the secure connection bundle and set the path of it like:
+PATH_SECURE_CONNECT_BUNDLE=/app/secure-connect-wikichat.zip
+
+Update the docker compose with the contents:
+
+```
+DEFAULT_ADMIN_PASSWORD="Test1234@#"
+DEFAULT_ADMIN_EMAIL=superadmin@localhost.com
+```
+This gives you the initial admin account that you need to grant additional users admin permissions.
+Be sure to not commit these credentials to source control!
+
+Create them also in a `.env.local` file
+
+You must obtain these OAUTH values and add them to that file as well:
+```
+OAUTH_CLIENTID=
+OAUTH_CLIENTSECRET=
+```

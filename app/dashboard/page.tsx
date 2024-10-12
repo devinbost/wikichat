@@ -4,15 +4,23 @@ import { useRouter } from "next/navigation";
 import LeftNav from "../../components/LeftNav";
 import TableRow from "../../components/TableRow";
 import { useEffect, useState } from "react";
-import MyModal from "../../components/Modal";
+import LLMInstructionModal from "../../components/InstructionModal";
 import Spinner from "../../components/Spinner";
+import { useSession, signIn } from "next-auth/react";
 
 export default function DashboardPage() {
+    const { data: session, status } = useSession();
+
     const [loading, setLoading] = useState(true);
     const [permissions, setPermissions] = useState(null);
     const [expandedRow, setExpandedRow] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [questions, setQuestions] = useState([]);
+    if (status === "unauthenticated") {
+        signIn("google"); // Redirect to Google sign-in
+        return null; // Prevent rendering until authenticated
+    }
+
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -266,7 +274,7 @@ export default function DashboardPage() {
                 </div>
             </div>
             {isModalOpen && (
-                <MyModal onClose={closeModal} title="Create A Record" btnText="Create" onRefresh={handleRefresh} />
+                <LLMInstructionModal onClose={closeModal} title="Create A Record" btnText="Create" onRefresh={handleRefresh} />
             )}
         </>
     );

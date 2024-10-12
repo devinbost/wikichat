@@ -15,6 +15,9 @@ const LeftNav = () => {
             router.push("/login");
         }
     }
+    const handleUserPageRedirect = () => {
+        router.push("/users");  // Redirect to the /users page
+      };
 
     return (
         <div className="flex flex-col h-screen w-[65px] bg-primary text-white">
@@ -22,7 +25,7 @@ const LeftNav = () => {
                 <div className="mb-4">
                     <h1 className="text-sm font-bold">Menu</h1>
                 </div>
-                <button title="Register a User">
+                <button title="Register a User" onClick={handleUserPageRedirect}>
                     <PersonPlusFill />
                 </button>
             </div>

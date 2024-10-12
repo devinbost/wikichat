@@ -32,10 +32,14 @@ const RegisterPage = () => {
         });
 
         if (res.ok) {
+            // Show success message to user
+            setLoading(false);
+            alert("Registration successful! Please check your email for the verification link.");
             router.push("/login");
         } else {
             const data = await res.json();
             setError(data.message);
+            setLoading(false);
         }
     }
     return loading ? (

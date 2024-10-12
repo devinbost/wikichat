@@ -1,13 +1,27 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import jwt from 'jsonwebtoken';
 import { cookies } from "next/headers";
 
-import type { NextRequest } from "next/server";
+const JWT_SECRET = process.env.JWT_SECRET;
 
-const JWT_SECRET = process.env.JWT_SECRET || "JWT secret";
+// Convert Base64URL-encoded string to Uint8Array
+function base64UrlDecode(input: string) {
+    input = input.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = input.length % 4 === 0 ? '' : new Array(4 - (input.length % 4)).fill('=').join('');
+    const binaryString = atob(input + pad);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
 
+// Verify JWT using Web Crypto API
 async function verifyJWT(token: string, secret: string) {
     const encoder = new TextEncoder();
     const keyData = encoder.encode(secret);
+    
+    // Import the secret key to be used for verification
     const key = await crypto.subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
 
     const parts = token.split(".");
@@ -16,35 +30,56 @@ async function verifyJWT(token: string, secret: string) {
     const [header, payload, signature] = parts;
     const signedData = `${header}.${payload}`;
 
-    const signatureBuffer = Uint8Array.from(atob(signature), c => c.charCodeAt(0));
-    const valid = await crypto.subtle.verify("HMAC", key, signatureBuffer, new TextEncoder().encode(signedData));
+    // Decode the signature
+    const signatureBuffer = base64UrlDecode(signature);
+
+    // Verify the signature using Web Crypto API
+    const valid = await crypto.subtle.verify(
+        "HMAC",
+        key,
+        signatureBuffer,
+        new TextEncoder().encode(signedData)
+    );
 
     if (!valid) throw new Error("Invalid token signature");
 
-    return JSON.parse(atob(payload)); // Decode payload
+    // Return decoded payload
+    return JSON.parse(atob(payload));
 }
 
 export async function middleware(request: NextRequest) {
-    const cookieStore = cookies(); // Use cookies() to access the cookies
-    const token = cookieStore.get("token")?.value; // Ensure correct method
+    const cookieStore = cookies();
+    const token = cookieStore.get("token")?.value;
 
     if (token) {
         try {
             const payload = await verifyJWT(token, JWT_SECRET);
+            const currentTime = Math.floor(Date.now() / 1000);
 
-            // Check if the token is expired
-            const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
             if (payload.exp && currentTime > payload.exp) {
                 console.log("Token is expired");
                 return NextResponse.redirect(new URL("/login", request.url));
             }
+
+            if (!payload.role) {
+                console.log("No role found in token");
+                return NextResponse.redirect(new URL("/login", request.url));
+            }
+
             if (payload.role === "end-user") {
                 return NextResponse.redirect(new URL("/", request.url));
             }
 
-            // Token is valid and not expired
+            if (request.nextUrl.pathname.startsWith("/api/createUser") || request.nextUrl.pathname.startsWith("/api/updateUser") || request.nextUrl.pathname.startsWith("/users")) {
+                if (payload.role !== "admin") {
+                    console.log("User does not have admin privileges");
+                    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+                }
+            }
+
             return NextResponse.next();
         } catch (err) {
+            console.error("JWT verification failed:", err.message);
             return NextResponse.redirect(new URL("/login", request.url));
         }
     } else {
@@ -53,5 +88,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/dashboard"],
+    matcher: [
+        "/", 
+        "/dashboard", 
+        "/users", 
+        "/api/createUser", 
+        "/api/updateUser",
+    ],
 };
