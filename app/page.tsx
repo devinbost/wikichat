@@ -31,6 +31,7 @@ export default function Home() {
         console.log("Session status:", status);
         if (status === "unauthenticated") {
             router.push("/login");
+            //return;
         } else if (status === "authenticated" && session?.user) {
             console.log("Authenticated user:", session);
             console.log("User email:", session.email); // Access email
