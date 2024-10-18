@@ -112,18 +112,36 @@ async function checkAndCreateRolePermissionsTable(cassandraClient) {
     // }
 }
 async function checkAndCreateDefaultAdminUser(cassandraClient) {
-    if (!DEFAULT_ADMIN_PASSWORD || !DEFAULT_ADMIN_EMAIL) {
-        console.log("No default admin password or email set. Skipping admin creation.");
+    if (!DEFAULT_ADMIN_EMAIL) {
+        console.log("No default admin email set. Skipping admin creation.");
         return;
     }
 
     try {
-        // Check if an admin already exists
-        const checkAdminQuery = `SELECT email FROM default_namespace.users WHERE role = 'admin' LIMIT 1`;
-        const result = await cassandraClient.execute(checkAdminQuery);
+        // Check if a user exists with the DEFAULT_ADMIN_EMAIL
+        const checkUserQuery = `SELECT user_id, email, role FROM default_namespace.users WHERE email = ?`;
+        const result = await cassandraClient.execute(checkUserQuery, [DEFAULT_ADMIN_EMAIL], { prepare: true });
 
-        if (result.rowLength === 0) {
-            // No admin exists, create a default admin
+        if (result.rowLength > 1) {
+            throw new Error(`Multiple users found with email: ${DEFAULT_ADMIN_EMAIL}`);
+        }
+
+        if (result.rowLength === 1) {
+            // User exists, update their role to 'admin'
+            const userId = result.rows[0].user_id;
+            const updatedAt = new Date();
+
+            const updateRoleQuery = `
+                UPDATE default_namespace.users
+                SET role = ?, updated_at = ?
+                WHERE user_id = ?
+            `;
+            const params = ['admin', updatedAt, userId];
+            await cassandraClient.execute(updateRoleQuery, params, { prepare: true });
+
+            console.log(`User with email ${DEFAULT_ADMIN_EMAIL} role updated to admin.`);
+        } else {
+            // User does not exist, create a new admin user
             const userId = uuidv4();
             const createdAt = new Date();
             const updatedAt = new Date();
@@ -136,8 +154,6 @@ async function checkAndCreateDefaultAdminUser(cassandraClient) {
             await cassandraClient.execute(insertAdminQuery, params, { prepare: true });
 
             console.log(`Default admin user created with email: ${DEFAULT_ADMIN_EMAIL}`);
-        } else {
-            console.log("Admin user already exists. Skipping admin creation.");
         }
     } catch (error) {
         console.error("Error during default admin creation:", error);

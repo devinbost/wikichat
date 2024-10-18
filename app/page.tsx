@@ -1,14 +1,12 @@
 "use client";
-import React from "react";
-import { useEffect, useRef, useState } from "react";
-import { ArrowCounterclockwise, Tools, Send } from "react-bootstrap-icons";
+import React, { useEffect, useRef, useState } from "react";
+import { ArrowCounterclockwise, Send } from "react-bootstrap-icons";
 import Bubble from "../components/Bubble";
 import Footer from "../components/Footer";
-import useConfiguration from "./hooks/useConfiguration";
-import useTheme from "./hooks/useTheme";
 import LoadingBubble from "../components/LoadingBubble";
 import Navbar from "../components/Navbar";
-import ReactMarkdown from "react-markdown";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 type UserState = {
     user_id: string;
@@ -16,15 +14,33 @@ type UserState = {
 };
 
 export default function Home() {
+    const { data: session, status } = useSession(); // Fetch session and its status
+    const router = useRouter(); // Initialize the useRouter hook for redirection
     const [isLoading, setIsLoading] = useState(false);
-    const [initialData, setInitialData] = useState<string>("");
-    const [initialQuestion, setInitialQuestion] = useState<string>("What is my mileage?");
+    const [initialQuestion, setInitialQuestion] = useState("What is my mileage?");
     const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
     const [input, setInput] = useState<string>("");
     const [user, setUser] = useState<UserState>({
         user_id: "8991147774",
         user_question: "What is my mileage?",
     });
+
+    // Example: Checking session status and role
+    useEffect(() => {
+        // Redirect to "/login" if session or role is not defined
+        console.log("Session status:", status);
+        if (status === "unauthenticated") {
+            router.push("/login");
+        } else if (status === "authenticated" && session?.user) {
+            console.log("Authenticated user:", session);
+            console.log("User email:", session.email); // Access email
+            console.log("User role:", session.role);   // Access role if attached
+            setUser({
+                user_id: session.email,  // Assuming email is used as user_id
+                user_question: initialQuestion,
+            });
+        }
+    }, [session, status, router]);
 
     const callFetchData = async (user: UserState, stream = true) => {
         let hasReceivedFirstChunk = false;
@@ -34,12 +50,10 @@ export default function Home() {
             chunk => {
                 if (!hasReceivedFirstChunk) {
                     hasReceivedFirstChunk = true;
-                    // Add an initial assistant message with empty content
                     setMessages(prevMessages => [...prevMessages, { role: "assistant", content: "" }]);
                     setIsLoading(false);
                 }
                 setMessages(prevMessages => {
-                    console.log(prevMessages);
                     const lastIndex = prevMessages.length - 1;
                     const lastMessage = prevMessages[lastIndex];
                     if (lastMessage && lastMessage.role === "assistant") {
@@ -49,7 +63,6 @@ export default function Home() {
                         };
                         return [...prevMessages.slice(0, lastIndex), updatedMessage];
                     } else {
-                        // If no assistant message exists, add one
                         return [...prevMessages, { role: "assistant", content: chunk }];
                     }
                 });
@@ -65,24 +78,6 @@ export default function Home() {
         );
     };
 
-    const setuser = async (Customer: string) => {
-        setIsLoading(true);
-        setInitialData("");
-        setMessages([]);
-        setUser({
-            user_id: Customer,
-            user_question: initialQuestion,
-        });
-        await callFetchData(
-            {
-                user_question: initialQuestion,
-                user_id: Customer,
-            },
-            false,
-        );
-        setIsLoading(false);
-    };
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInput(e.target.value);
     };
@@ -94,12 +89,10 @@ export default function Home() {
             setMessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
 
             setInput("");
-
             setUser(prevState => ({
                 ...prevState,
                 user_question: input,
             }));
-            setIsLoading(true);
             await callFetchData({
                 ...user,
                 user_question: input,
@@ -134,117 +127,62 @@ export default function Home() {
             }
 
             if (stream) {
-                if (!response.body) {
-                    throw new Error('ReadableStream not yet supported in this browser.');
-                }
-    
-                const reader = response.body.getReader();
+                const reader = response.body?.getReader();
                 const decoder = new TextDecoder();
-    
-                let buffer = '';
+
+                let buffer = "";
                 let done = false;
 
                 while (!done) {
-                    const { value, done: doneReading } = await reader.read();
+                    const { value, done: doneReading } = await reader?.read();
                     done = doneReading;
                     if (value) {
                         buffer += decoder.decode(value, { stream: true });
-
-                        let lines = buffer.split('\n');
-                        buffer = lines.pop() || ''; // Keep the incomplete line for next time
+                        let lines = buffer.split("\n");
+                        buffer = lines.pop() || "";
 
                         for (const line of lines) {
-                            if (line.startsWith('event: ')) {
-                                // Handle event name if needed
-                                const eventName = line.slice(7).trim();
-                                // You can store eventName if necessary
-                            } else if (line.startsWith('data: ')) {
+                            if (line.startsWith("data: ")) {
                                 const data = line.slice(6).trim();
                                 if (data) {
                                     try {
                                         const parsedData = JSON.parse(data);
                                         if (parsedData.chunk) {
                                             onUpdate(parsedData.chunk);
-                                        } else if (parsedData.message) {
-                                            console.log(parsedData.message);
                                         }
                                     } catch (err) {
-                                        console.error('Failed to parse JSON:', err);
+                                        console.error("Failed to parse JSON:", err);
                                     }
                                 }
-                            } else if (line === '') {
-                                // Empty line indicates end of one message in SSE
-                                // You can reset variables or handle any necessary actions here
                             }
                         }
                     }
                 }
-                onClose('Stream closed');
+                onClose("Stream closed");
             } else {
                 const data = await response.json();
                 setMessages(prevMessages => [...prevMessages, { role: "assistant", content: data.message?.text }]);
-                setIsLoading(false); // Ensure loading state is reset
             }
         } catch (error) {
             console.error("Error fetching data:", error);
-            setInitialData("Error fetching data");
-            setIsLoading(false); // Ensure loading state is reset
         }
     };
 
-    const { category, setCategory, theme, setTheme } = useTheme();
-    const { llm, setConfiguration } = useConfiguration();
-
-    const messagesEndRef = useRef(null);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    // useEffect(() => {
-    //     callFetchData(user, false);
-    // }, []);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages.length]);
-
-    const handleReset = () => {
-        setMessages([]);
-        setCategory("custom");
-    };
-
     return (
-        <main className={`${category} flex h-screen flex-col items-center justify-center py-6`}>
-            <section className="flex flex-col bg-body origin:w-[1200px] w-full origin:h-[800px] h-full rounded-3xl border overflow-y-auto scrollbar-none">
-                <Navbar
-                    llm={llm}
-                    setConfiguration={setConfiguration}
-                    theme={theme}
-                    setTheme={setTheme}
-                    setUser={setuser}
-                />
+        <main className="flex h-screen flex-col items-center justify-center py-6">
+            <section className="flex flex-col bg-body origin:w-[1200px] w-full origin:h-[800px] h-full rounded-3xl border overflow-y-auto">
+                <Navbar />
                 <div className="flex flex-col flex-auto mx-6 md:mx-16">
-                    {messages && messages.length > 0 ? (
+                    {messages.length > 0 ? (
                         <div className="flex flex-col gap-6 py-6">
                             {messages.map((message, index) => (
-                                <Bubble
-                                    ref={messagesEndRef}
-                                    key={`message-${index}`}
-                                    content={message}
-                                    category={category}
-                                />
+                                <Bubble key={`message-${index}`} content={message} />
                             ))}
-                            {isLoading && <LoadingBubble ref={messagesEndRef} />}
+                            {isLoading && <LoadingBubble />}
                         </div>
                     ) : (
                         <div className="flex flex-col gap-6 md:gap-16 mt-auto mb-6">
-                            <div className="text-l md:text-2xl text-left">
-                                Welcome. Please ask a question below.
-                            </div>
-                            <div className="text-md md:text-lg text-left">
-                                <ReactMarkdown>{initialData}</ReactMarkdown>
-                            </div>
+                            <div className="text-l md:text-2xl text-left">Welcome. Please ask a question below.</div>
                         </div>
                     )}
                 </div>
@@ -252,7 +190,7 @@ export default function Home() {
                     <form className="flex h-[40px] gap-2" onSubmit={handleSendnew}>
                         <div className="relative flex-1">
                             <input
-                                className="input border-tertiary hover:border-primary focus:border-primary block border w-full text-sm md:text-base outline-none bg-transparent rounded-full py-2 px-4"
+                                className="input border w-full rounded-full py-2 px-4"
                                 onChange={handleInputChange}
                                 placeholder="Enter your question..."
                                 value={input}
@@ -261,11 +199,8 @@ export default function Home() {
                                 <Send size={20} />
                             </button>
                         </div>
-                        <button
-                            onClick={handleReset}
-                            className="bg-primary text-inverse hover:bg-primary-hover flex rounded-full items-center justify-center px-2.5 origin:px-3">
+                        <button className="bg-primary text-inverse rounded-full px-2.5">
                             <ArrowCounterclockwise size={20} />
-                            <span className="hidden origin:block text-sm ml-2">New chat</span>
                         </button>
                     </form>
                     <Footer />

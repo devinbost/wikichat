@@ -41,7 +41,7 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
             {/* Singapore Airlines logo */}
             <AirlineIcon />
             <div className="flex gap-2 md:ml-auto">
-                <Listbox value={selectedLlm} by="value" onChange={handleChange}>
+                {/* <Listbox value={selectedLlm} by="value" onChange={handleChange}>
                     <div className="relative">
                         <Listbox.Button className="h-10 px-4 rounded-full inline-flex justify-between gap-2 items-center bg-primary text-inverse hover:bg-primary-hover">
                             {selectedLlm.label}
@@ -62,7 +62,7 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
                             ))}
                         </Listbox.Options>
                     </div>
-                </Listbox>
+                </Listbox> */}
                 {/* User Selection Listbox */}
                 <div className="flex gap-2 items-center">
                     <input

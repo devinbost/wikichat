@@ -48,6 +48,13 @@ async function verifyJWT(token: string, secret: string) {
 }
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // Skip authentication checks for the /login page and /api/auth routes
+    if (pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
+        return NextResponse.next();
+    }
+
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
 
@@ -70,7 +77,7 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(new URL("/", request.url));
             }
 
-            if (request.nextUrl.pathname.startsWith("/api/createUser") || request.nextUrl.pathname.startsWith("/api/updateUser") || request.nextUrl.pathname.startsWith("/users")) {
+            if (pathname.startsWith("/api/createUser") || pathname.startsWith("/api/updateUser") || pathname.startsWith("/users")) {
                 if (payload.role !== "admin") {
                     console.log("User does not have admin privileges");
                     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
@@ -89,7 +96,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        "/", 
         "/dashboard", 
         "/users", 
         "/api/createUser", 
