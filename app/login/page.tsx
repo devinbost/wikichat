@@ -10,6 +10,9 @@ const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const [username, setUsername] = useState(""); // Store the username input for Credentials login
+    const [password, setPassword] = useState(""); // Store the password input for Credentials login
+
     async function handleGoogleLogin() {
         setLoading(true);
         
@@ -29,6 +32,25 @@ const LoginPage = () => {
             console.log( "Login failed. Please try again.");
         }
     }
+    async function handleCredentialsLogin(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        setLoading(true);
+
+        const result = await signIn("credentials", {
+            redirect: false,
+            username,
+            password,
+            callbackUrl: "/",
+        });
+
+        if (result?.ok) {
+            router.push("/");
+        } else {
+            setLoading(false);
+            setError(result?.error || "Login failed. Please try again.");
+        }
+    }
+
 
     return loading ? (
         <Spinner />
@@ -48,6 +70,34 @@ const LoginPage = () => {
                             Sign in with Google
                         </button>
                     </div>
+                    <form onSubmit={handleCredentialsLogin} className="space-y-4">
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="w-full p-2 rounded border"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full p-2 rounded border"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="w-full transform hover:scale-[1.05] transition-transform duration-200 bg-primary text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        >
+                            Sign in with Credentials
+                        </button>
+                    </form>
                     {error && <p className="text-red-500">{error}</p>}
                 </div>
             </div>

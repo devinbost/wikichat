@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials"; // Import the CredentialsProvider
 import { v4 as uuidv4 } from "uuid";
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 
@@ -209,6 +210,21 @@ export default NextAuth({
           GoogleProvider({
               clientId: process.env.OAUTH_CLIENTID || "default-client-id",
               clientSecret: process.env.OAUTH_CLIENTSECRET || "default-client-secret",
+          }),
+          CredentialsProvider({
+            // Name the credentials provider, visible on the login page
+            name: "Test Login",
+            credentials: {
+              username: { label: "Username", type: "text", placeholder: "Enter any username" },
+              password: { label: "Password", type: "password", placeholder: "Enter any password" },
+            },
+            authorize: async (credentials) => {
+              // Always authorize for testing purposes
+              if (credentials) {
+                return { id: uuidv4(), name: credentials.username, email: `${credentials.username}@test.com` };
+              }
+              return null;
+            },
           }),
       ],
       jwt: {

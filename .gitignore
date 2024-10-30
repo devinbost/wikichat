@@ -177,3 +177,4 @@ models
 huggingface.zip
 models.zip
 app/secure-connect-wikichat.zip
+scripts/deployment.py
