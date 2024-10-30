@@ -5,42 +5,62 @@ import { ChevronDown } from "react-bootstrap-icons";
 import AirlineIcon from "./icons/singapore_icon";
 
 interface Props {
-    llm: string;
-    setConfiguration: (llm: string) => void;
-    theme: "light" | "dark";
-    setTheme: (theme: "light" | "dark") => void;
-    setUser: (user: string) => void;
+    //setConfiguration: (llm: string) => void;
+    //theme: "light" | "dark";
+    //setTheme: (theme: "light" | "dark") => void;
+    setCustomer: (customer_id: string) => void;
+    userName: string; // This is derived from the session and is unrelated to setCustomer above, which is for their customer!
 }
 
-const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX.Element => {
-    const llmOptions = [
-        { label: "GPT 3.5 Turbo", value: "gpt-3.5-turbo" },
-        { label: "GPT 4", value: "gpt-4" },
-        { label: "GPT 4 Turbo", value: "gpt-4-1106-preview" },
-    ];
+const Navbar = ({ setCustomer, userName }: Props): JSX.Element => {
+    // const llmOptions = [
+    //     { label: "GPT 3.5 Turbo", value: "gpt-3.5-turbo" },
+    //     { label: "GPT 4", value: "gpt-4" },
+    //     { label: "GPT 4 Turbo", value: "gpt-4-1106-preview" },
+    // ];
 
-    const [selectedUserId, setSelectedUserId] = useState("8991147774");
+    const [selectedCustomerId, setSelectedCustomerId] = useState("8991147774");
 
-    const [selectedLlm, setSelectedLlm] = useState(llmOptions.find(opt => opt.value === llm));
+    // const [selectedLlm, setSelectedLlm] = useState(llmOptions.find(opt => opt.value === llm));
 
-    const handleChange = llm => {
-        setSelectedLlm(llm);
-        setConfiguration(llm.value);
-    };
+    // const handleChange = llm => {
+    //     setSelectedLlm(llm);
+    //     setConfiguration(llm.value);
+    // };
 
     const handleChangeUser = () => {
-        setUser(selectedUserId); // Pass the entered user ID to the parent component
+        setCustomer(selectedCustomerId); // Pass the entered user ID to the parent component
     };
 
-    const handleToggle = () => {
-        setTheme(theme === "dark" ? "light" : "dark");
+    // const handleToggle = () => {
+    //     setTheme(theme === "dark" ? "light" : "dark");
+    // };
+
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("/api/logout", {
+                method: "DELETE",
+                credentials: "include", // Send cookies with the request if needed
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to log out");
+            }
+
+            window.location.href = "/login"; // Redirect to login page
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
 
     return (
-        <nav className="flex flex-col md:flex-row gap-3 md:gap-6 rounded-t-3xl bg-primary items-center md:items-start sticky top-0 z-10 p-6 md:px-16 md:pt-16">
+        <nav className="flex flex-col gap-3 md:gap-2 rounded-t-3xl bg-primary items-center md:items-start sticky top-0 z-10 p-6 md:px-16 md:pt-6">
             {/* Singapore Airlines logo */}
-            <AirlineIcon />
-            <div className="flex gap-2 md:ml-auto">
+            <div className="flex items-center gap-2 md:ml-auto">
+                <h1 className="text-inverse">Hello, {userName}!</h1> {/* Display the user's name */}
+            </div>
+            <div className="flex gap-2 md:ml-auto md:flex-row">
+                <AirlineIcon/>
                 {/* <Listbox value={selectedLlm} by="value" onChange={handleChange}>
                     <div className="relative">
                         <Listbox.Button className="h-10 px-4 rounded-full inline-flex justify-between gap-2 items-center bg-primary text-inverse hover:bg-primary-hover">
@@ -67,9 +87,9 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
                 <div className="flex gap-2 items-center">
                     <input
                         type="text"
-                        value={selectedUserId}
-                        onChange={e => setSelectedUserId(e.target.value)}
-                        placeholder="Enter user_id"
+                        value={selectedCustomerId}
+                        onChange={e => setSelectedCustomerId(e.target.value)}
+                        placeholder="Enter customer_id"
                         className="h-10 rounded-full bg-primary text-inverse placeholder:text-inverse"
                         style={{
                             borderColor: "var(--background-body)",
@@ -85,6 +105,12 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
                         Set User ID
                     </button>
                 </div>
+                <button
+                    onClick={handleLogout}
+                    className="h-10 px-3 rounded-full text-primary hover:bg-secondary-hover"
+                        style={{ backgroundColor: "var(--background-body)" }}>
+                    Logout
+                </button>
                 <button id="app-tooltip" className="peer border rounded-full bg-body hover:bg-bg-1 w-10 h-10">
                     ?
                 </button>
@@ -94,14 +120,7 @@ const Navbar = ({ llm, setConfiguration, theme, setTheme, setUser }: Props): JSX
                     clickable
                     className="max-w-sm md:max-w-2xl rounded-2xl z-30">
                     Chatting with SingaPore Airlines is a breeze! Simply type your questions or requests in a clear and
-                    concise manner. Responses are sourced from{" "}
-                    <a
-                        className="text-link"
-                        href="https://www.google.com/aclk?sa=l&ai=DChcSEwiIwtuUzNuIAxWXZEECHUlyCGMYABAAGgJ3cw&co=1&ase=2&gclid=Cj0KCQjwxsm3BhDrARIsAMtVz6PYuBwwCVPW9OByVdavGt6_txSh_UE1FFOKVMHA-_4uAWJxlRBDUdEaAtN9EALw_wcB&sig=AOD64_39Zw3XUj44Yl6peNkLVC8sgvaegg&q&nis=4&adurl&ved=2ahUKEwj14deUzNuIAxV_SKQEHQdZOwAQ0Qx6BAgJEAE"
-                        rel="noreferrer noopener"
-                        target="_blank">
-                        SingaPore airline&apos;s
-                    </a>
+                    concise manner. Responses are sourced from Singapore Airline&apos;s live customer data!
                 </Tooltip>
             </div>
         </nav>

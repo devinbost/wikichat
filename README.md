@@ -165,7 +165,7 @@ Then, go to localhost:3000 to access the app.
 
 ## Secure connection bundle
 You will need to download the secure connection bundle and set the path of it like:
-PATH_SECURE_CONNECT_BUNDLE=/app/secure-connect-wikichat.zip
+PATH_SECURE_CONNECT_BUNDLE=./app/secure-connect-wikichat.zip
 
 Update the docker compose with the contents:
 

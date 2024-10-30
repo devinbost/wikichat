@@ -21,7 +21,9 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node", "next-auth"] 
   },
   "include": [
     "next-env.d.ts",

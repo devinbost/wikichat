@@ -19,9 +19,17 @@ async function fetchRecordsFromCQLDatabase() {
 export async function GET() {
     try {
         const records = await fetchRecordsFromCQLDatabase();
-        return NextResponse.json({ message: "Records fetched successfully", data: records }, { status: 200 });
+        const roles = records.map((record) => record.role); // Extract roles as strings
+
+        return NextResponse.json(
+            { message: "Records fetched successfully", data: roles }, 
+            { status: 200 }
+        );
     } catch (error) {
         console.error("Error during fetching records: ", error);
-        return NextResponse.json({ message: "Record fetching failed", error: error.message }, { status: 500 });
+        return NextResponse.json(
+            { message: "Record fetching failed", error: error.message }, 
+            { status: 500 }
+        );
     }
 }

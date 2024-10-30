@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { v4 as uuidv4 } from "uuid";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 
 import getCassandraClient from "../../../lib/db";
 
@@ -205,21 +205,27 @@ async function insertUserIntoCQLDatabase(
 }
 
 export default NextAuth({
-    providers: [
-      GoogleProvider({
-        clientId: process.env.OAUTH_CLIENTID,
-        clientSecret: process.env.OAUTH_CLIENTSECRET,
-      }),
-    ],
-    jwt: {
-        secret: process.env.JWT_SECRET,
+      providers: [
+          GoogleProvider({
+              clientId: process.env.OAUTH_CLIENTID || "default-client-id",
+              clientSecret: process.env.OAUTH_CLIENTSECRET || "default-client-secret",
+          }),
+      ],
+      jwt: {
+        secret: process.env.JWT_SECRET || "default-jwt-secret",
         encode: async ({ token }) => {
-          return jwt.sign(token, process.env.JWT_SECRET);
+            if (!token) {
+                throw new Error("Token is undefined or invalid.");
+            }
+            return jwt.sign(token as object, process.env.JWT_SECRET as Secret);
         },
         decode: async ({ token }) => {
-          return jwt.verify(token, process.env.JWT_SECRET);
+            if (!token) {
+                throw new Error("Token is undefined or invalid.");
+            }
+            return jwt.verify(token, process.env.JWT_SECRET as Secret) as JwtPayload;
         },
-      },
+    },
       cookies: {
         sessionToken: {
           name: 'token', // Set the custom cookie name here
@@ -238,43 +244,45 @@ export default NextAuth({
     callbacks: {
       async jwt({ token, account, profile }) {
         // Modify the token as needed
-        if (account && profile) {
-            token.email = profile.email; // Capture the user's email
-            // Check user's role. If it exists, then set to token. 
-            
+        if (account && profile && typeof profile.email === "string") {
+            token.email = typeof profile.email === "string" ? profile.email : undefined; // Ensure email is a string
+    
             const cassandraClient = await getCassandraClient();
-            // Ensure DB is setup. In future, move this code to run once upon app start.
+            
+            // Ensure DB setup. In the future, move this to run once upon app start.
             await checkAndCreateUsersTable(cassandraClient);
             await checkAndCreateRolePermissionsTable(cassandraClient);
             await checkAndCreateDefaultAdminUser(cassandraClient);
-
-            // check if user exists already. If so, get role. 
+    
+            // Check if the user already exists and fetch their role
             const userRole = await getUserRoleByEmail(cassandraClient, profile.email);
-
-                // Check if the user exists in the database
-            if (userRole) {
-                // User exists, set the role in the token
+    
+            if (typeof userRole === "string") {
+                // If the role exists, assign it to the token
                 token.role = userRole;
-                const cassandraClient = await getCassandraClient();
             } else {
-                // User does not exist, create a new user with default role
+                // If the user does not exist, create them with a default role
                 const userId = uuidv4();
                 const createdAt = new Date();
                 const updatedAt = new Date();
-                const role = "end-user";
+                const role = "end-user"; // Default role
+    
                 await insertUserIntoCQLDatabase(userId, profile.email, role, createdAt, updatedAt);
                 token.role = role;
             }
-            
         }
+    
         console.log("JWT Token after assignment:", token); // Log to verify the token
         return token;
-      },
+    },
       async session({ session, token }) {
         // Modify the session object based on token data
-        session.email = token.email; // Attach email to the session object
-        session.role = token.role;
-        console.log("Session data:", session); // Log to verify session data
+        session.user = {
+            ...session.user,
+            email: typeof token.email === "string" ? token.email : undefined,
+            role: typeof token.role === "string" ? token.role : undefined, // Ensure it's a string
+        };
+        console.log("Session data:", session); // Verify session data
         return session;
       },
     },

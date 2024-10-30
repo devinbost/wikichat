@@ -58,38 +58,39 @@ export async function middleware(request: NextRequest) {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
 
-    if (token) {
-        try {
-            const payload = await verifyJWT(token, JWT_SECRET);
-            const currentTime = Math.floor(Date.now() / 1000);
+    if (!token) {
+        console.log("Token not found, redirecting to login");
+        return NextResponse.redirect(new URL("/login", request.url));
+    }
 
-            if (payload.exp && currentTime > payload.exp) {
-                console.log("Token is expired");
-                return NextResponse.redirect(new URL("/login", request.url));
-            }
+    try {
+        const payload = await verifyJWT(token, JWT_SECRET as string);
+        const currentTime = Math.floor(Date.now() / 1000);
 
-            if (!payload.role) {
-                console.log("No role found in token");
-                return NextResponse.redirect(new URL("/login", request.url));
-            }
-
-            if (payload.role === "end-user") {
-                return NextResponse.redirect(new URL("/", request.url));
-            }
-
-            if (pathname.startsWith("/api/createUser") || pathname.startsWith("/api/updateUser") || pathname.startsWith("/users")) {
-                if (payload.role !== "admin") {
-                    console.log("User does not have admin privileges");
-                    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-                }
-            }
-
-            return NextResponse.next();
-        } catch (err) {
-            console.error("JWT verification failed:", err.message);
+        if (payload.exp && currentTime > payload.exp) {
+            console.log("Token is expired");
             return NextResponse.redirect(new URL("/login", request.url));
         }
-    } else {
+
+        if (!payload.role) {
+            console.log("No role found in token");
+            return NextResponse.redirect(new URL("/login", request.url));
+        }
+
+        if (payload.role === "end-user") {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+
+        if (pathname.startsWith("/api/createUser") || pathname.startsWith("/api/updateUser") || pathname.startsWith("/users")) {
+            if (payload.role !== "admin") {
+                console.log("User does not have admin privileges");
+                return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+            }
+        }
+
+        return NextResponse.next();
+    } catch (err) {
+        console.error("JWT verification failed:", err.message);
         return NextResponse.redirect(new URL("/login", request.url));
     }
 }

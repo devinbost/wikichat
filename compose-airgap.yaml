@@ -12,9 +12,6 @@ services:
     networks:
       - langflow-network
   langflow:
-    build:
-      context: .
-      dockerfile: Dockerfile.langflow
     image: localhost:5000/langflow-sia:latest
     ports:
       - "7860:7860"
@@ -28,10 +25,9 @@ services:
       - LANGFLOW_STORE_ENVIRONMENT_VARIABLES=true
       - LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=ASTRA_DB_TOKEN,ASTRA_DB_DATABASE_ID,OPENAI_KEY,OPENAI_API_KEY,OPEN_API_KEY,ASTRA_ENDPOINT,MYSQL_USER,MYSQL_PASSWORD,MYSQL_DB,MYSQL_HOST,LANGCHAIN_TRACING_V2,LANGCHAIN_SESSION,LANGCHAIN_API_KEY,OLLAMA_HOST,HUGGINGFACE_MODEL_PATH
     volumes:
-      - ./langflow-data:/app/langflow
+      - langflow-data:/app/langflow
       - ./huggingface:/app/huggingface
       - ./.env.docker:/app/.env
-      - ./flows:/app/flows
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
       interval: 30s
@@ -61,9 +57,6 @@ services:
     - DEBUG=next:*
     - DEFAULT_ADMIN_PASSWORD="Test1234@#"
     - DEFAULT_ADMIN_EMAIL=superadmin@localhost.com
-    build:
-      context: .
-      dockerfile: Dockerfile.app
     image: localhost:5000/nextjs-app-sia:latest
     ports:
       - "3000:3000"
@@ -82,22 +75,6 @@ services:
     networks:
       - langflow-network
     entrypoint: ["ollama", "serve"]  
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: "Mysql!@#"
-      MYSQL_DATABASE: "MYSQL"
-    volumes:
-      - ./mysql-init:/docker-entrypoint-initdb.d
-    ports:
-      - "3306:3306"
-    networks:
-      - langflow-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 volumes:
   langflow-postgres:

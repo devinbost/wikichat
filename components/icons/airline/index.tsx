@@ -12,7 +12,7 @@ function AirlineIconBlue() {
             <title>SIA stk linear_FC RGB</title>
             <desc>Created with Sketch.</desc>
             <defs></defs>
-            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                 <g id="desktop-footer" transform="translate(-422.000000, -562.000000)">
                     <g id="Singapore-Airlines-Group" transform="translate(100.000000, 562.000000)">
                         <g id="Group-4" transform="translate(185.000000, 0.000000)">

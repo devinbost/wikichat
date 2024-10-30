@@ -5,7 +5,9 @@ async function fetchRecordsFromCQLDatabase(limit: number) {
     try {
         const cassandraClient = await getCassandraClient();
         const cql_query = `
-            SELECT * FROM default_namespace.question_instruction LIMIT ?
+            SELECT question_id, instruction, query, system 
+            FROM default_namespace.question_instruction 
+            LIMIT ?;
         `;
         const result = await cassandraClient.execute(cql_query, [limit], { prepare: true });
 
@@ -19,9 +21,15 @@ async function fetchRecordsFromCQLDatabase(limit: number) {
 export async function GET() {
     try {
         const records = await fetchRecordsFromCQLDatabase(20);
-        return NextResponse.json({ message: "Records fetched successfully", data: records }, { status: 200 });
+        return NextResponse.json(
+            { message: "Records fetched successfully", data: records }, 
+            { status: 200 }
+        );
     } catch (error) {
         console.error("Error during fetching records: ", error);
-        return NextResponse.json({ message: "Record fetching failed", error: error.message }, { status: 500 });
+        return NextResponse.json(
+            { message: "Record fetching failed", error: error.message }, 
+            { status: 500 }
+        );
     }
 }

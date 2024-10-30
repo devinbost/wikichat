@@ -4,17 +4,35 @@ import LeftNav from "../../components/LeftNav";
 import Spinner from "../../components/Spinner";
 import UserModal from "../../components/UserModal";
 
+type Permission = {
+    can_modify: boolean;
+    can_delete: boolean;
+    can_add: boolean;
+    can_view: boolean;
+};
+
+type User = {
+    user_id: string;
+    email: string;
+    role: string;
+};
+
 export default function UserDashboardPage() {
     const [loading, setLoading] = useState(true);
-    const [permissions, setPermissions] = useState(null);
+    const [permission, setPermission] = useState<Permission | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [users, setUsers] = useState([]);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [modalType, setModalType] = useState<"Create" | "Update">("Create");
 
-    const openModal = () => {
+    const openModal = (user: User | null = null, type: "Create" | "Update" = "Create") => {
+        setSelectedUser(user);
+        setModalType(type);
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
+        setSelectedUser(null);
         setIsModalOpen(false);
     };
 
@@ -32,107 +50,143 @@ export default function UserDashboardPage() {
         }
     };
 
-    const fetchPermissions = async (resourceName: string) => {
+    const fetchPermission = async (resourceName: string) => {
         try {
-            const response = await fetch("/api/getPermissions", {
+            const response = await fetch("/api/getPermission", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ resource_name: resourceName }),
             });
             if (response.ok) {
                 const data = await response.json();
-                setPermissions(data.permissions);
+                setPermission(data.permission);
                 await fetchUsers();
             } else {
-                console.error("Failed to fetch user permissions");
+                console.error("Failed to fetch user permission");
             }
         } catch (error) {
-            console.error("Error fetching user permissions: ", error);
+            console.error("Error fetching user permission: ", error);
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchPermissions("user_management");
-    }, []);
+    const handleCreateOrUpdate = async (user: Partial<User>, type: "Create" | "Update") => {
+        const endpoint = type === "Create" ? "/api/createUser" : "/api/updateUser";
+        const body = JSON.stringify({
+            user_id: user.user_id,
+            formEmail: user.email,
+            formRole: user.role,
+        });
 
-    const handleRefresh = () => {
-        fetchUsers();
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body,
+            });
+
+            if (response.ok) {
+                await fetchUsers();
+                closeModal();
+            } else {
+                console.error("Failed to create or update user");
+            }
+        } catch (error) {
+            console.error(`Error during ${type} operation: `, error);
+        }
     };
 
-    if (loading) {
-        return <Spinner />;
-    }
+    const handleDelete = async (userId: string) => {
+        try {
+            const response = await fetch(`/api/deleteUser`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: userId }),
+            });
+            if (response.ok) {
+                await fetchUsers();
+            } else {
+                console.error("Failed to delete user");
+            }
+        } catch (error) {
+            console.error("Error deleting user:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchPermission("user_management");
+    }, []);
+
+    if (loading) return <Spinner />;
 
     return (
         <>
             <div className="flex min-h-screen">
-                <div>
-                    <LeftNav />
-                </div>
+                <div><LeftNav /></div>
                 <div className="flex flex-1 justify-center items-center h-screen">
-                    <section className="container ">
+                    <section className="container">
                         <div className="flex flex-col">
                             <div className="mb-3 flex justify-end">
                                 <button
-                                    onClick={openModal}
-                                    className="cursor-pointer transform hover:scale-[1.05] transition-transform duration-200 w-40 bg-primary flex justify-center items-center text-white px-4 py-3 rounded-md focus:outline-none">
+                                    onClick={() => openModal(null, "Create")}
+                                    className="w-40 bg-primary text-white px-4 py-3 rounded-md">
                                     Create a User
                                 </button>
                             </div>
-                            <div className="overflow-x-auto overflow-y-visible scrollbar-none sm:-mx-6 lg:mx-8 2xl:mx-2 max-h-[80vh]">
-                                <div className=" inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                                    <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
-                                        <div className="overflow-y-auto max-h-[80vh]">
-                                            <table className="min-w-full">
-                                                <thead className="bg-primary dark:bg-gray-800 sticky top-0 z-10">
-                                                    <tr>
-                                                        <th
-                                                            scope="col"
-                                                            className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-white">
-                                                            User ID
-                                                        </th>
-                                                        <th
-                                                            scope="col"
-                                                            className="text-white px-4 py-3.5 text-sm font-normal text-left rtl:text-right">
-                                                            Email
-                                                        </th>
-                                                        <th
-                                                            scope="col"
-                                                            className="text-white px-4 py-3.5 text-sm font-normal text-left rtl:text-right">
-                                                            Role
-                                                        </th>
-                                                        {permissions?.can_modify && permissions?.can_delete && (
-                                                            <th scope="col" className="text-white relative py-3.5 px-4">
-                                                                <span className="text-white">Actions</span>
-                                                            </th>
-                                                        )}
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                                                    {users.map(user => (
-                                                        <tr key={user.user_id}>
-                                                            <td className="px-4 py-3.5">{user.user_id}</td>
-                                                            <td className="px-4 py-3.5">{user.email}</td>
-                                                            <td className="px-4 py-3.5">{user.role}</td>
-                                                            {/* Add action buttons for edit/delete */}
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full">
+                                    <thead className="bg-primary text-white">
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            {permission?.can_modify && permission?.can_delete && (
+                                                <th>Actions</th>
+                                            )}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map(user => (
+                                            <tr key={user.user_id}>
+                                                <td>{user.user_id}</td>
+                                                <td>{user.email}</td>
+                                                <td>{user.role}</td>
+                                                {permission?.can_modify && permission?.can_delete && (
+                                                    <td>
+                                                        <button
+                                                            onClick={() => openModal(user, "Update")}
+                                                            className="text-blue-500 hover:underline">
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(user.user_id)}
+                                                            className="text-red-500 hover:underline ml-4">
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </section>
                 </div>
             </div>
+
             {isModalOpen && (
-                <UserModal onClose={closeModal} title="Create A User" btnText="Create" onRefresh={handleRefresh} />
+                <UserModal
+                    user_id={selectedUser?.user_id}
+                    username={selectedUser?.email}
+                    role={selectedUser?.role}
+                    modalType={modalType}
+                    title={modalType === "Create" ? "Create A User" : "Update User"}
+                    btnText={modalType === "Create" ? "Create" : "Update"}
+                    onClose={closeModal}
+                    onSubmit={(user) => handleCreateOrUpdate(user, modalType)}
+                />
             )}
         </>
     );

@@ -9,11 +9,11 @@ interface CustomJwtPayload extends JwtPayload {
     email: string;
     role: string;
 }
-async function queryPermissionsForRole(role: string, resource_name: string) {
+async function queryPermissionForRole(role: string, resource_name: string) {
     try {
         const cassandraClient = await getCassandraClient();
         const query =
-            "SELECT * FROM default_namespace.role_permissions WHERE role = ? AND resource_name = ? ALLOW FILTERING";
+            "SELECT role, resource_name, can_add, can_delete, can_modify, can_view FROM default_namespace.role_permissions WHERE role = ? AND resource_name = ? ALLOW FILTERING";
         const result = await cassandraClient.execute(query, [role, resource_name], { prepare: true });
 
         if (result.rows.length > 0) {
@@ -22,7 +22,7 @@ async function queryPermissionsForRole(role: string, resource_name: string) {
             return null;
         }
     } catch (error) {
-        console.error("Error querying permissions: ", error);
+        console.error("Error querying permission: ", error);
         throw new Error("Database query failed");
     }
 }
@@ -44,15 +44,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: "Invalid token" }, { status: 401 });
         }
 
-        const permissions = await queryPermissionsForRole(decoded.role, resource_name);
+        const permission = await queryPermissionForRole(decoded.role, resource_name);
 
-        if (permissions) {
-            return NextResponse.json({ message: "Permissions fetched successfully", permissions }, { status: 200 });
+        if (permission) {
+            return NextResponse.json({ message: "Permission fetched successfully", permission }, { status: 200 });
         } else {
-            return NextResponse.json({ message: "No permissions found for the role" }, { status: 404 });
+            return NextResponse.json({ message: "No permission found for the role" }, { status: 404 });
         }
     } catch (error) {
-        console.error("Error fetching permissions: ", error);
-        return NextResponse.json({ message: "Failed to fetch permissions", error: error.message }, { status: 500 });
+        console.error("Error fetching permission: ", error);
+        return NextResponse.json({ message: "Failed to fetch permission", error: error.message }, { status: 500 });
     }
 }

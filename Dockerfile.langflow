@@ -20,13 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.**
 
-FROM devinbostds/langflow_arm64:1.0.18
+#FROM devinbostds/langflow_arm64:1.0.18
+FROM langflowai/langflow:1.0.18
 
 WORKDIR /app
 
-COPY flows /app/flows
-
-RUN pip install -U langflow cassio mysql-connector-python oracledb sentence-transformers langchain-huggingface
+RUN pip install -U langflow cassio mysql-connector-python sentence-transformers langchain-huggingface
 
 ENV LANGFLOW_LOAD_FLOWS_PATH=/app/flows
 
