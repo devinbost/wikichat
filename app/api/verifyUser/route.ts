@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import getCassandraClient from '../../../lib/db';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'JWT secret';
+const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
 
 // Function to update the user status in the database
 async function verifyUserInCQLDatabase(userId: string) {

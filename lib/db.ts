@@ -27,3 +27,4 @@ const cassandraClientSingleton = async () => {
 export default async function getCassandraClient() {
     return cassandraClientSingleton();
 }
+

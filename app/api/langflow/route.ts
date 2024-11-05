@@ -43,171 +43,139 @@ export async function POST(req: NextRequest) {
         const { inputValue, inputType, outputType, session_id, stream } = await req.json();
 
         const langflowClient = new LangflowClient({
-            baseURL: process.env.NEXT_PUBLIC_LANGFLOW_BASE_URL || "",
+            baseURL: process.env.LANGFLOW_BASE_URL || "",
             applicationToken: process.env.LANGFLOW_APPLICATION_TOKEN || "",
         });
-        const flowIdOrName = process.env.FLOW_ID_OR_NAME || "";
+        const flowIdOrName = process.env.SEARCH_FLOW_NAME || "";
         const langflowId = process.env.LANGFLOW_ID || "";
         const UUID_SessionId = hashSessionId(session_id);
         console.log("🚀 ~ POST ~ UUID_SessionId:", UUID_SessionId);
         const tweaks = {
-            "ChatInput-qBbK8": {
-              "files": "",
-              "sender": "User",
-              "sender_name": "User",
-              "should_store_message": true
-            },
-            "Memory-mf9Rj": {
-                "n_messages": 100,
-                "order": "Ascending",
-                "sender": "Machine and User",
-                "sender_name": "",
-                "session_id": "",
-                "template": "{sender_name}: {text}"
-              },
-              "AstraDB-TYZWg": {
-                "api_endpoint": "ASTRA_ENDPOINT",
-                "batch_size": null,
-                "bulk_delete_concurrency": null,
-                "bulk_insert_batch_concurrency": null,
-                "bulk_insert_overwrite_concurrency": null,
-                "collection_indexing_policy": "",
-                "collection_name": "questions_hf",
-                "metadata_indexing_exclude": "",
-                "metadata_indexing_include": "",
-                "metric": "",
-                "namespace": "default_namespace",
-                "number_of_results": 4,
-                "pre_delete_collection": false,
-                "search_filter": {},
-                "search_input": "",
-                "search_score_threshold": 0,
-                "search_type": "Similarity",
-                "setup_mode": "Sync",
-                "token": "ASTRA_DB_TOKEN"
-              },
-              "CustomComponent-Sz0Qi": {
-                "input_value": ""
-              },
-              "ParseData-GPBs1": {
-                "sep": "\n",
-                "template": "{user_question}"
-              },
-              "OpenAIEmbeddings-pty3P": {
-                "chunk_size": 1000,
-                "client": "",
-                "default_headers": {},
-                "default_query": {},
-                "deployment": "",
-                "dimensions": null,
-                "embedding_ctx_length": 1536,
-                "max_retries": 3,
-                "model": "text-embedding-3-large",
-                "model_kwargs": {},
-                "openai_api_base": "",
-                "openai_api_key": "OPENAI_API_KEY",
-                "openai_api_type": "",
-                "openai_api_version": "",
-                "openai_organization": "",
-                "openai_proxy": "",
-                "request_timeout": null,
-                "show_progress_bar": false,
-                "skip_empty": false,
-                "tiktoken_enable": true,
-                "tiktoken_model_name": ""
-              },
-              "AstraDB-B96xa": {
-                "collection_name": "question_instruction",
-                "database_id": "ASTRA_DB_DATABASE_ID",
-                "key_column_name": "question_id",
-                "namespace": "default_namespace",
-                "token": "ASTRA_DB_TOKEN"
-              },
-              "ParseData-Kbr1J": {},
-              "CustomComponent-tNuWo": {},
-              "CustomComponent-Lb2HY": {
-                "DB_ID": "ASTRA_DB_DATABASE_ID",
-                "DB_TOKEN": "ASTRA_DB_TOKEN"
-              },
-              "CustomComponent-YMsHE": {},
-              "Prompt-l7YlL": {
-                "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{user_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context - don't answer these questions:\n\n\n{chat_history}",
-                "rows": "",
-                "user_question": "",
-                "chat_history": ""
-              },
-              "ParseData-616KE": {
-                "sep": "\n",
-                "template": "{rows}"
-              },
-              "ParseData-nmbnH": {
-                "sep": "\n",
-                "template": "{user_question}"
-              },
-              "ChatOutput-S4jn4": {
-                "data_template": "{text}",
-                "input_value": "",
-                "sender": "Machine",
-                "sender_name": "AI",
-                "session_id": "",
-                "should_store_message": true
-              },
-              "CustomComponent-xalJ6": {
-                "DB_HOST": "MYSQL_HOST",
-                "DB_NAME": "MYSQL_DB",
-                "DB_PASSWORD": "MYSQL_PASSWORD",
-                "DB_USER": "MYSQL_USER"
-              },
-              "CustomComponent-D393a": {},
-              "ParseData-rBWlk": {
-                "sep": "\n",
-                "template": "{text}"
-              },
-              "OllamaModel-hwZ5G": {
-                "base_url": "OLLAMA_HOST",
-                "format": "",
-                "input_value": "",
-                "metadata": {},
-                "mirostat": "Disabled",
-                "mirostat_eta": null,
-                "mirostat_tau": null,
-                "model_name": "llama3.1:latest",
-                "num_ctx": null,
-                "num_gpu": null,
-                "num_thread": null,
-                "repeat_last_n": null,
-                "repeat_penalty": null,
-                "stop_tokens": "",
-                "stream": false,
-                "system": "",
-                "system_message": "",
-                "tags": "",
-                "temperature": 0.2,
-                "template": "",
-                "tfs_z": null,
-                "timeout": null,
-                "top_k": null,
-                "top_p": null,
-                "verbose": false
-              },
-              "OpenAIModel-inKZc": {
-                "api_key": "OPENAI_API_KEY",
-                "input_value": "",
-                "json_mode": false,
-                "max_tokens": null,
-                "model_kwargs": {},
-                "model_name": "gpt-4o",
-                "openai_api_base": "",
-                "output_schema": {},
-                "seed": 1,
-                "stream": false,
-                "system_message": "",
-                "temperature": 0.1
-              },
-              "HuggingFaceInferenceAPIEmbeddings-x7O7p": {
-                "model_path": "HUGGINGFACE_MODEL_PATH"
-              }
-            };
+          "ChatInput-RjY7v": {
+            "files": "",
+            "sender": "User",
+            "sender_name": "User",
+            "session_id": UUID_SessionId,
+            "should_store_message": true
+          },
+          "Memory-UvXdS": {
+            "n_messages": 100,
+            "order": "Ascending",
+            "sender": "Machine and User",
+            "sender_name": "",
+            "session_id": UUID_SessionId,
+            "template": "{sender_name}: {text}"
+          },
+          "CustomComponent-pemtq": {
+            "input_value": ""
+          },
+          "ParseData-WGKsE": {
+            "sep": "\n",
+            "template": "{user_question}"
+          },
+          "ParseData-5sZ05": {},
+          "CustomComponent-zcsC3": {},
+          "CustomComponent-ZauAh": {
+            "DB_ID": "ASTRA_DB_DATABASE_ID",
+            "DB_TOKEN": "ASTRA_DB_TOKEN"
+          },
+          "CustomComponent-PBC8l": {},
+          "Prompt-WQy1S": {
+            "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{user_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context - don't answer these questions:\n\n\n{chat_history}",
+            "rows": "",
+            "user_question": "",
+            "chat_history": ""
+          },
+          "ParseData-ojkQ4": {
+            "sep": "\n",
+            "template": "{rows}"
+          },
+          "ParseData-MKMlW": {
+            "sep": "\n",
+            "template": "{user_question}"
+          },
+          "ChatOutput-YLKnt": {
+            "data_template": "{text}",
+            "input_value": "",
+            "sender": "Machine",
+            "sender_name": "AI",
+            "session_id": UUID_SessionId,
+            "should_store_message": true
+          },
+          "CustomComponent-a31yV": {
+            "DB_HOST": "MYSQL_HOST",
+            "DB_NAME": "MYSQL_DB",
+            "DB_PASSWORD": "MYSQL_PASSWORD",
+            "DB_USER": "MYSQL_USER"
+          },
+          "CustomComponent-WSzv5": {},
+          "ParseData-me0f7": {
+            "sep": "\n",
+            "template": "{text}"
+          },
+          "OllamaModel-6QliL": {
+            "base_url": "OLLAMA_HOST",
+            "format": "",
+            "input_value": "",
+            "metadata": {},
+            "mirostat": "Disabled",
+            "mirostat_eta": null,
+            "mirostat_tau": null,
+            "model_name": "llama3.1:latest",
+            "num_ctx": null,
+            "num_gpu": null,
+            "num_thread": null,
+            "repeat_last_n": null,
+            "repeat_penalty": null,
+            "stop_tokens": "",
+            "stream": false,
+            "system": "",
+            "system_message": "",
+            "tags": "",
+            "temperature": 0.2,
+            "template": "",
+            "tfs_z": null,
+            "timeout": null,
+            "top_k": null,
+            "top_p": null,
+            "verbose": false
+          },
+          "HuggingFaceInferenceAPIEmbeddings-cKkul": {
+            "model_path": "HUGGINGFACE_MODEL_PATH"
+          },
+          "HCD-wM3Po": {
+            "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
+            "batch_size": null,
+            "bulk_delete_concurrency": null,
+            "bulk_insert_batch_concurrency": null,
+            "bulk_insert_overwrite_concurrency": null,
+            "ca_certificate": "",
+            "collection_indexing_policy": "",
+            "collection_name": "CASSANDRA_COLLECTION",
+            "metadata_indexing_exclude": "",
+            "metadata_indexing_include": "",
+            "metric": "",
+            "namespace": "default_namespace",
+            "number_of_results": 4,
+            "password": "CASSANDRA_PASSWORD",
+            "pre_delete_collection": false,
+            "search_filter": {},
+            "search_input": "",
+            "search_score_threshold": 0,
+            "search_type": "Similarity",
+            "setup_mode": "Sync",
+            "username": "CASSANDRA_USERNAME"
+          },
+          "APIRequest-KSAJk": {
+            "api_key": "REST_API_KEY",
+            "curl": "",
+            "lsl_key": "REST_LSL_KEY",
+            "method": "POST",
+            "timeout": 5,
+            "url": "REST_ENDPOINT"
+          },
+          "TransformData-AFmuc": {}
+        };
             if (stream) {
                 // Initiate the session and get the stream URL
                 const initResponse = await langflowClient.initiateSession(

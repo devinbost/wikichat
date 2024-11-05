@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import getCassandraClient from "../../../lib/db";
+import getCassandraDataCollection from "../../../lib/datadb";
 
 async function deleteUserFromCQLDatabase(question_id: number) {
     try {
@@ -13,6 +14,17 @@ async function deleteUserFromCQLDatabase(question_id: number) {
         throw new Error("Database deletion failed");
     }
 }
+async function deleteRecordFromVectorCollection(question_id: number) {
+    try {
+        const collection = await getCassandraDataCollection();
+        // note that we can't add the question/text to this update unless we also update the vector
+        await collection.findOneAndDelete({ question_id: question_id});
+    }
+    catch (error) {
+        console.error("Error inserting into the database: ", error);
+        throw new Error("Database insertion failed");
+    }
+}
 
 export async function DELETE(request: Request) {
     try {
@@ -23,7 +35,7 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ message: "question_id is required" }, { status: 400 });
         }
 
-        await deleteUserFromCQLDatabase(question_id);
+        await deleteRecordFromVectorCollection(question_id);
 
         return NextResponse.json({ message: "Record deletion successful" }, { status: 200 });
     } catch (error) {

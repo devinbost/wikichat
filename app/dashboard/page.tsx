@@ -3,7 +3,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import LeftNav from "../../components/LeftNav";
 import TableRow from "../../components/TableRow";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LLMInstructionModal from "../../components/InstructionModal";
 import Spinner from "../../components/Spinner";
 import { useSession, signIn } from "next-auth/react";
@@ -64,7 +64,7 @@ export default function DashboardPage() {
         }
     };
 
-    const fetchPermission = async (resourceName: string) => {
+    const fetchPermission = useCallback(async (resourceName: string) => {
         try {
             const response = await fetch("/api/getPermission", {
                 method: "POST",
@@ -76,7 +76,7 @@ export default function DashboardPage() {
             if (response.ok) {
                 const data = await response.json();
                 setPermission(data.permission);
-                await fetchQuestions();
+                await fetchQuestions();  
             } else {
                 console.error("Failed to fetch user permission");
             }
@@ -85,7 +85,7 @@ export default function DashboardPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         const initialize = async () => {
@@ -102,7 +102,7 @@ export default function DashboardPage() {
         };
     
         initialize();
-    }, [status]); // Add 'status' as a dependency to trigger the effect correctly
+    }, [status, fetchPermission]); 
 
     const handleRefresh = () => {
         fetchQuestions();
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                                                                     isExpanded={expandedRow === questionData.question_id}
                                                                     onRowClick={() => handleRowClick(questionData.question_id)}
                                                                     onRefresh={handleRefresh}
-                                                                    isAdmin={(permission?.can_modify ?? false) && (permission?.can_delete ?? false)}
+                                                                    isAdmin={!!(permission?.can_modify && permission?.can_delete)}
                                                                 />
                                                             ))}
                                                         </tbody>

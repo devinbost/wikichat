@@ -1,26 +1,22 @@
 import { NextResponse } from "next/server";
-import getCassandraClient from "../../../lib/db";
+import getCassandraDataCollection from "../../../lib/datadb";
 
-async function fetchRecordsFromCQLDatabase(limit: number) {
+async function getRecordsInVectorDatabase() {
+    // note that we can't add the question/text to this update unless we also update the vector
     try {
-        const cassandraClient = await getCassandraClient();
-        const cql_query = `
-            SELECT question_id, instruction, query, system 
-            FROM default_namespace.question_instruction 
-            LIMIT ?;
-        `;
-        const result = await cassandraClient.execute(cql_query, [limit], { prepare: true });
-
-        return result.rows;
+        const collection = await getCassandraDataCollection();
+        const docBefore = await collection.find({ });
+        return docBefore;
+        
     } catch (error) {
-        console.error("Error fetching from the database: ", error);
-        throw new Error("Database fetch failed");
+        console.error("Error updating the vector database: ", error);
+        throw new Error("Database update failed");
     }
 }
 
 export async function GET() {
     try {
-        const records = await fetchRecordsFromCQLDatabase(20);
+        const records = await getRecordsInVectorDatabase();
         return NextResponse.json(
             { message: "Records fetched successfully", data: records }, 
             { status: 200 }

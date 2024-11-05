@@ -121,7 +121,7 @@ FLOW_ID_OR_NAME=openai_flow
 # FLOW_ID_OR_NAME=local_flow
 LANGFLOW_ID=453...
 LANGFLOW_BASE_URL=http://127.0.0.1:7860
-NEXT_PUBLIC_LANGFLOW_BASE_URL=http://127.0.0.1:7860
+LANGFLOW_BASE_URL=http://127.0.0.1:7860
 
 # Put all of your LangFlow variables in here.
 OPENAI_KEY=sk-proj-9...
@@ -145,7 +145,7 @@ HUGGINGFACE_MODEL_PATH=sentence-transformers/all-MiniLM-L12-v2
 In the `.env.docker` version, use these values instead:
 ```
 LANGFLOW_BASE_URL=http://langflow:7860
-NEXT_PUBLIC_LANGFLOW_BASE_URL=http://langflow:7860
+LANGFLOW_BASE_URL=http://langflow:7860
 MYSQL_HOST=host.docker.internal (if mysql is running on host machine)
 
 HUGGINGFACE_MODEL_PATH=/app/huggingface/all-MiniLM-L12-v2
@@ -180,6 +180,6 @@ Create them also in a `.env.local` file
 
 You must obtain these OAUTH values and add them to that file as well:
 ```
-OAUTH_CLIENTID=
-OAUTH_CLIENTSECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```

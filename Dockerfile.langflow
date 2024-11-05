@@ -25,7 +25,7 @@ FROM langflowai/langflow:1.0.18
 
 WORKDIR /app
 
-RUN pip install -U langflow cassio mysql-connector-python sentence-transformers langchain-huggingface
+RUN pip install -U langflow cassio mysql-connector-python sentence-transformers langchain-huggingface langchain-astradb
 
 ENV LANGFLOW_LOAD_FLOWS_PATH=/app/flows
 

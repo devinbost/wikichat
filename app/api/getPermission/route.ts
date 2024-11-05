@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import getCassandraClient from "../../../lib/db";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "JWT secret";
+const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
 
 interface CustomJwtPayload extends JwtPayload {
     email: string;

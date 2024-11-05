@@ -17,7 +17,8 @@ type CustomerState = {
 export default function Home() {
     const { data: session, status } = useSession(); // Fetch session and its status
     const router = useRouter(); // Initialize the useRouter hook for redirection
-    const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticating, setIsAuthenticating] = useState(true);
+    const [isUpdatingMessages, setIsUpdatingMessages] = useState(false);
     const [initialQuestion, setInitialQuestion] = useState("What is my mileage?");
     const [initialCustomerId, setInitialCustomerId] = useState("8991147774");
     const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
@@ -26,6 +27,14 @@ export default function Home() {
         customer_id: "8991147774",
         customer_question: "What is my mileage?",
     });
+
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
 
     // Example: Checking session status and role
     useEffect(() => {
@@ -45,9 +54,9 @@ export default function Home() {
                 customer_id: initialCustomerId,
                 customer_question: initialQuestion,
             });
-            setIsLoading(false);
+            setIsAuthenticating(false);
         }
-    }, [session, status, router, initialQuestion]);
+    }, [session, status, router, initialCustomerId, initialQuestion]);
 
     const callFetchData = async (user: CustomerState, stream = true) => {
         let hasReceivedFirstChunk = false;
@@ -58,7 +67,7 @@ export default function Home() {
                 if (!hasReceivedFirstChunk) {
                     hasReceivedFirstChunk = true;
                     setMessages(prevMessages => [...prevMessages, { role: "assistant", content: "" }]);
-                    setIsLoading(false);
+                    setIsUpdatingMessages(false);
                 }
                 setMessages(prevMessages => {
                     const lastIndex = prevMessages.length - 1;
@@ -76,11 +85,11 @@ export default function Home() {
             },
             fullMessage => {
                 console.log("Stream Closed:", fullMessage);
-                setIsLoading(false);
+                setIsUpdatingMessages(false);
             },
             error => {
                 console.error("Stream Error:", error);
-                setIsLoading(false);
+                setIsUpdatingMessages(false);
             },
         );
     };
@@ -91,7 +100,7 @@ export default function Home() {
 
     const handleSendnew = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setIsLoading(true);
+        setIsUpdatingMessages(true);
         if (input.trim()) {
             setMessages(prevMessages => [...prevMessages, { role: "user", content: input }]);
 
@@ -121,7 +130,7 @@ export default function Home() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    inputValue: JSON.stringify(inputValue.customer_question),
+                    inputValue: JSON.stringify(inputValue),
                     inputType: "chat",
                     outputType: "chat",
                     session_id: inputValue.customer_id,
@@ -183,7 +192,7 @@ export default function Home() {
         }
     };
 
-    if (isLoading) {
+    if (isAuthenticating) {
         return (
             <main className="flex h-screen items-center justify-center">
                 <ClipLoader color="#4A90E2" size={60} /> {/* Spinner here */}
@@ -204,7 +213,8 @@ export default function Home() {
                                 {messages.map((message, index) => (
                                     <Bubble key={`message-${index}`} content={message} />
                                 ))}
-                                {isLoading && <LoadingBubble />}
+                                {isUpdatingMessages && <LoadingBubble />}
+                                <div ref={messagesEndRef} /> {/* This div is used to autoscroll */}
                             </div>
                         ) : (
                             <div className="flex flex-col gap-6 md:gap-16 mt-auto mb-6">

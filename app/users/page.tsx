@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import LeftNav from "../../components/LeftNav";
 import Spinner from "../../components/Spinner";
 import UserModal from "../../components/UserModal";
@@ -50,7 +50,7 @@ export default function UserDashboardPage() {
         }
     };
 
-    const fetchPermission = async (resourceName: string) => {
+    const fetchPermission = useCallback(async (resourceName: string) => {
         try {
             const response = await fetch("/api/getPermission", {
                 method: "POST",
@@ -69,7 +69,7 @@ export default function UserDashboardPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     const handleCreateOrUpdate = async (user: Partial<User>, type: "Create" | "Update") => {
         const endpoint = type === "Create" ? "/api/createUser" : "/api/updateUser";
@@ -116,7 +116,7 @@ export default function UserDashboardPage() {
 
     useEffect(() => {
         fetchPermission("user_management");
-    }, []);
+    }, [fetchPermission]);
 
     if (loading) return <Spinner />;
 

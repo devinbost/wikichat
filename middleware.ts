@@ -1,50 +1,21 @@
 import { NextResponse, NextRequest } from "next/server";
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
 
-// Convert Base64URL-encoded string to Uint8Array
-function base64UrlDecode(input: string) {
-    input = input.replace(/-/g, '+').replace(/_/g, '/');
-    const pad = input.length % 4 === 0 ? '' : new Array(4 - (input.length % 4)).fill('=').join('');
-    const binaryString = atob(input + pad);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes;
-}
 
-// Verify JWT using Web Crypto API
 async function verifyJWT(token: string, secret: string) {
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(secret);
-    
-    // Import the secret key to be used for verification
-    const key = await crypto.subtle.importKey("raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
-
-    const parts = token.split(".");
-    if (parts.length !== 3) throw new Error("Invalid JWT");
-
-    const [header, payload, signature] = parts;
-    const signedData = `${header}.${payload}`;
-
-    // Decode the signature
-    const signatureBuffer = base64UrlDecode(signature);
-
-    // Verify the signature using Web Crypto API
-    const valid = await crypto.subtle.verify(
-        "HMAC",
-        key,
-        signatureBuffer,
-        new TextEncoder().encode(signedData)
-    );
-
-    if (!valid) throw new Error("Invalid token signature");
-
-    // Return decoded payload
-    return JSON.parse(atob(payload));
+    try {
+      // Verify token using `jsonwebtoken` library
+      const payload = jwt.verify(token, secret) as JwtPayload;
+  
+      // Return the payload if verification succeeds
+      return payload;
+    } catch (err) {
+      console.error("JWT verification failed:", err.message);
+      throw new Error("Invalid token signature or token expired");
+    }
 }
 
 export async function middleware(request: NextRequest) {
@@ -66,11 +37,6 @@ export async function middleware(request: NextRequest) {
     try {
         const payload = await verifyJWT(token, JWT_SECRET as string);
         const currentTime = Math.floor(Date.now() / 1000);
-
-        if (payload.exp && currentTime > payload.exp) {
-            console.log("Token is expired");
-            return NextResponse.redirect(new URL("/login", request.url));
-        }
 
         if (!payload.role) {
             console.log("No role found in token");
