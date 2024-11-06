@@ -232,12 +232,15 @@ export const authOptions: AuthOptions = {
           if (!token) {
               throw new Error("Token is undefined or invalid.");
           }
+          const expirationTimeInSeconds = 60 * 60; // 1 hour
+          const exp = Math.floor(Date.now() / 1000) + expirationTimeInSeconds;
           // Set expiration time (e.g., 1 hour)
          console.log("Token before encoding:", token); // Log to verify the token
 
         return jwt.sign(
             {
                 ...token,
+                exp,
                 iat: Math.floor(Date.now() / 1000), // Current timestamp
             },
             JWT_SECRET as Secret
@@ -266,36 +269,48 @@ export const authOptions: AuthOptions = {
     strategy: "jwt", // Ensure that this is set to "jwt" if using JSON Web Tokens
   },
   callbacks: {
-    async jwt({ token, account, profile }) {
-      // Modify the token as needed
-      if (account && profile && typeof profile.email === "string") {
-          token.email = typeof profile.email === "string" ? profile.email : undefined; // Ensure email is a string
-  
-          const cassandraClient = await getCassandraClient();
+    async jwt({ token, user, account, profile }) {
+        if (account) {
+            // This is the initial invocation. It will be called when the user signs in.
+            token.provider = account.provider;
+            if (account.provider === 'google' && profile) { 
+                // Handle Google provider
+                token.email = profile.email;
+                token.name = profile.name;
+                // Additional profile information can be added here
+              } else if (account.provider === 'credentials' && user) {
+                // Handle Credentials provider
+                token.email = user.email;
+                token.name = user.name;
+                // Additional user information can be added here
+              }
+            
+            const cassandraClient = await getCassandraClient();
           
-          // Ensure DB setup. In the future, move this to run once upon app start.
-          await checkAndCreateUsersTable(cassandraClient);
-          await checkAndCreateRolePermissionsTable(cassandraClient);
-          await checkAndCreateDefaultAdminUser(cassandraClient);
-  
-          // Check if the user already exists and fetch their role
-          const userRole = await getUserRoleByEmail(cassandraClient, profile.email);
-          console.log("Role retrieved from DB:", userRole); // Log to verify the role
-  
-          if (typeof userRole === "string") {
-              // If the role exists, assign it to the token
-              token.role = userRole;
-          } else {
-              // If the user does not exist, create them with a default role
-              const userId = uuidv4();
-              const createdAt = new Date();
-              const updatedAt = new Date();
-              const role = "end-user"; // Default role
-  
-              await insertUserIntoCQLDatabase(userId, profile.email, role, createdAt, updatedAt);
-              token.role = role;
-          }
-      }
+            // Ensure DB is setup. In the future, move this to run once upon app start.
+            await checkAndCreateUsersTable(cassandraClient);
+            await checkAndCreateRolePermissionsTable(cassandraClient);
+            await checkAndCreateDefaultAdminUser(cassandraClient);
+            
+            // Check if the user already exists and fetch their role
+            const userRole = await getUserRoleByEmail(cassandraClient, token.email);
+            console.log("Role retrieved from DB:", userRole); // Log to verify the role
+    
+            if (typeof userRole === "string") {
+                // If the role exists, assign it to the token
+                token.role = userRole;
+            } else {
+                // If the user does not exist, create them with a default role
+                const userId = uuidv4();
+                const createdAt = new Date();
+                const updatedAt = new Date();
+                const role = "end-user"; // Default role
+    
+                await insertUserIntoCQLDatabase(userId, token.email, role, createdAt, updatedAt);
+                token.role = role;
+            }
+        }
+      // Modify the token as needed
   
       console.log("JWT Token after assignment:", token); // Log to verify the token
       console.log("(It should contain a role value.)");
@@ -308,7 +323,7 @@ export const authOptions: AuthOptions = {
           email: typeof token.email === "string" ? token.email : undefined,
           role: typeof token.role === "string" ? token.role : undefined, // Ensure it's a string
       };
-      console.log("Session data:", session); // Verify session data
+      console.log("Session data (should contain email, name, and role):", session); // Verify session data
       return session;
     },
   },
