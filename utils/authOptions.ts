@@ -298,10 +298,16 @@ export const authOptions: AuthOptions = {
             await checkAndCreateDefaultAdminUser(cassandraClient);
             
             // Check if the user already exists and fetch their role
-            const userRole = await getUserRoleByEmail(cassandraClient, token.email);
-            console.log("Role retrieved from DB:", userRole); // Log to verify the role
-    
-            if (typeof userRole === "string") {
+            let userRole = "";
+
+            if (typeof token.email === "string" && token.email.trim() !== "") {
+                userRole = await getUserRoleByEmail(cassandraClient, token.email);
+                console.log("Role retrieved from DB:", userRole); // Log to verify the role
+            } else {
+                console.error("Token email is invalid or empty:", token.email);
+            }
+
+            if (typeof userRole === "string" && userRole.trim() !== "") {
                 // If the role exists, assign it to the token
                 token.role = userRole;
             } else {
@@ -310,16 +316,21 @@ export const authOptions: AuthOptions = {
                 const createdAt = new Date();
                 const updatedAt = new Date();
                 const role = "end-user"; // Default role
-    
-                await insertUserIntoCQLDatabase(userId, token.email, role, createdAt, updatedAt);
-                token.role = role;
+
+                if (typeof token.email === "string" && token.email.trim() !== "") {
+                    await insertUserIntoCQLDatabase(userId, token.email, role, createdAt, updatedAt);
+                    token.role = role;
+                } else {
+                    console.warn("User creation skipped due to invalid email.");
+                }
             }
-        }
-      // Modify the token as needed
-  
-      console.log("JWT Token after assignment:", token); // Log to verify the token
-      console.log("(It should contain a role value.)");
-      return token;
+            // Modify the token as needed
+        
+            console.log("JWT Token after assignment:", token); // Log to verify the token
+            console.log("(It should contain a role value.)");
+            return token;
+        } 
+        return token; // ensure token is returned after the first invocation (after initial login)
   },
     async session({ session, token }) {
       // Modify the session object based on token data

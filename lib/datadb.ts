@@ -17,22 +17,31 @@ const cassandraDataClientSingleton = async () => {
     const client = new DataAPIClient(tokenProvider, {
       environment: 'dse', 
         dbOptions: {
+          monitorCommands: true,
           token: tokenProvider.getToken(),
           keyspace: "default_namespace",
           dataApiPath: dataApiPath
         }});
+    
+    client.on('commandStarted', (event) => {
+      console.dir(event, { depth: null });
+    });
 
     // Initialize the database with keyspace, token, and overridden dataApiPath in dbOptions
     const db = client.db(endpoint);
     // Create the collection and list collections
     const collectionNames = await db.listCollections({ nameOnly: true });
     console.log('Collection Names found:', collectionNames);
-    const result4 = await db.dropCollection(collectionName);
-    // const result2 = await db.createCollection(collectionName);
+    //const result4 = await db.dropCollection('dse_vector_test');
+    const collectionNames2 = await db.listCollections({ nameOnly: true });
+    console.log('Collection Names2 found:', collectionNames2);
+    //const result3 = await db.dropCollection('questions_hf_dse');
+    //const result5 = await db.dropCollection('vector_5_collection');
+    //const result2 = await db.createCollection(collectionName);
     const collection = await db.collection(collectionName);
     const docBefore = await collection.find({ }).toArray();
     console.log('Documents found before delete:', docBefore);
-    const result = await collection.deleteMany({});
+    //const result = await collection.deleteMany({});
     const docAfter = await collection.find({ }).toArray();
     console.log('Documents found after delete:', docAfter);
 
