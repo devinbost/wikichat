@@ -5,7 +5,7 @@ async function getRecordsInVectorDatabase() {
     // note that we can't add the question/text to this update unless we also update the vector
     try {
         const collection = await getCassandraDataCollection();
-        const docBefore = await collection.find({ });
+        const docBefore = await collection.find({ }).toArray();
         return docBefore;
         
     } catch (error) {

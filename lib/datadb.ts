@@ -1,30 +1,6 @@
 
 import base64 from 'base-64';
-import { DataAPIClient } from '@datastax/astra-db-ts';
-
-class TokenProvider {
-  // to do: update to use this one: https://github.com/datastax/astra-db-ts/blob/263e90d0ab98762f72d0ffbc98c26c39c81c1de7/src/lib/token-providers/userpass-token-providers.ts#L32
-  private username: string;
-  private password: string;
-  private PREFIX = 'Cassandra';
-
-  constructor(username: string, password: string) {
-    this.username = username;
-    this.password = password;
-  }
-
-  private _b64(cleartext: string): string {
-    return base64.encode(cleartext);
-  }
-
-  public getToken(): string {
-    return `${this.PREFIX}:${this._b64(this.username)}:${this._b64(this.password)}`;
-  }
-
-  public toString(): string {
-    return this.getToken();
-  }
-}
+import { DataAPIClient, UsernamePasswordTokenProvider } from '@datastax/astra-db-ts';
 
 
 const cassandraDataClientSingleton = async () => {
@@ -32,11 +8,33 @@ const cassandraDataClientSingleton = async () => {
     const password = (process.env.CASSANDRA_PASSWORD || 'example_data_password');
     const username = (process.env.CASSANDRA_USERNAME || 'example_data_username');
     const collectionName = (process.env.CASSANDRA_COLLECTION || 'example_data_collection');
+    const dataApiPath = (process.env.DATA_API_PATH || 'api/json/v1'); // Default works for Astra
 
-    const tokenProvider = new TokenProvider(username, password);
-    const client = new DataAPIClient(tokenProvider.getToken());
-    const db = client.db(endpoint, { keyspace: 'default_namespace' });
-    const collection = db.collection(collectionName);
+    const tokenProvider = new UsernamePasswordTokenProvider(username, password);
+    // Initialize DataAPIClient with token and options, including dataApiPath
+    
+  
+    const client = new DataAPIClient(tokenProvider, {
+      environment: 'dse', 
+        dbOptions: {
+          token: tokenProvider.getToken(),
+          keyspace: "default_namespace",
+          dataApiPath: dataApiPath
+        }});
+
+    // Initialize the database with keyspace, token, and overridden dataApiPath in dbOptions
+    const db = client.db(endpoint);
+    // Create the collection and list collections
+    const collectionNames = await db.listCollections({ nameOnly: true });
+    console.log('Collection Names found:', collectionNames);
+    const result4 = await db.dropCollection(collectionName);
+    // const result2 = await db.createCollection(collectionName);
+    const collection = await db.collection(collectionName);
+    const docBefore = await collection.find({ }).toArray();
+    console.log('Documents found before delete:', docBefore);
+    const result = await collection.deleteMany({});
+    const docAfter = await collection.find({ }).toArray();
+    console.log('Documents found after delete:', docAfter);
 
     if (!globalThis.cassandraCollectionGlobal) {
         console.log('Cassandra Database session Created');

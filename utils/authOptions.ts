@@ -237,20 +237,25 @@ export const authOptions: AuthOptions = {
           // Set expiration time (e.g., 1 hour)
          console.log("Token before encoding:", token); // Log to verify the token
 
-        return jwt.sign(
+        const signedToken = jwt.sign(
             {
                 ...token,
                 exp,
                 iat: Math.floor(Date.now() / 1000), // Current timestamp
             },
-            JWT_SECRET as Secret
+            JWT_SECRET as Secret,
+            { algorithm: "HS256" }
         );
+        console.log("Token after encoding:", signedToken); // Log to verify the token
+        return signedToken;
       },
       decode: async ({ token }) => {
           if (!token) {
               throw new Error("Token is undefined or invalid.");
           }
-          return jwt.verify(token, JWT_SECRET as Secret) as JwtPayload;
+          const mytoken = jwt.verify(token, JWT_SECRET as Secret, { algorithms: ["HS256"] }) as JwtPayload;
+          console.log("Token after decoding:", mytoken); // Log to verify the token
+          return mytoken;
       },
   },
     cookies: {

@@ -52,13 +52,21 @@ export default function DashboardPage() {
                 throw new Error(`Failed to fetch questions: ${response.statusText}`);
             }
     
-            const result: { message: string; data: Question[] } = await response.json();
+            const result = await response.json();
+            console.log(result);
     
             if (!result.data) {
                 throw new Error("No data found in the response");
             }
+            const questions: Question[] = result.data.map((record: any) => ({
+                question_id: record.metadata.question_id,
+                question: record.content,
+                query: record.metadata.query,
+                instruction: record.metadata.instruction,
+                system: record.metadata.system,
+            }));
     
-            setQuestions(result.data);
+            setQuestions(questions);
         } catch (error) {
             console.error("Error fetching questions: ", error);
         }

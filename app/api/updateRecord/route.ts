@@ -1,23 +1,7 @@
 import { NextResponse } from "next/server";
-import getCassandraClient from "../../../lib/db";
-import getCassandraDataClient from "../../../lib/datadb";
+
 import getCassandraDataCollection from "../../../lib/datadb";
 
-async function updateQuestionInCQLDatabase(question_id: number, query: string, instruction: string, system: string) {
-    try {
-        const cassandraClient = await getCassandraClient();
-        const cql_query = `
-            UPDATE default_namespace.question_instruction
-            SET instruction = ?, query = ?, system = ?
-            WHERE question_id = ?
-        `;
-        const params = [instruction, query, system, question_id];
-        await cassandraClient.execute(cql_query, params, { prepare: true });
-    } catch (error) {
-        console.error("Error updating the database: ", error);
-        throw new Error("Database update failed");
-    }
-}
 async function updateQuestionInVectorDatabase(question_id: number, query: string, instruction: string, system: string) {
     // note that we can't add the question/text to this update unless we also update the vector
     try {
