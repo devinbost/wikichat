@@ -13,6 +13,21 @@ const cassandraClientSingleton = async () => {
             credentials: {
                 username: process.env.CASSANDRA_USERNAME || 'your_username',
                 password: process.env.CASSANDRA_PASSWORD || 'your_password'
+            },
+            // Add retry options
+            pooling: {
+                coreConnectionsPerHost: {
+                    local: 2,
+                    remote: 1
+                }
+            },
+            socketOptions: {
+                connectTimeout: 5000 // 5 seconds
+            },
+            queryOptions: {
+                consistency: cassandra.types.consistencies.localQuorum,
+                retryOnTimeout: true,
+                readTimeout: 5000 // 5 seconds
             }
         });
 

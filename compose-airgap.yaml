@@ -59,6 +59,8 @@ services:
     - DEBUG=next:*
     - DEFAULT_ADMIN_PASSWORD="Test1234@#"
     - DEFAULT_ADMIN_EMAIL=superadmin@localhost.com
+    - NEXTAUTH_URL=http://dbost-app-lb-1804274937.us-west-2.elb.amazonaws.com:80
+    - AUTH_SECRET=default-jwt-secret
     image: localhost:5000/nextjs-app-sia:latest
     ports:
       - "3000:3000"

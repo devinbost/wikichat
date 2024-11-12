@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { signIn } from "next-auth/react";
+import React, { useState, useEffect } from "react";
+import { signIn, getCsrfToken } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Spinner from "../../components/Spinner";
 import AirlineIconBlue from "../../components/icons/airline";
@@ -12,6 +12,16 @@ const LoginPage = () => {
 
     const [username, setUsername] = useState(""); // Store the username input for Credentials login
     const [password, setPassword] = useState(""); // Store the password input for Credentials login
+
+    const [csrfToken, setCsrfToken] = useState<string|undefined>("");
+
+    useEffect(() => {
+        const fetchCsrfToken = async () => {
+            const token = await getCsrfToken();
+            setCsrfToken(token);
+        };
+        fetchCsrfToken();
+    }, []);
 
     async function handleGoogleLogin() {
         setLoading(true);
@@ -41,13 +51,15 @@ const LoginPage = () => {
             username,
             password,
             callbackUrl: "/",
+            csrfToken, // Include the CSRF token here
         });
+        console.log("Sign-in result:", result); // Log the full result
 
         if (result?.ok) {
-            router.push("/");
+            router.push(result.url || '/dashboard');
         } else {
             setLoading(false);
-            setError(result?.error || "Login failed. Please try again.");
+            setError(result?.error || 'Login failed. Please try again.');
         }
     }
 
@@ -71,6 +83,11 @@ const LoginPage = () => {
                         </button>
                     </div>
                     <form onSubmit={handleCredentialsLogin} className="space-y-4">
+                        <input
+                            name="csrfToken"
+                            type="hidden"
+                            defaultValue={csrfToken}
+                        />
                         <div>
                             <input
                                 type="text"

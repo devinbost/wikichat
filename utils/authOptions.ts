@@ -205,6 +205,7 @@ async function insertUserIntoCQLDatabase(
 }
 
 export const authOptions: AuthOptions = {
+    useSecureCookies: true,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || "default-client-id",
@@ -331,7 +332,14 @@ export const authOptions: AuthOptions = {
             return token;
         } 
         return token; // ensure token is returned after the first invocation (after initial login)
-  },
+    },
+    async redirect({ url, baseUrl }) {
+        // Allows relative callback URLs
+        if (url.startsWith('/')) return `${baseUrl}${url}`;
+        // Allows callback URLs on the same origin
+        else if (new URL(url).origin === baseUrl) return url;
+        return baseUrl;
+    },
     async session({ session, token }) {
       // Modify the session object based on token data
       session.user = {
