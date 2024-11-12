@@ -7,7 +7,7 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import getCassandraClient from "../lib/db";
 
 const DEFAULT_ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL;
-const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || "Aj1rEw+XLkpfGT7Sgzl8oSJvnNwm7XospZxoYTjxbn4=";
 
 async function checkAndCreateUsersTable(client: any) {
     try {
@@ -205,7 +205,7 @@ async function insertUserIntoCQLDatabase(
 }
 
 export const authOptions: AuthOptions = {
-    useSecureCookies: true,
+    //useSecureCookies: true,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || "default-client-id",
@@ -227,8 +227,12 @@ export const authOptions: AuthOptions = {
           },
         }),
     ],
+    pages: {
+        signIn: "/login",
+        signOut: "/logout",
+    },
     jwt: {
-      secret: JWT_SECRET,
+      secret: NEXTAUTH_SECRET,
       encode: async ({ token }) => {
           if (!token) {
               throw new Error("Token is undefined or invalid.");
@@ -244,7 +248,7 @@ export const authOptions: AuthOptions = {
                 exp,
                 iat: Math.floor(Date.now() / 1000), // Current timestamp
             },
-            JWT_SECRET as Secret,
+            NEXTAUTH_SECRET as Secret,
             { algorithm: "HS256" }
         );
         console.log("Token after encoding:", signedToken); // Log to verify the token
@@ -254,11 +258,11 @@ export const authOptions: AuthOptions = {
           if (!token) {
               throw new Error("Token is undefined or invalid.");
           }
-          const mytoken = jwt.verify(token, JWT_SECRET as Secret, { algorithms: ["HS256"] }) as JwtPayload;
+          const mytoken = jwt.verify(token, NEXTAUTH_SECRET as Secret, { algorithms: ["HS256"] }) as JwtPayload;
           console.log("Token after decoding:", mytoken); // Log to verify the token
           return mytoken;
       },
-  },
+    },
     cookies: {
       sessionToken: {
         name: 'token', // Set the custom cookie name here
@@ -270,7 +274,7 @@ export const authOptions: AuthOptions = {
         },
       },
     },
-  secret: JWT_SECRET, // Ensure this is set to a secure random value
+  secret: NEXTAUTH_SECRET, // Ensure this is set to a secure random value
   session: {
     strategy: "jwt", // Ensure that this is set to "jwt" if using JSON Web Tokens
   },
@@ -333,13 +337,13 @@ export const authOptions: AuthOptions = {
         } 
         return token; // ensure token is returned after the first invocation (after initial login)
     },
-    async redirect({ url, baseUrl }) {
-        // Allows relative callback URLs
-        if (url.startsWith('/')) return `${baseUrl}${url}`;
-        // Allows callback URLs on the same origin
-        else if (new URL(url).origin === baseUrl) return url;
-        return baseUrl;
-    },
+    // async redirect({ url, baseUrl }) {
+    //     // Allows relative callback URLs
+    //     if (url.startsWith('/')) return `${baseUrl}${url}`;
+    //     // Allows callback URLs on the same origin
+    //     else if (new URL(url).origin === baseUrl) return url;
+    //     return baseUrl;
+    // },
     async session({ session, token }) {
       // Modify the session object based on token data
       session.user = {
