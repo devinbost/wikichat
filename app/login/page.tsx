@@ -56,7 +56,7 @@ const LoginPage = () => {
         console.log("Sign-in result:", result); // Log the full result
 
         if (result?.ok) {
-            router.push(result.url || '/dashboard');
+            router.push(result.url || '/');
         } else {
             setLoading(false);
             setError(result?.error || 'Login failed. Please try again.');

@@ -30,7 +30,7 @@ services:
     volumes:
       - ./langflow-data:/app/langflow
       - ./huggingface:/app/huggingface
-      - ./.env.docker:/app/.env
+      - ./.env.production:/app/.env
       - ./flows:/app/flows
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/health"]

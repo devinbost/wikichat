@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "env-cmd -f .env.docker -- next dev",
-    "devlocal": "env-cmd -f .env.non-docker -- next dev",
-    "buildlocal": "env-cmd -f .env.non-docker -- next build",
-    "build": "env-cmd -f .env.docker -- next build",
-    "start": "env-cmd -f .env.docker -- next start",
-    "startlocal": "env-cmd -f .env.non-docker -- next start",
+    "dev": "env-cmd -f .env.production -- next dev",
+    "devlocal": "env-cmd -f .env.development -- next dev",
+    "buildlocal": "env-cmd -f .env.development -- next build",
+    "build": "env-cmd -f .env.production -- next build",
+    "start": "env-cmd -f .env.production -- next start",
+    "startlocal": "env-cmd -f .env.development -- next start",
     "seed": "ts-node ./scripts/populateDb.ts",
     "lint": "next lint"
   },

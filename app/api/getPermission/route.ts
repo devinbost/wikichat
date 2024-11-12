@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import getCassandraClient from "../../../lib/db";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || "Aj1rEw+XLkpfGT7Sgzl8oSJvnNwm7XospZxoYTjxbn4=";
 
 interface CustomJwtPayload extends JwtPayload {
     email: string;
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         }
 
         // Verify and decode the JWT
-        const decoded = jwt.verify(token, JWT_SECRET) as CustomJwtPayload;
+        const decoded = jwt.verify(token, NEXTAUTH_SECRET) as CustomJwtPayload;
 
         if (!decoded || !decoded.role) {
             return NextResponse.json({ message: "Invalid token" }, { status: 401 });

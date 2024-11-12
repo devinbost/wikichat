@@ -27,7 +27,7 @@ services:
     volumes:
       - langflow-data:/app/langflow
       - ./huggingface:/app/huggingface
-      - ./.env.docker:/app/.env
+      - ./.env.production:/app/.env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
       interval: 30s
@@ -37,7 +37,7 @@ services:
     networks:
       - langflow-network
     env_file:
-      - .env.docker 
+      - .env.production 
 
   postgres:
     image: postgres:16
@@ -60,18 +60,18 @@ services:
     - DEFAULT_ADMIN_PASSWORD="Test1234@#"
     - DEFAULT_ADMIN_EMAIL=superadmin@localhost.com
     - NEXTAUTH_URL=http://dbost-app-lb-1804274937.us-west-2.elb.amazonaws.com:80
-    - AUTH_SECRET=default-jwt-secret
+    - AUTH_SECRET=Aj1rEw+XLkpfGT7Sgzl8oSJvnNwm7XospZxoYTjxbn4=
     image: localhost:5000/nextjs-app-sia:latest
     ports:
       - "3000:3000"
     depends_on:
       - langflow
     volumes:
-    - ./.env.docker:/app/.env.docker
+    - ./.env.production:/app/.env.production
     networks:
       - langflow-network
     env_file:
-      - .env.docker 
+      - .env.production 
   ollama:
     image: ollama/ollama:latest
     ports:

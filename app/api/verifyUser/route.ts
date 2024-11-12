@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import getCassandraClient from '../../../lib/db';
 
-const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || "Aj1rEw+XLkpfGT7Sgzl8oSJvnNwm7XospZxoYTjxbn4=";
 
 // Function to update the user status in the database
 async function verifyUserInCQLDatabase(userId: string) {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, NEXTAUTH_SECRET);
     const { userId } = decoded as { email: string; userId: string };
 
     // Mark the user as verified

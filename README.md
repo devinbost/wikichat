@@ -93,10 +93,10 @@ This is the directory that will be used in the env file for docker.
 ### Environment variables:
 Create two env files:
 
-- `.env.non-docker` (for local development & testing)
-- `.env.docker` (for deployment)
+- `.env.development` (for local development & testing)
+- `.env.production` (for deployment)
 
-The difference is that `.env.docker` uses environment variables that are associated with docker networking.
+The difference is that `.env.production` uses environment variables that are associated with docker networking.
 
 ```
 ASTRA_DB_API_ENDPOINT=https://....astra.datastax.com
@@ -142,7 +142,7 @@ HUGGINGFACE_MODEL_PATH=sentence-transformers/all-MiniLM-L12-v2
 
 
 
-In the `.env.docker` version, use these values instead:
+In the `.env.production` version, use these values instead:
 ```
 LANGFLOW_BASE_URL=http://langflow:7860
 LANGFLOW_BASE_URL=http://langflow:7860
@@ -153,7 +153,7 @@ HUGGINGFACE_MODEL_PATH=/app/huggingface/all-MiniLM-L12-v2
 
 ## Local testing:
 Command for starting the app locally for debugging/testing:
-`LANGFLOW_STORE_ENVIRONMENT_VARIABLES=true LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=ASTRA_ENDPOINT,ASTRA_DB_TOKEN,ASTRA_DB_DATABASE_ID,OPENAI_KEY,MYSQL_DB,MYSQL_USER,MYSQL_PASSWORD,MYSQL_HOST,LANGCHAIN_TRACING_V2,LANGCHAIN_SESSION,LANGCHAIN_API_KEY,OLLAMA_HOST python -m langflow run --env-file /Users/devin.bost/proj/repos/wikichat/.env.non-docker`
+`LANGFLOW_STORE_ENVIRONMENT_VARIABLES=true LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=ASTRA_ENDPOINT,ASTRA_DB_TOKEN,ASTRA_DB_DATABASE_ID,OPENAI_KEY,MYSQL_DB,MYSQL_USER,MYSQL_PASSWORD,MYSQL_HOST,LANGCHAIN_TRACING_V2,LANGCHAIN_SESSION,LANGCHAIN_API_KEY,OLLAMA_HOST python -m langflow run --env-file /Users/devin.bost/proj/repos/wikichat/.env.development`
 Then, run:
 `npm dev run`
 

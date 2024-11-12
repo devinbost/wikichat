@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import getCassandraClient from "../../../lib/db";
 import bcrypt from "bcryptjs";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || "Aj1rEw+XLkpfGT7Sgzl8oSJvnNwm7XospZxoYTjxbn4=";
   
 
 async function queryCQLDatabase(email: string) {
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     //     const passwordMatch = bcrypt.compareSync(password, user.hashed_password);
 
     //     if (passwordMatch) {
-    //         const token = jwt.sign({ email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "1d" });
+    //         const token = jwt.sign({ email: user.email, role: user.role }, NEXTAUTH_SECRET, { expiresIn: "1d" });
 
     //         const response = NextResponse.json({ message: "Login successful", role: user.role });
     //         // Set the JWT in an HTTP-only cookie

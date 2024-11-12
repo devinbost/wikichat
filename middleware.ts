@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default-jwt-secret";
+const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || "Aj1rEw+XLkpfGT7Sgzl8oSJvnNwm7XospZxoYTjxbn4=";
 const BASE_URL = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 
 // Convert Base64URL-encoded string to Uint8Array
@@ -102,7 +102,7 @@ export async function middleware(request: NextRequest) {
 
     // try {
     //     console.log("Token found, verifying JWT");
-    //     const payload = await verifyJWT(token, JWT_SECRET as string);
+    //     const payload = await verifyJWT(token, NEXTAUTH_SECRET as string);
     //     console.log("JWT verified successfully");
 
     //     if (!payload.role) {
