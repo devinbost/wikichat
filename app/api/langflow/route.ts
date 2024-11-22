@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LangflowClient } from "../../../utils/langflowClient";
-import { tweaks } from "../../../utils/consts";
 
 // Define the characters for Base62 encoding
 const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -51,14 +50,14 @@ export async function POST(req: NextRequest) {
         const UUID_SessionId = hashSessionId(session_id);
         console.log("🚀 ~ POST ~ UUID_SessionId:", UUID_SessionId);
         const tweaks = {
-          "ChatInput-RjY7v": {
+          "ChatInput-HAlZ5": {
             "files": "",
             "sender": "User",
             "sender_name": "User",
             "session_id": UUID_SessionId,
             "should_store_message": true
           },
-          "Memory-UvXdS": {
+          "Memory-eK2If": {
             "n_messages": 100,
             "order": "Ascending",
             "sender": "Machine and User",
@@ -66,35 +65,31 @@ export async function POST(req: NextRequest) {
             "session_id": UUID_SessionId,
             "template": "{sender_name}: {text}"
           },
-          "CustomComponent-pemtq": {
+          "CustomComponent-aXg3u": {
             "input_value": ""
           },
-          "ParseData-WGKsE": {
+          "ParseData-R71KI": {
             "sep": "\n",
-            "template": "{user_question}"
+            "template": "{customer_question}"
           },
-          "ParseData-5sZ05": {},
-          "CustomComponent-zcsC3": {},
-          "CustomComponent-ZauAh": {
-            "DB_ID": "ASTRA_DB_DATABASE_ID",
-            "DB_TOKEN": "ASTRA_DB_TOKEN"
-          },
-          "CustomComponent-PBC8l": {},
-          "Prompt-WQy1S": {
-            "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{user_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context - don't answer these questions:\n\n\n{chat_history}",
+          "ParseData-pGsiS": {},
+          "CustomComponent-UPu1p": {},
+          "CustomComponent-Co5hv": {},
+          "Prompt-ZpkRb": {
+            "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{customer_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context - don't answer these questions:\n\n\n{chat_history}",
             "rows": "",
             "user_question": "",
             "chat_history": ""
           },
-          "ParseData-ojkQ4": {
+          "ParseData-GUEZG": {
             "sep": "\n",
             "template": "{rows}"
           },
-          "ParseData-MKMlW": {
+          "ParseData-e2GHa": {
             "sep": "\n",
-            "template": "{user_question}"
+            "template": "{customer_question}"
           },
-          "ChatOutput-YLKnt": {
+          "ChatOutput-RR2bM": {
             "data_template": "{text}",
             "input_value": "",
             "sender": "Machine",
@@ -102,18 +97,12 @@ export async function POST(req: NextRequest) {
             "session_id": UUID_SessionId,
             "should_store_message": true
           },
-          "CustomComponent-a31yV": {
-            "DB_HOST": "MYSQL_HOST",
-            "DB_NAME": "MYSQL_DB",
-            "DB_PASSWORD": "MYSQL_PASSWORD",
-            "DB_USER": "MYSQL_USER"
-          },
-          "CustomComponent-WSzv5": {},
-          "ParseData-me0f7": {
+          "CustomComponent-1XMau": {},
+          "ParseData-9K7aL": {
             "sep": "\n",
             "template": "{text}"
           },
-          "OllamaModel-6QliL": {
+          "OllamaModel-akWdO": {
             "base_url": "OLLAMA_HOST",
             "format": "",
             "input_value": "",
@@ -140,10 +129,10 @@ export async function POST(req: NextRequest) {
             "top_p": null,
             "verbose": false
           },
-          "HuggingFaceInferenceAPIEmbeddings-cKkul": {
+          "HuggingFaceInferenceAPIEmbeddings-xbsvj": {
             "model_path": "HUGGINGFACE_MODEL_PATH"
           },
-          "HCD-wM3Po": {
+          "HCD-RTBjy": {
             "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
             "batch_size": null,
             "bulk_delete_concurrency": null,
@@ -166,7 +155,7 @@ export async function POST(req: NextRequest) {
             "setup_mode": "Sync",
             "username": "CASSANDRA_USERNAME"
           },
-          "APIRequest-KSAJk": {
+          "APIRequest-akNxr": {
             "api_key": "REST_API_KEY",
             "curl": "",
             "lsl_key": "REST_LSL_KEY",
@@ -174,7 +163,7 @@ export async function POST(req: NextRequest) {
             "timeout": 5,
             "url": "REST_ENDPOINT"
           },
-          "TransformData-AFmuc": {}
+          "TransformData-vRDZQ": {}
         };
             if (stream) {
                 // Initiate the session and get the stream URL

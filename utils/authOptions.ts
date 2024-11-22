@@ -268,7 +268,7 @@ export const authOptions: AuthOptions = {
         name: 'token', // Set the custom cookie name here
         options: {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+          secure: false, // process.env.NODE_ENV === "production", // Use secure cookies in production
           path: "/",
           sameSite: "lax",
         },

@@ -82,69 +82,67 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     console.log(`Processing request for path: ${pathname}`);
 
-    return NextResponse.next();
+    // Skip authentication checks for public routes
+    if (pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
+        console.log("Public route accessed, skipping authentication checks");
+        return NextResponse.next();
+    }
 
-    // // Skip authentication checks for public routes
-    // if (pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
-    //     console.log("Public route accessed, skipping authentication checks");
-    //     return NextResponse.next();
-    // }
+    const cookieStore = cookies();
+    const token = cookieStore.get("token")?.value;
 
-    // const cookieStore = cookies();
-    // const token = cookieStore.get("token")?.value;
+    if (!token) {
+        console.warn("No token found in cookies, redirecting to login");
+        const loginUrl = new URL('/login', getBaseUrl(request));
+        loginUrl.searchParams.set('callbackUrl', request.url);
+        return NextResponse.redirect(loginUrl);
+    }
 
-    // if (!token) {
-    //     console.warn("No token found in cookies, redirecting to login");
-    //     const loginUrl = new URL('/login', getBaseUrl(request));
-    //     loginUrl.searchParams.set('callbackUrl', request.url);
-    //     return NextResponse.redirect(loginUrl);
-    // }
+    try {
+        console.log("Token found, verifying JWT");
+        const payload = await verifyJWT(token, NEXTAUTH_SECRET as string);
+        console.log("JWT verified successfully");
 
-    // try {
-    //     console.log("Token found, verifying JWT");
-    //     const payload = await verifyJWT(token, NEXTAUTH_SECRET as string);
-    //     console.log("JWT verified successfully");
+        if (!payload.role) {
+            console.warn("No role found in token, redirecting to login");
+            const loginUrl = new URL('/login', getBaseUrl(request));
+            loginUrl.searchParams.set('callbackUrl', request.url);
+            return NextResponse.redirect(loginUrl);
+        }
 
-    //     if (!payload.role) {
-    //         console.warn("No role found in token, redirecting to login");
-    //         const loginUrl = new URL('/login', getBaseUrl(request));
-    //         loginUrl.searchParams.set('callbackUrl', request.url);
-    //         return NextResponse.redirect(loginUrl);
-    //     }
+        console.log(`User role: ${payload.role}`);
 
-    //     console.log(`User role: ${payload.role}`);
+        if (payload.role === "end-user") {
+            console.log("End-user role detected, redirecting to home page");
+            return NextResponse.redirect(new URL("/", getBaseUrl(request)));
+        }
 
-    //     if (payload.role === "end-user") {
-    //         console.log("End-user role detected, redirecting to home page");
-    //         return NextResponse.redirect(new URL("/", getBaseUrl(request)));
-    //     }
+        if (pathname.startsWith("/dashboard")) {
+            if (payload.role !== "admin" && payload.role !== "power-user") {
+                console.warn("User lacks dashboard access privileges");
+                return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+            }
+            console.log("Dashboard access granted");
+        }
 
-    //     if (pathname.startsWith("/dashboard")) {
-    //         if (payload.role !== "admin" && payload.role !== "power-user") {
-    //             console.warn("User lacks dashboard access privileges");
-    //             return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    //         }
-    //         console.log("Dashboard access granted");
-    //     }
+        if (pathname.startsWith("/api/createUser") || 
+            pathname.startsWith("/api/updateUser") || 
+            pathname.startsWith("/users")) {
+            if (payload.role !== "admin") {
+                console.warn("User lacks admin privileges for user management");
+                return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+            }
+            console.log("Admin access granted for user management");
+        }
 
-    //     if (pathname.startsWith("/api/createUser") || 
-    //         pathname.startsWith("/api/updateUser") || 
-    //         pathname.startsWith("/users")) {
-    //         if (payload.role !== "admin") {
-    //             console.warn("User lacks admin privileges for user management");
-    //             return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    //         }
-    //         console.log("Admin access granted for user management");
-    //     }
-
-    //     console.log("Access granted for requested path");
-    //     return NextResponse.next();
-    // } catch (err) {
-    //     console.error("JWT verification failed:", err.message);
-    //     const loginUrl = new URL('/login', getBaseUrl(request));
-    //     loginUrl.searchParams.set('callbackUrl', request.url);
-    //     return NextResponse.redirect(loginUrl);
-    // }
+        console.log("Access granted for requested path");
+        return NextResponse.next();
+    } catch (err) {
+        console.error("JWT verification failed:", err.message);
+        const loginUrl = new URL('/login', getBaseUrl(request));
+        loginUrl.searchParams.set('callbackUrl', request.url);
+        return NextResponse.redirect(loginUrl);
+    }
 }
 
 export const config = {

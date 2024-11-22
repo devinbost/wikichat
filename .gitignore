@@ -179,3 +179,7 @@ models.zip
 app/secure-connect-wikichat.zip
 scripts/deployment.py
 flows/INIT_6.1.json
+langflow-tmp/cache/*
+langflow-tmp/langflow-app-data/*
+langflow-tmp/langflow-data/*
+langflow-tmp/langflow-postgres/*

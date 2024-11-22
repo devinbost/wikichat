@@ -3,7 +3,6 @@ import getCassandraClient from "../../../lib/db";
 import getCassandraDataCollection from "../../../lib/datadb";
 import { NextRequest, NextResponse } from "next/server";
 import { LangflowClient } from "../../../utils/langflowClient";
-import { tweaks } from "../../../utils/consts";
 import exp from "constants";
 import { getServerSession } from "next-auth";
 import authOptions from "../../../utils/authOptions";
@@ -22,20 +21,23 @@ async function insertRecordIntoVectorCollection(question_id: string, query: stri
         const flowIdOrName = process.env.INGEST_FLOW_NAME || "";
         const langflowId = process.env.LANGFLOW_ID || "";
         const tweaks = {
-            "ChatInput-vTFel": {
+            "ChatInput-KoofM": {
               "files": "",
+              "background_color": "",
+              "chat_icon": "",
               "sender": "User",
               "sender_name": "User",
               "session_id": session_id,
-              "should_store_message": true
+              "should_store_message": true,
+              "text_color": ""
             },
-            "CustomComponent-79dKv": {
+            "CustomComponent-YP2LT": {
               "input_value": ""
             },
-            "HuggingFaceInferenceAPIEmbeddings-B9hkI": {
+            "HuggingFaceInferenceAPIEmbeddings-DWU1r": {
               "model_path": "HUGGINGFACE_MODEL_PATH"
             },
-            "HCD-F747C": {
+            "HCD-2LJvG": {
               "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
               "batch_size": null,
               "bulk_delete_concurrency": null,
@@ -58,7 +60,7 @@ async function insertRecordIntoVectorCollection(question_id: string, query: stri
               "setup_mode": "Sync",
               "username": "CASSANDRA_USERNAME"
             },
-            "TransformData-HEVKG": {}
+            "TransformData-FA3MS": {}
           };
           try {
             const response = await langflowClient.runFlow(

@@ -8,7 +8,7 @@ const cassandraClientSingleton = async () => {
 
         const client = new cassandra.Client({
             contactPoints: contactPoints, 
-            localDataCenter: "dc1",
+            localDataCenter: process.env.CASSANDRA_DC || "dc-1",
             keyspace: process.env.CASSANDRA_NAMESPACE || 'default_namespace',
             credentials: {
                 username: process.env.CASSANDRA_USERNAME || 'your_username',

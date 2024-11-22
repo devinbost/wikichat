@@ -33,21 +33,22 @@ const cassandraDataClientSingleton = async () => {
     const collectionNames = await db.listCollections({ nameOnly: true });
     console.log('Collection Names found:', collectionNames);
     //const result4 = await db.dropCollection('dse_vector_test');
-    const collectionNames2 = await db.listCollections({ nameOnly: true });
-    console.log('Collection Names2 found:', collectionNames2);
+    // const collectionNames2 = await db.listCollections({ nameOnly: true });
+    // console.log('Collection Names2 found:', collectionNames2);
     //const result3 = await db.dropCollection('questions_hf_dse');
     //const result5 = await db.dropCollection('vector_5_collection');
     //const result2 = await db.createCollection(collectionName);
     const collection = await db.collection(collectionName);
     const docBefore = await collection.find({ }).toArray();
-    console.log('Documents found before delete:', docBefore);
+    console.log('Documents found:', docBefore);
     //const result = await collection.deleteMany({});
-    const docAfter = await collection.find({ }).toArray();
-    console.log('Documents found after delete:', docAfter);
+    // const docAfter = await collection.find({ }).toArray();
+    // console.log('Documents found after delete:', docAfter);
 
     if (!globalThis.cassandraCollectionGlobal) {
         console.log('Cassandra Database session Created');
-        if (process.env.NODE_ENV !== 'production') globalThis.cassandraCollectionGlobal = collection;
+        //if (process.env.NODE_ENV !== 'production') 
+        globalThis.cassandraCollectionGlobal = collection;
     }
 
     return globalThis.cassandraCollectionGlobal;

@@ -7,8 +7,8 @@ async function updateQuestionInVectorDatabase(question_id: number, query: string
     try {
         const collection = await getCassandraDataCollection();
         const docBefore = await collection.findOneAndUpdate(
-            { question_id: question_id },
-            { $set: { instruction: instruction, query: query, system: system } },
+            { "metadata.question_id": question_id },
+            { $set: { "metadata.instruction": instruction, "metadata.query": query, "metadata.system": system } },
           );
         
     } catch (error) {
