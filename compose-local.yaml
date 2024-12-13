@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres
       - registry
-    command: ["langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
+    command: ["python", "-m", "langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
     working_dir: /app
     environment:
 #      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow

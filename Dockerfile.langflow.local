@@ -25,8 +25,8 @@
 #FROM devinbostds/langflow_arm64:edge
 #FROM devinbostds/langflow_arm64:1.0.19.post2.plus
 # FROM devinbostds/langflow_arm64:1.0.19.post2
-FROM devinbostds/langflow_arm64:1.1.0
-
+#FROM devinbostds/langflow_arm64:1.1.0
+FROM langflowai/langflow-ep:v1.1.1.dev8
 WORKDIR /app
 
 #RUN pip install -U cassio mysql-connector-python sentence-transformers langchain-huggingface langchain-astradb

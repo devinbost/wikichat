@@ -23,7 +23,7 @@
 #FROM devinbostds/langflow_arm64:1.0.18
 #FROM langflowai/langflow:v1.1.0
 #FROM langflowai/langflow:v1.0.19.post2
-FROM langflowai/langflow:v1.1.0
+FROM langflowai/langflow-ep:v1.1.1.dev8
 WORKDIR /app
 
 #RUN pip install -U cassio mysql-connector-python sentence-transformers langchain-huggingface langchain-astradb
