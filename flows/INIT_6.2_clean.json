@@ -1,0 +1,1229 @@
+{
+  "id": "37a9a22c-b38b-4d35-83f3-2ba600c7c897",
+  "data": {
+    "nodes": [
+      {
+        "id": "HuggingFaceInferenceAPIEmbeddings-wxQfk",
+        "type": "genericNode",
+        "position": {
+          "x": 20,
+          "y": 645.5280465348428
+        },
+        "data": {
+          "type": "HuggingFaceInferenceAPIEmbeddings",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from langchain_community.embeddings.huggingface import HuggingFaceInferenceAPIEmbeddings\nfrom pydantic.v1.types import SecretStr\n \nfrom langflow.base.models.model import LCModelComponent\nfrom langflow.field_typing import Embeddings\nfrom langflow.io import MessageTextInput, Output, SecretStrInput\n \n \nclass HuggingFaceInferenceAPIEmbeddingsComponent(LCModelComponent):\n    display_name = \"HuggingFace Embeddings\"\n    description = \"Generate embeddings using Hugging Face Inference API models.\"\n    documentation = \"https://github.com/huggingface/text-embeddings-inference\"\n    icon = \"HuggingFace\"\n    name = \"HuggingFaceInferenceAPIEmbeddings\"\n \n    inputs = [\n        MessageTextInput(name=\"model_path\", display_name=\"Model Path\", value=\"sentence-transformers/all-MiniLM-L12-v2\"),\n    ]\n \n    outputs = [\n        Output(display_name=\"Embeddings\", name=\"embeddings\", method=\"build_embeddings\"),\n    ]\n \n    def build_embeddings(self) -> Embeddings:\n        #modelPath = \"/Users/devin.bost/huggingfacetemp/all-MiniLM-L12-v2\"\n        from langchain_huggingface import HuggingFaceEmbeddings\n        model_kwargs = {'device': 'cpu'}\n        encode_kwargs = {'normalize_embeddings': False}\n        embedding = HuggingFaceEmbeddings(\n            model_name=self.model_path,\n            model_kwargs=model_kwargs,\n            encode_kwargs=encode_kwargs\n        )\n        return embedding",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "model_path": {
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_path",
+                "value": "HUGGINGFACE_MODEL_PATH",
+                "display_name": "Model Path",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Generate embeddings using Hugging Face Inference API models.",
+            "icon": "HuggingFace",
+            "base_classes": [
+              "Embeddings"
+            ],
+            "display_name": "Custom Component",
+            "documentation": "https://github.com/huggingface/text-embeddings-inference",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Embeddings"
+                ],
+                "selected": "Embeddings",
+                "name": "embeddings",
+                "display_name": "Embeddings",
+                "method": "build_embeddings",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "model_path"
+            ],
+            "beta": false,
+            "edited": true,
+            "lf_version": "1.1.1.dev11"
+          },
+          "id": "HuggingFaceInferenceAPIEmbeddings-wxQfk"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 253
+      },
+      {
+        "id": "HCD-IW3W0",
+        "type": "genericNode",
+        "position": {
+          "x": 694.8325840710551,
+          "y": 38
+        },
+        "data": {
+          "type": "HCD",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "embedding": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "embedding",
+                "value": "",
+                "display_name": "Embedding or Astra Vectorize",
+                "advanced": false,
+                "input_types": [
+                  "Embeddings",
+                  "dict"
+                ],
+                "dynamic": false,
+                "info": "Allows either an embedding model or an Astra Vectorize configuration.",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "ingest_data": {
+                "trace_as_metadata": true,
+                "list": true,
+                "trace_as_input": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "ingest_data",
+                "value": "",
+                "display_name": "Ingest Data",
+                "advanced": false,
+                "input_types": [
+                  "Data"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "DataInput"
+              },
+              "api_endpoint": {
+                "load_from_db": true,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "api_endpoint",
+                "value": "",
+                "display_name": "HCD API Endpoint",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "API endpoint URL for the HCD service.",
+                "title_case": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "batch_size": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "batch_size",
+                "value": "",
+                "display_name": "Batch Size",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional number of data to process in a single batch.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "bulk_delete_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "bulk_delete_concurrency",
+                "value": "",
+                "display_name": "Bulk Delete Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional concurrency level for bulk delete operations.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "bulk_insert_batch_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "bulk_insert_batch_concurrency",
+                "value": "",
+                "display_name": "Bulk Insert Batch Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional concurrency level for bulk insert operations.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "bulk_insert_overwrite_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "bulk_insert_overwrite_concurrency",
+                "value": "",
+                "display_name": "Bulk Insert Overwrite Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional concurrency level for bulk insert operations that overwrite existing data.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "ca_certificate": {
+                "trace_as_input": true,
+                "multiline": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "ca_certificate",
+                "value": "",
+                "display_name": "CA Certificate",
+                "advanced": true,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Optional CA certificate for TLS connections to HCD.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from loguru import logger\nfrom sentence_transformers import SentenceTransformer\nfrom langflow.base.vectorstores.model import LCVectorStoreComponent, check_cached_vector_store\nfrom langflow.helpers import docs_to_data\nfrom langflow.inputs import DictInput, FloatInput\nfrom langflow.io import (\n    BoolInput,\n    DataInput,\n    DropdownInput,\n    HandleInput,\n    IntInput,\n    MultilineInput,\n    SecretStrInput,\n    StrInput,\n)\nfrom langflow.schema import Data\n\n\nclass HCDVectorStoreComponent(LCVectorStoreComponent):\n    display_name: str = \"Hyper-Converged Database\"\n    description: str = \"Bulk ingestion into DSE via Data API\"\n    documentation: str = \"https://python.langchain.com/docs/integrations/vectorstores/astradb\"\n    name = \"HCD\"\n    icon: str = \"HCD\"\n\n    inputs = [\n        StrInput(\n            name=\"collection_name\",\n            display_name=\"Collection Name\",\n            info=\"The name of the collection within HCD where the vectors will be stored.\",\n            required=True,\n        ),\n        StrInput(\n            name=\"username\",\n            display_name=\"HCD Username\",\n            info=\"Authentication username for accessing HCD.\",\n            value=\"hcd-superuser\",\n            required=True,\n        ),\n        SecretStrInput(\n            name=\"password\",\n            display_name=\"HCD Password\",\n            info=\"Authentication password for accessing HCD.\",\n            value=\"HCD_PASSWORD\",\n            required=True,\n        ),\n        SecretStrInput(\n            name=\"api_endpoint\",\n            display_name=\"HCD API Endpoint\",\n            info=\"API endpoint URL for the HCD service.\",\n            value=\"HCD_API_ENDPOINT\",\n            required=True,\n        ),\n        MultilineInput(\n            name=\"search_input\",\n            display_name=\"Search Input\",\n        ),\n        DataInput(\n            name=\"ingest_data\",\n            display_name=\"Ingest Data\",\n            is_list=True,\n        ),\n        StrInput(\n            name=\"namespace\",\n            display_name=\"Namespace\",\n            info=\"Optional namespace within HCD to use for the collection.\",\n            value=\"default_namespace\",\n            advanced=True,\n        ),\n        MultilineInput(\n            name=\"ca_certificate\",\n            display_name=\"CA Certificate\",\n            info=\"Optional CA certificate for TLS connections to HCD.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"metric\",\n            display_name=\"Metric\",\n            info=\"Optional distance metric for vector comparisons in the vector store.\",\n            options=[\"cosine\", \"dot_product\", \"euclidean\"],\n            advanced=True,\n        ),\n        IntInput(\n            name=\"batch_size\",\n            display_name=\"Batch Size\",\n            info=\"Optional number of data to process in a single batch.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"bulk_insert_batch_concurrency\",\n            display_name=\"Bulk Insert Batch Concurrency\",\n            info=\"Optional concurrency level for bulk insert operations.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"bulk_insert_overwrite_concurrency\",\n            display_name=\"Bulk Insert Overwrite Concurrency\",\n            info=\"Optional concurrency level for bulk insert operations that overwrite existing data.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"bulk_delete_concurrency\",\n            display_name=\"Bulk Delete Concurrency\",\n            info=\"Optional concurrency level for bulk delete operations.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"setup_mode\",\n            display_name=\"Setup Mode\",\n            info=\"Configuration mode for setting up the vector store, with options like 'Sync', 'Async', or 'Off'.\",\n            options=[\"Sync\", \"Async\", \"Off\"],\n            advanced=True,\n            value=\"Sync\",\n        ),\n        BoolInput(\n            name=\"pre_delete_collection\",\n            display_name=\"Pre Delete Collection\",\n            info=\"Boolean flag to determine whether to delete the collection before creating a new one.\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"metadata_indexing_include\",\n            display_name=\"Metadata Indexing Include\",\n            info=\"Optional list of metadata fields to include in the indexing.\",\n            advanced=True,\n        ),\n        HandleInput(\n            name=\"embedding\",\n            display_name=\"Embedding or Astra Vectorize\",\n            input_types=[\"Embeddings\", \"dict\"],\n            info=\"Allows either an embedding model or an Astra Vectorize configuration.\",  # TODO: This should be optional, but need to refactor langchain-astradb first.\n        ),\n        StrInput(\n            name=\"metadata_indexing_exclude\",\n            display_name=\"Metadata Indexing Exclude\",\n            info=\"Optional list of metadata fields to exclude from the indexing.\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"collection_indexing_policy\",\n            display_name=\"Collection Indexing Policy\",\n            info=\"Optional dictionary defining the indexing policy for the collection.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"number_of_results\",\n            display_name=\"Number of Results\",\n            info=\"Number of results to return.\",\n            advanced=True,\n            value=4,\n        ),\n        DropdownInput(\n            name=\"search_type\",\n            display_name=\"Search Type\",\n            info=\"Search type to use\",\n            options=[\"Similarity\", \"Similarity with score threshold\", \"MMR (Max Marginal Relevance)\"],\n            value=\"Similarity\",\n            advanced=True,\n        ),\n        FloatInput(\n            name=\"search_score_threshold\",\n            display_name=\"Search Score Threshold\",\n            info=\"Minimum similarity score threshold for search results. (when using 'Similarity with score threshold')\",\n            value=0,\n            advanced=True,\n        ),\n        DictInput(\n            name=\"search_filter\",\n            display_name=\"Search Metadata Filter\",\n            info=\"Optional dictionary of filters to apply to the search query.\",\n            advanced=True,\n            is_list=True,\n        ),\n    ]\n\n    @check_cached_vector_store\n    def build_vector_store(self):\n        try:\n            from langchain_astradb import AstraDBVectorStore\n            from langchain_astradb.utils.astradb import SetupMode\n        except ImportError:\n            raise ImportError(\n                \"Could not import langchain Astra DB integration package. \"\n                \"Please install it with `pip install langchain-astradb`.\"\n            )\n\n        try:\n            from astrapy.constants import Environment\n            from astrapy.authentication import UsernamePasswordTokenProvider\n        except ImportError:\n            raise ImportError(\n                \"Could not import astrapy integration package. \" \"Please install it with `pip install astrapy`.\"\n            )\n\n        try:\n            if not self.setup_mode:\n                self.setup_mode = self._inputs[\"setup_mode\"].options[0]\n\n            setup_mode_value = SetupMode[self.setup_mode.upper()]\n        except KeyError:\n            raise ValueError(f\"Invalid setup mode: {self.setup_mode}\")\n\n        if not isinstance(self.embedding, dict):\n            embedding_dict = {\"embedding\": self.embedding}\n        else:\n            from astrapy.info import CollectionVectorServiceOptions\n\n            dict_options = self.embedding.get(\"collection_vector_service_options\", {})\n            dict_options[\"authentication\"] = {\n                k: v for k, v in dict_options.get(\"authentication\", {}).items() if k and v\n            }\n            dict_options[\"parameters\"] = {k: v for k, v in dict_options.get(\"parameters\", {}).items() if k and v}\n            embedding_dict = {\n                \"collection_vector_service_options\": CollectionVectorServiceOptions.from_dict(dict_options)\n            }\n            collection_embedding_api_key = self.embedding.get(\"collection_embedding_api_key\")\n            if collection_embedding_api_key:\n                embedding_dict[\"collection_embedding_api_key\"] = collection_embedding_api_key\n\n        token_provider = UsernamePasswordTokenProvider(self.username, self.password)\n        vector_store_kwargs = {\n            **embedding_dict,\n            \"collection_name\": self.collection_name,\n            \"token\": token_provider,\n            \"api_endpoint\": self.api_endpoint,\n            \"namespace\": self.namespace,\n            \"metric\": self.metric or None,\n            \"batch_size\": self.batch_size or None,\n            \"bulk_insert_batch_concurrency\": self.bulk_insert_batch_concurrency or None,\n            \"bulk_insert_overwrite_concurrency\": self.bulk_insert_overwrite_concurrency or None,\n            \"bulk_delete_concurrency\": self.bulk_delete_concurrency or None,\n            \"setup_mode\": setup_mode_value,\n            \"pre_delete_collection\": self.pre_delete_collection or False,\n            \"environment\": Environment.HCD,\n        }\n\n        if self.metadata_indexing_include:\n            vector_store_kwargs[\"metadata_indexing_include\"] = self.metadata_indexing_include\n        elif self.metadata_indexing_exclude:\n            vector_store_kwargs[\"metadata_indexing_exclude\"] = self.metadata_indexing_exclude\n        elif self.collection_indexing_policy:\n            vector_store_kwargs[\"collection_indexing_policy\"] = self.collection_indexing_policy\n\n        try:\n            vector_store = AstraDBVectorStore(**vector_store_kwargs)\n            vector_store.clear()\n        except Exception as e:\n            raise ValueError(f\"Error initializing AstraDBVectorStore: {str(e)}\") from e\n\n        self._add_documents_to_vector_store(vector_store)\n        return vector_store\n\n    def _add_documents_to_vector_store(self, vector_store):\n        documents = []\n        \n        example_questions = [\n            {\n              \"question\": \"When did the user last login?\",\n              \"question_id\": 1,\n              \"query\": \"LOGIN_DATA\",\n              \"instruction\": \"Check the LATEST_LOGIN_ON date and provide that to answer this question.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"Did this user classify? Was customer audited?\",\n              \"question_id\": 2,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"Check if SPL_CUS_TYPE = C. If so, then the user did classify, which means they can't redeem or utilize their miles.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"Why can't the customer redeem their miles?\",\n              \"question_id\": 3,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"Check if SPL_CUS_TYPE = C. If so, then the user did classify, which means they can't redeem or utilize their miles.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"Was this user's phone number modified recently?\",\n              \"question_id\": 4,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"Check if IS_RGN_MODIFIED_RECENTLY is YES. If so, the phone number was modified recently. Otherise, it was not.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"Has there been a recent transaction?\",\n              \"question_id\": 5,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"Check if HAS_RECENT_TXN field is YES. If so, there has been a recent transaction. Otherwise, there has not been one.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"Who classified this user?\",\n              \"question_id\": 6,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"check for CLASSIFIED_BY. The name of that field indicates who classified the user.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"When was this customer's tier changed?\",\n              \"question_id\": 7,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"check TIER_STATUS_CHG_DT, which is the date\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"What date did the customer enroll/register?\",\n              \"question_id\": 8,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"check ENROLLED_ON, which is the date\",\n              \"system\": \"http\"\n            }\n            ,\n            {\n              \"question\": \"What is my current miles balance?\",\n              \"question_id\": 9,\n              \"query\": \"BASE_DATA\",\n              \"instruction\": \"check CUR_BAL. That's the balance in miles.\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"Please give summary of events \",\n              \"question_id\": 10,\n              \"query\": \"EVENT_DATA\",\n              \"instruction\": \"\"\" Please give the summary of the events and contents of EVENT_DESC. The defenition of the content of the data is as follows:\n                                    rcre_user_id : User ID that created the record, usually a system user or service account\n                                    rcre_dt : Record creation date\n                                    INT_ID : Customer ID\n                                    event_src : Source system where the event originated\n                                Originating sources:\n                                    MARMS - internal system\n                                    SYST - system\n                                    TD-PHE - Manila call center\n                                    TD-EML\n                                    COMM: e-statements\n                                1Point:\n                                    event_subject : What the event was.\n                                Linking : Customer tried to link points to partner system\n                                Point conversion : Customer converted points to miles, etc.\n                                event_type : Event type: TRAN (transaction), EVNT (event),\n                                event_sub_type : Event sub-type. CONV (conversion), PROF (personal info), OTHE (other), CARD (card issuance), SECR (secret), STAT (status change)\n                                event_desc: Description of the event, which includes important notes from systems or support agents. This is the main field you should be focusing for summary \"\"\",\n              \"system\": \"http\"\n            },\n            {\n              \"question\": \"What's a summary of events?\",\n              \"question_id\": 11,\n              \"query\": \"EVENT_DATA\",\n              \"instruction\": \"Summarize all the contents in EVENT_DESC. Be sure to mention this data came from http\",\n              \"system\": \"http\"\n            }\n        ]\n        \n        for entry in example_questions:\n            doc = Document(page_content=entry[\"question\"], metadata={\"question_id\": entry[\"question_id\"], \"query\": entry[\"query\"], \"instruction\": entry[\"instruction\"], \"system\": entry[\"system\"]})\n            documents.append(doc)\n        \n\n        if documents:\n            logger.debug(f\"Adding {len(documents)} documents to the Vector Store.\")\n            try:\n                vector_store.add_documents(documents)\n            except Exception as e:\n                raise ValueError(f\"Error adding documents to AstraDBVectorStore: {str(e)}\") from e\n        else:\n            logger.debug(\"No documents to add to the Vector Store.\")\n\n    def _map_search_type(self):\n        if self.search_type == \"Similarity with score threshold\":\n            return \"similarity_score_threshold\"\n        elif self.search_type == \"MMR (Max Marginal Relevance)\":\n            return \"mmr\"\n        else:\n            return \"similarity\"\n\n    def _build_search_args(self):\n        args = {\n            \"k\": self.number_of_results,\n            \"score_threshold\": self.search_score_threshold,\n        }\n\n        if self.search_filter:\n            clean_filter = {k: v for k, v in self.search_filter.items() if k and v}\n            if len(clean_filter) > 0:\n                args[\"filter\"] = clean_filter\n        return args\n\n    def search_documents(self) -> list[Data]:\n        vector_store = self.build_vector_store()\n\n        logger.debug(f\"Search input: {self.search_input}\")\n        logger.debug(f\"Search type: {self.search_type}\")\n        logger.debug(f\"Number of results: {self.number_of_results}\")\n\n        if self.search_input and isinstance(self.search_input, str) and self.search_input.strip():\n            try:\n                search_type = self._map_search_type()\n                search_args = self._build_search_args()\n\n                docs = vector_store.search(query=self.search_input, search_type=search_type, **search_args)\n            except Exception as e:\n                raise ValueError(f\"Error performing search in AstraDBVectorStore: {str(e)}\") from e\n\n            logger.debug(f\"Retrieved documents: {len(docs)}\")\n\n            data = docs_to_data(docs)\n            logger.debug(f\"Converted documents to data: {len(data)}\")\n            self.status = data\n            return data\n        else:\n            logger.debug(\"No search input provided. Skipping search.\")\n            return []\n\n    def get_retriever_kwargs(self):\n        search_args = self._build_search_args()\n        return {\n            \"search_type\": self._map_search_type(),\n            \"search_kwargs\": search_args,\n        }\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "collection_indexing_policy": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "collection_indexing_policy",
+                "value": "",
+                "display_name": "Collection Indexing Policy",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional dictionary defining the indexing policy for the collection.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "collection_name": {
+                "trace_as_metadata": true,
+                "load_from_db": true,
+                "list": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "collection_name",
+                "value": "CASSANDRA_COLLECTION",
+                "display_name": "Collection Name",
+                "advanced": false,
+                "dynamic": false,
+                "info": "The name of the collection within HCD where the vectors will be stored.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "metadata_indexing_exclude": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "metadata_indexing_exclude",
+                "value": "",
+                "display_name": "Metadata Indexing Exclude",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional list of metadata fields to exclude from the indexing.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "metadata_indexing_include": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "metadata_indexing_include",
+                "value": "",
+                "display_name": "Metadata Indexing Include",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional list of metadata fields to include in the indexing.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "metric": {
+                "trace_as_metadata": true,
+                "options": [
+                  "cosine",
+                  "dot_product",
+                  "euclidean"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "metric",
+                "value": "",
+                "display_name": "Metric",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional distance metric for vector comparisons in the vector store.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "namespace": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "namespace",
+                "value": "default_namespace",
+                "display_name": "Namespace",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional namespace within HCD to use for the collection.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "number_of_results": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "number_of_results",
+                "value": 4,
+                "display_name": "Number of Results",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Number of results to return.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "password": {
+                "load_from_db": true,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "password",
+                "value": "",
+                "display_name": "HCD Password",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Authentication password for accessing HCD.",
+                "title_case": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "pre_delete_collection": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "pre_delete_collection",
+                "value": false,
+                "display_name": "Pre Delete Collection",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Boolean flag to determine whether to delete the collection before creating a new one.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "search_filter": {
+                "trace_as_input": true,
+                "list": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_filter",
+                "value": {},
+                "display_name": "Search Metadata Filter",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional dictionary of filters to apply to the search query.",
+                "title_case": false,
+                "type": "dict",
+                "_input_type": "DictInput"
+              },
+              "search_input": {
+                "trace_as_input": true,
+                "multiline": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_input",
+                "value": "",
+                "display_name": "Search Input",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "search_score_threshold": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_score_threshold",
+                "value": 0,
+                "display_name": "Search Score Threshold",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Minimum similarity score threshold for search results. (when using 'Similarity with score threshold')",
+                "title_case": false,
+                "type": "float",
+                "_input_type": "FloatInput"
+              },
+              "search_type": {
+                "trace_as_metadata": true,
+                "options": [
+                  "Similarity",
+                  "Similarity with score threshold",
+                  "MMR (Max Marginal Relevance)"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_type",
+                "value": "Similarity",
+                "display_name": "Search Type",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Search type to use",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "setup_mode": {
+                "trace_as_metadata": true,
+                "options": [
+                  "Sync",
+                  "Async",
+                  "Off"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "setup_mode",
+                "value": "Sync",
+                "display_name": "Setup Mode",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Configuration mode for setting up the vector store, with options like 'Sync', 'Async', or 'Off'.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "username": {
+                "trace_as_metadata": true,
+                "load_from_db": true,
+                "list": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "username",
+                "value": "CASSANDRA_USERNAME",
+                "display_name": "HCD Username",
+                "advanced": false,
+                "dynamic": false,
+                "info": "Authentication username for accessing HCD.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              }
+            },
+            "description": "Bulk ingestion into DSE via Data API",
+            "icon": "HCD",
+            "base_classes": [
+              "Data",
+              "Retriever",
+              "VectorStore"
+            ],
+            "display_name": "Custom Component",
+            "documentation": "https://python.langchain.com/docs/integrations/vectorstores/astradb",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Retriever"
+                ],
+                "selected": "Retriever",
+                "name": "base_retriever",
+                "display_name": "Retriever",
+                "method": "build_base_retriever",
+                "value": "__UNDEFINED__",
+                "cache": true
+              },
+              {
+                "types": [
+                  "Data"
+                ],
+                "selected": "Data",
+                "name": "search_results",
+                "display_name": "Search Results",
+                "method": "search_documents",
+                "value": "__UNDEFINED__",
+                "cache": true
+              },
+              {
+                "types": [
+                  "VectorStore"
+                ],
+                "selected": "VectorStore",
+                "name": "vector_store",
+                "display_name": "Vector Store",
+                "method": "cast_vector_store",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "collection_name",
+              "username",
+              "password",
+              "api_endpoint",
+              "search_input",
+              "ingest_data",
+              "namespace",
+              "ca_certificate",
+              "metric",
+              "batch_size",
+              "bulk_insert_batch_concurrency",
+              "bulk_insert_overwrite_concurrency",
+              "bulk_delete_concurrency",
+              "setup_mode",
+              "pre_delete_collection",
+              "metadata_indexing_include",
+              "embedding",
+              "metadata_indexing_exclude",
+              "collection_indexing_policy",
+              "number_of_results",
+              "search_type",
+              "search_score_threshold",
+              "search_filter"
+            ],
+            "beta": false,
+            "edited": true,
+            "lf_version": "1.0.18"
+          },
+          "id": "HCD-IW3W0"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 769,
+        "dragging": false
+      },
+      {
+        "id": "HCD-qpw9L",
+        "type": "genericNode",
+        "position": {
+          "x": 652.5660922749294,
+          "y": 983.1391273076583
+        },
+        "data": {
+          "type": "HCD",
+          "node": {
+            "template": {
+              "_type": "Component",
+              "embedding": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "embedding",
+                "value": "",
+                "display_name": "Embedding or Astra Vectorize",
+                "advanced": false,
+                "input_types": [
+                  "Embeddings",
+                  "dict"
+                ],
+                "dynamic": false,
+                "info": "Allows either an embedding model or an Astra Vectorize configuration.",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "ingest_data": {
+                "trace_as_metadata": true,
+                "list": true,
+                "trace_as_input": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "ingest_data",
+                "value": "",
+                "display_name": "Ingest Data",
+                "advanced": false,
+                "input_types": [
+                  "Data"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "other",
+                "_input_type": "DataInput"
+              },
+              "api_endpoint": {
+                "load_from_db": true,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "api_endpoint",
+                "value": "",
+                "display_name": "HCD API Endpoint",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "API endpoint URL for the HCD service.",
+                "title_case": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "batch_size": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "batch_size",
+                "value": "",
+                "display_name": "Batch Size",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional number of data to process in a single batch.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "bulk_delete_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "bulk_delete_concurrency",
+                "value": "",
+                "display_name": "Bulk Delete Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional concurrency level for bulk delete operations.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "bulk_insert_batch_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "bulk_insert_batch_concurrency",
+                "value": "",
+                "display_name": "Bulk Insert Batch Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional concurrency level for bulk insert operations.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "bulk_insert_overwrite_concurrency": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "bulk_insert_overwrite_concurrency",
+                "value": "",
+                "display_name": "Bulk Insert Overwrite Concurrency",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional concurrency level for bulk insert operations that overwrite existing data.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "ca_certificate": {
+                "trace_as_input": true,
+                "multiline": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "ca_certificate",
+                "value": "",
+                "display_name": "CA Certificate",
+                "advanced": true,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Optional CA certificate for TLS connections to HCD.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from loguru import logger\n\nfrom langflow.base.vectorstores.model import LCVectorStoreComponent, check_cached_vector_store\nfrom langflow.helpers import docs_to_data\nfrom langflow.inputs import DictInput, FloatInput\nfrom langflow.io import (\n    BoolInput,\n    DataInput,\n    DropdownInput,\n    HandleInput,\n    IntInput,\n    MultilineInput,\n    SecretStrInput,\n    StrInput,\n)\nfrom langflow.schema import Data\n\n\nclass HCDVectorStoreComponent(LCVectorStoreComponent):\n    display_name: str = \"Hyper-Converged Database\"\n    description: str = \"Use this one for testing\"\n    documentation: str = \"https://python.langchain.com/docs/integrations/vectorstores/astradb\"\n    name = \"HCD\"\n    icon: str = \"HCD\"\n\n    inputs = [\n        StrInput(\n            name=\"collection_name\",\n            display_name=\"Collection Name\",\n            info=\"The name of the collection within HCD where the vectors will be stored.\",\n            required=True,\n        ),\n        StrInput(\n            name=\"username\",\n            display_name=\"HCD Username\",\n            info=\"Authentication username for accessing HCD.\",\n            value=\"hcd-superuser\",\n            required=True,\n        ),\n        SecretStrInput(\n            name=\"password\",\n            display_name=\"HCD Password\",\n            info=\"Authentication password for accessing HCD.\",\n            value=\"HCD_PASSWORD\",\n            required=True,\n        ),\n        SecretStrInput(\n            name=\"api_endpoint\",\n            display_name=\"HCD API Endpoint\",\n            info=\"API endpoint URL for the HCD service.\",\n            value=\"HCD_API_ENDPOINT\",\n            required=True,\n        ),\n        MultilineInput(\n            name=\"search_input\",\n            display_name=\"Search Input\",\n        ),\n        DataInput(\n            name=\"ingest_data\",\n            display_name=\"Ingest Data\",\n            is_list=True,\n        ),\n        StrInput(\n            name=\"namespace\",\n            display_name=\"Namespace\",\n            info=\"Optional namespace within HCD to use for the collection.\",\n            value=\"default_namespace\",\n            advanced=True,\n        ),\n        MultilineInput(\n            name=\"ca_certificate\",\n            display_name=\"CA Certificate\",\n            info=\"Optional CA certificate for TLS connections to HCD.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"metric\",\n            display_name=\"Metric\",\n            info=\"Optional distance metric for vector comparisons in the vector store.\",\n            options=[\"cosine\", \"dot_product\", \"euclidean\"],\n            advanced=True,\n        ),\n        IntInput(\n            name=\"batch_size\",\n            display_name=\"Batch Size\",\n            info=\"Optional number of data to process in a single batch.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"bulk_insert_batch_concurrency\",\n            display_name=\"Bulk Insert Batch Concurrency\",\n            info=\"Optional concurrency level for bulk insert operations.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"bulk_insert_overwrite_concurrency\",\n            display_name=\"Bulk Insert Overwrite Concurrency\",\n            info=\"Optional concurrency level for bulk insert operations that overwrite existing data.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"bulk_delete_concurrency\",\n            display_name=\"Bulk Delete Concurrency\",\n            info=\"Optional concurrency level for bulk delete operations.\",\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"setup_mode\",\n            display_name=\"Setup Mode\",\n            info=\"Configuration mode for setting up the vector store, with options like 'Sync', 'Async', or 'Off'.\",\n            options=[\"Sync\", \"Async\", \"Off\"],\n            advanced=True,\n            value=\"Sync\",\n        ),\n        BoolInput(\n            name=\"pre_delete_collection\",\n            display_name=\"Pre Delete Collection\",\n            info=\"Boolean flag to determine whether to delete the collection before creating a new one.\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"metadata_indexing_include\",\n            display_name=\"Metadata Indexing Include\",\n            info=\"Optional list of metadata fields to include in the indexing.\",\n            advanced=True,\n        ),\n        HandleInput(\n            name=\"embedding\",\n            display_name=\"Embedding or Astra Vectorize\",\n            input_types=[\"Embeddings\", \"dict\"],\n            info=\"Allows either an embedding model or an Astra Vectorize configuration.\",  # TODO: This should be optional, but need to refactor langchain-astradb first.\n        ),\n        StrInput(\n            name=\"metadata_indexing_exclude\",\n            display_name=\"Metadata Indexing Exclude\",\n            info=\"Optional list of metadata fields to exclude from the indexing.\",\n            advanced=True,\n        ),\n        StrInput(\n            name=\"collection_indexing_policy\",\n            display_name=\"Collection Indexing Policy\",\n            info=\"Optional dictionary defining the indexing policy for the collection.\",\n            advanced=True,\n        ),\n        IntInput(\n            name=\"number_of_results\",\n            display_name=\"Number of Results\",\n            info=\"Number of results to return.\",\n            advanced=True,\n            value=4,\n        ),\n        DropdownInput(\n            name=\"search_type\",\n            display_name=\"Search Type\",\n            info=\"Search type to use\",\n            options=[\"Similarity\", \"Similarity with score threshold\", \"MMR (Max Marginal Relevance)\"],\n            value=\"Similarity\",\n            advanced=True,\n        ),\n        FloatInput(\n            name=\"search_score_threshold\",\n            display_name=\"Search Score Threshold\",\n            info=\"Minimum similarity score threshold for search results. (when using 'Similarity with score threshold')\",\n            value=0,\n            advanced=True,\n        ),\n        DictInput(\n            name=\"search_filter\",\n            display_name=\"Search Metadata Filter\",\n            info=\"Optional dictionary of filters to apply to the search query.\",\n            advanced=True,\n            is_list=True,\n        ),\n    ]\n\n    @check_cached_vector_store\n    def build_vector_store(self):\n        try:\n            from langchain_astradb import AstraDBVectorStore\n            from langchain_astradb.utils.astradb import SetupMode\n        except ImportError:\n            raise ImportError(\n                \"Could not import langchain Astra DB integration package. \"\n                \"Please install it with `pip install langchain-astradb`.\"\n            )\n\n        try:\n            from astrapy.constants import Environment\n            from astrapy.authentication import UsernamePasswordTokenProvider\n        except ImportError:\n            raise ImportError(\n                \"Could not import astrapy integration package. \" \"Please install it with `pip install astrapy`.\"\n            )\n\n        try:\n            if not self.setup_mode:\n                self.setup_mode = self._inputs[\"setup_mode\"].options[0]\n\n            setup_mode_value = SetupMode[self.setup_mode.upper()]\n        except KeyError:\n            raise ValueError(f\"Invalid setup mode: {self.setup_mode}\")\n\n        if not isinstance(self.embedding, dict):\n            embedding_dict = {\"embedding\": self.embedding}\n        else:\n            from astrapy.info import CollectionVectorServiceOptions\n\n            dict_options = self.embedding.get(\"collection_vector_service_options\", {})\n            dict_options[\"authentication\"] = {\n                k: v for k, v in dict_options.get(\"authentication\", {}).items() if k and v\n            }\n            dict_options[\"parameters\"] = {k: v for k, v in dict_options.get(\"parameters\", {}).items() if k and v}\n            embedding_dict = {\n                \"collection_vector_service_options\": CollectionVectorServiceOptions.from_dict(dict_options)\n            }\n            collection_embedding_api_key = self.embedding.get(\"collection_embedding_api_key\")\n            if collection_embedding_api_key:\n                embedding_dict[\"collection_embedding_api_key\"] = collection_embedding_api_key\n\n        token_provider = UsernamePasswordTokenProvider(self.username, self.password)\n        vector_store_kwargs = {\n            **embedding_dict,\n            \"collection_name\": self.collection_name,\n            \"token\": token_provider,\n            \"api_endpoint\": self.api_endpoint,\n            \"namespace\": self.namespace,\n            \"metric\": self.metric or None,\n            \"batch_size\": self.batch_size or None,\n            \"bulk_insert_batch_concurrency\": self.bulk_insert_batch_concurrency or None,\n            \"bulk_insert_overwrite_concurrency\": self.bulk_insert_overwrite_concurrency or None,\n            \"bulk_delete_concurrency\": self.bulk_delete_concurrency or None,\n            \"setup_mode\": setup_mode_value,\n            \"pre_delete_collection\": self.pre_delete_collection or False,\n            \"environment\": Environment.HCD,\n        }\n\n        if self.metadata_indexing_include:\n            vector_store_kwargs[\"metadata_indexing_include\"] = self.metadata_indexing_include\n        elif self.metadata_indexing_exclude:\n            vector_store_kwargs[\"metadata_indexing_exclude\"] = self.metadata_indexing_exclude\n        elif self.collection_indexing_policy:\n            vector_store_kwargs[\"collection_indexing_policy\"] = self.collection_indexing_policy\n\n        try:\n            vector_store = AstraDBVectorStore(**vector_store_kwargs)\n        except Exception as e:\n            raise ValueError(f\"Error initializing AstraDBVectorStore: {str(e)}\") from e\n\n        self._add_documents_to_vector_store(vector_store)\n        return vector_store\n\n    def _add_documents_to_vector_store(self, vector_store):\n        documents = []\n        for _input in self.ingest_data or []:\n            if isinstance(_input, Data):\n                documents.append(_input.to_lc_document())\n            else:\n                raise ValueError(\"Vector Store Inputs must be Data objects.\")\n\n        if documents:\n            logger.debug(f\"Adding {len(documents)} documents to the Vector Store.\")\n            try:\n                vector_store.add_documents(documents)\n            except Exception as e:\n                raise ValueError(f\"Error adding documents to AstraDBVectorStore: {str(e)}\") from e\n        else:\n            logger.debug(\"No documents to add to the Vector Store.\")\n\n    def _map_search_type(self):\n        if self.search_type == \"Similarity with score threshold\":\n            return \"similarity_score_threshold\"\n        elif self.search_type == \"MMR (Max Marginal Relevance)\":\n            return \"mmr\"\n        else:\n            return \"similarity\"\n\n    def _build_search_args(self):\n        args = {\n            \"k\": self.number_of_results,\n            \"score_threshold\": self.search_score_threshold,\n        }\n\n        if self.search_filter:\n            clean_filter = {k: v for k, v in self.search_filter.items() if k and v}\n            if len(clean_filter) > 0:\n                args[\"filter\"] = clean_filter\n        return args\n\n    def search_documents(self) -> list[Data]:\n        vector_store = self.build_vector_store()\n\n        logger.debug(f\"Search input: {self.search_input}\")\n        logger.debug(f\"Search type: {self.search_type}\")\n        logger.debug(f\"Number of results: {self.number_of_results}\")\n\n        if self.search_input and isinstance(self.search_input, str) and self.search_input.strip():\n            try:\n                search_type = self._map_search_type()\n                search_args = self._build_search_args()\n\n                docs = vector_store.search(query=self.search_input, search_type=search_type, **search_args)\n            except Exception as e:\n                raise ValueError(f\"Error performing search in AstraDBVectorStore: {str(e)}\") from e\n\n            logger.debug(f\"Retrieved documents: {len(docs)}\")\n\n            data = docs_to_data(docs)\n            logger.debug(f\"Converted documents to data: {len(data)}\")\n            self.status = data\n            return data\n        else:\n            logger.debug(\"No search input provided. Skipping search.\")\n            return []\n\n    def get_retriever_kwargs(self):\n        search_args = self._build_search_args()\n        return {\n            \"search_type\": self._map_search_type(),\n            \"search_kwargs\": search_args,\n        }\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "collection_indexing_policy": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "collection_indexing_policy",
+                "value": "",
+                "display_name": "Collection Indexing Policy",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional dictionary defining the indexing policy for the collection.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "collection_name": {
+                "trace_as_metadata": true,
+                "load_from_db": true,
+                "list": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "collection_name",
+                "value": "CASSANDRA_COLLECTION",
+                "display_name": "Collection Name",
+                "advanced": false,
+                "dynamic": false,
+                "info": "The name of the collection within HCD where the vectors will be stored.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "metadata_indexing_exclude": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "metadata_indexing_exclude",
+                "value": "",
+                "display_name": "Metadata Indexing Exclude",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional list of metadata fields to exclude from the indexing.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "metadata_indexing_include": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "metadata_indexing_include",
+                "value": "",
+                "display_name": "Metadata Indexing Include",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional list of metadata fields to include in the indexing.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "metric": {
+                "trace_as_metadata": true,
+                "options": [
+                  "cosine",
+                  "dot_product",
+                  "euclidean"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "metric",
+                "value": "",
+                "display_name": "Metric",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional distance metric for vector comparisons in the vector store.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "namespace": {
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "namespace",
+                "value": "default_namespace",
+                "display_name": "Namespace",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional namespace within HCD to use for the collection.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "number_of_results": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "number_of_results",
+                "value": 4,
+                "display_name": "Number of Results",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Number of results to return.",
+                "title_case": false,
+                "type": "int",
+                "_input_type": "IntInput"
+              },
+              "password": {
+                "load_from_db": true,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "password",
+                "value": "",
+                "display_name": "HCD Password",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Authentication password for accessing HCD.",
+                "title_case": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "pre_delete_collection": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "pre_delete_collection",
+                "value": false,
+                "display_name": "Pre Delete Collection",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Boolean flag to determine whether to delete the collection before creating a new one.",
+                "title_case": false,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "search_filter": {
+                "trace_as_input": true,
+                "list": true,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_filter",
+                "value": {},
+                "display_name": "Search Metadata Filter",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Optional dictionary of filters to apply to the search query.",
+                "title_case": false,
+                "type": "dict",
+                "_input_type": "DictInput"
+              },
+              "search_input": {
+                "trace_as_input": true,
+                "multiline": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_input",
+                "value": "What's the miles?",
+                "display_name": "Search Input",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "search_score_threshold": {
+                "trace_as_metadata": true,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_score_threshold",
+                "value": 0,
+                "display_name": "Search Score Threshold",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Minimum similarity score threshold for search results. (when using 'Similarity with score threshold')",
+                "title_case": false,
+                "type": "float",
+                "_input_type": "FloatInput"
+              },
+              "search_type": {
+                "trace_as_metadata": true,
+                "options": [
+                  "Similarity",
+                  "Similarity with score threshold",
+                  "MMR (Max Marginal Relevance)"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "search_type",
+                "value": "Similarity",
+                "display_name": "Search Type",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Search type to use",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "setup_mode": {
+                "trace_as_metadata": true,
+                "options": [
+                  "Sync",
+                  "Async",
+                  "Off"
+                ],
+                "combobox": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "setup_mode",
+                "value": "Sync",
+                "display_name": "Setup Mode",
+                "advanced": true,
+                "dynamic": false,
+                "info": "Configuration mode for setting up the vector store, with options like 'Sync', 'Async', or 'Off'.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "username": {
+                "trace_as_metadata": true,
+                "load_from_db": true,
+                "list": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "username",
+                "value": "CASSANDRA_USERNAME",
+                "display_name": "HCD Username",
+                "advanced": false,
+                "dynamic": false,
+                "info": "Authentication username for accessing HCD.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              }
+            },
+            "description": "Use this one for testing",
+            "icon": "HCD",
+            "base_classes": [
+              "Data",
+              "Retriever",
+              "VectorStore"
+            ],
+            "display_name": "Hyper-Converged Database",
+            "documentation": "https://python.langchain.com/docs/integrations/vectorstores/astradb",
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Retriever"
+                ],
+                "selected": "Retriever",
+                "name": "base_retriever",
+                "display_name": "Retriever",
+                "method": "build_base_retriever",
+                "value": "__UNDEFINED__",
+                "cache": true
+              },
+              {
+                "types": [
+                  "Data"
+                ],
+                "selected": "Data",
+                "name": "search_results",
+                "display_name": "Search Results",
+                "method": "search_documents",
+                "value": "__UNDEFINED__",
+                "cache": true
+              },
+              {
+                "types": [
+                  "VectorStore"
+                ],
+                "selected": "VectorStore",
+                "name": "vector_store",
+                "display_name": "Vector Store",
+                "method": "cast_vector_store",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "collection_name",
+              "username",
+              "password",
+              "api_endpoint",
+              "search_input",
+              "ingest_data",
+              "namespace",
+              "ca_certificate",
+              "metric",
+              "batch_size",
+              "bulk_insert_batch_concurrency",
+              "bulk_insert_overwrite_concurrency",
+              "bulk_delete_concurrency",
+              "setup_mode",
+              "pre_delete_collection",
+              "metadata_indexing_include",
+              "embedding",
+              "metadata_indexing_exclude",
+              "collection_indexing_policy",
+              "number_of_results",
+              "search_type",
+              "search_score_threshold",
+              "search_filter"
+            ],
+            "beta": false,
+            "edited": true,
+            "lf_version": "1.1.1.dev11"
+          },
+          "id": "HCD-qpw9L"
+        },
+        "selected": false,
+        "width": 320,
+        "height": 769,
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "source": "HuggingFaceInferenceAPIEmbeddings-wxQfk",
+        "target": "HCD-qpw9L",
+        "sourceHandle": "{œdataTypeœ:œHuggingFaceInferenceAPIEmbeddingsœ,œidœ:œHuggingFaceInferenceAPIEmbeddings-wxQfkœ,œnameœ:œembeddingsœ,œoutput_typesœ:[œEmbeddingsœ]}",
+        "targetHandle": "{œfieldNameœ:œembeddingœ,œidœ:œHCD-qpw9Lœ,œinputTypesœ:[œEmbeddingsœ,œdictœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-HuggingFaceInferenceAPIEmbeddings-wxQfk{œdataTypeœ:œHuggingFaceInferenceAPIEmbeddingsœ,œidœ:œHuggingFaceInferenceAPIEmbeddings-wxQfkœ,œnameœ:œembeddingsœ,œoutput_typesœ:[œEmbeddingsœ]}-HCD-qpw9L{œfieldNameœ:œembeddingœ,œidœ:œHCD-qpw9Lœ,œinputTypesœ:[œEmbeddingsœ,œdictœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "embedding",
+            "id": "HCD-qpw9L",
+            "inputTypes": [
+              "Embeddings",
+              "dict"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "HuggingFaceInferenceAPIEmbeddings",
+            "id": "HuggingFaceInferenceAPIEmbeddings-wxQfk",
+            "name": "embeddings",
+            "output_types": [
+              "Embeddings"
+            ]
+          }
+        },
+        "selected": false,
+        "animated": false,
+        "className": ""
+      },
+      {
+        "source": "HuggingFaceInferenceAPIEmbeddings-wxQfk",
+        "target": "HCD-IW3W0",
+        "sourceHandle": "{œdataTypeœ:œHuggingFaceInferenceAPIEmbeddingsœ,œidœ:œHuggingFaceInferenceAPIEmbeddings-wxQfkœ,œnameœ:œembeddingsœ,œoutput_typesœ:[œEmbeddingsœ]}",
+        "targetHandle": "{œfieldNameœ:œembeddingœ,œidœ:œHCD-IW3W0œ,œinputTypesœ:[œEmbeddingsœ,œdictœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-HuggingFaceInferenceAPIEmbeddings-wxQfk{œdataTypeœ:œHuggingFaceInferenceAPIEmbeddingsœ,œidœ:œHuggingFaceInferenceAPIEmbeddings-wxQfkœ,œnameœ:œembeddingsœ,œoutput_typesœ:[œEmbeddingsœ]}-HCD-IW3W0{œfieldNameœ:œembeddingœ,œidœ:œHCD-IW3W0œ,œinputTypesœ:[œEmbeddingsœ,œdictœ],œtypeœ:œotherœ}",
+        "data": {
+          "targetHandle": {
+            "fieldName": "embedding",
+            "id": "HCD-IW3W0",
+            "inputTypes": [
+              "Embeddings",
+              "dict"
+            ],
+            "type": "other"
+          },
+          "sourceHandle": {
+            "dataType": "HuggingFaceInferenceAPIEmbeddings",
+            "id": "HuggingFaceInferenceAPIEmbeddings-wxQfk",
+            "name": "embeddings",
+            "output_types": [
+              "Embeddings"
+            ]
+          }
+        },
+        "selected": false,
+        "animated": false,
+        "className": ""
+      }
+    ],
+    "viewport": {
+      "x": 13.822130018737539,
+      "y": 54.1503991103948,
+      "zoom": 0.5108100938216809
+    }
+  },
+  "description": "Design Dialogues with Langflow.",
+  "name": "INIT_6.2_clean",
+  "last_tested_version": "1.1.1.dev11",
+  "endpoint_name": "init",
+  "is_component": false
+}

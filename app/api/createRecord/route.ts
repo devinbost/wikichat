@@ -21,7 +21,7 @@ async function insertRecordIntoVectorCollection(question_id: string, query: stri
         const flowIdOrName = process.env.INGEST_FLOW_NAME || "";
         const langflowId = process.env.LANGFLOW_ID || "";
         const tweaks = {
-            "ChatInput-KoofM": {
+            "ChatInput-ClkLb": {
               "files": "",
               "background_color": "",
               "chat_icon": "",
@@ -31,13 +31,13 @@ async function insertRecordIntoVectorCollection(question_id: string, query: stri
               "should_store_message": true,
               "text_color": ""
             },
-            "CustomComponent-YP2LT": {
+            "CustomComponent-yp7eY": {
               "input_value": ""
             },
-            "HuggingFaceInferenceAPIEmbeddings-DWU1r": {
+            "HuggingFaceInferenceAPIEmbeddings-3lldb": {
               "model_path": "HUGGINGFACE_MODEL_PATH"
             },
-            "HCD-2LJvG": {
+            "HCD-wPRVm": {
               "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
               "batch_size": null,
               "bulk_delete_concurrency": null,
@@ -60,7 +60,7 @@ async function insertRecordIntoVectorCollection(question_id: string, query: stri
               "setup_mode": "Sync",
               "username": "CASSANDRA_USERNAME"
             },
-            "TransformData-FA3MS": {}
+            "TransformData-bJOj1": {}
           };
           try {
             const response = await langflowClient.runFlow(

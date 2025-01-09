@@ -6,7 +6,7 @@ async function updateQuestionInVectorDatabase(question_id: number, query: string
     // note that we can't add the question/text to this update unless we also update the vector
     try {
         const collection = await getCassandraDataCollection();
-        const docBefore = await collection.findOneAndUpdate(
+        const docBefore = await collection.updateOne(
             { "metadata.question_id": question_id },
             { $set: { "metadata.instruction": instruction, "metadata.query": query, "metadata.system": system } },
           );

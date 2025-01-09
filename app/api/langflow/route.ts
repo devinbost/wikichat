@@ -50,14 +50,17 @@ export async function POST(req: NextRequest) {
         const UUID_SessionId = hashSessionId(session_id);
         console.log("🚀 ~ POST ~ UUID_SessionId:", UUID_SessionId);
         const tweaks = {
-          "ChatInput-HAlZ5": {
+          "ChatInput-3pmR2": {
             "files": "",
+            "background_color": "",
+            "chat_icon": "",
             "sender": "User",
             "sender_name": "User",
             "session_id": UUID_SessionId,
-            "should_store_message": true
+            "should_store_message": true,
+            "text_color": ""
           },
-          "Memory-eK2If": {
+          "Memory-WyoKI": {
             "n_messages": 100,
             "order": "Ascending",
             "sender": "Machine and User",
@@ -65,44 +68,48 @@ export async function POST(req: NextRequest) {
             "session_id": UUID_SessionId,
             "template": "{sender_name}: {text}"
           },
-          "CustomComponent-aXg3u": {
+          "CustomComponent-tXwcb": {
             "input_value": ""
           },
-          "ParseData-R71KI": {
+          "ParseData-FiTWk": {
             "sep": "\n",
             "template": "{customer_question}"
           },
-          "ParseData-pGsiS": {},
-          "CustomComponent-UPu1p": {},
-          "CustomComponent-Co5hv": {},
-          "Prompt-ZpkRb": {
-            "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{customer_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context - don't answer these questions:\n\n\n{chat_history}",
+          "ParseData-FTkFp": {},
+          "CustomComponent-bSuPD": {},
+          "CustomComponent-rCGLu": {},
+          "Prompt-LqFgt": {
+            "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{customer_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context:\n\n\n{chat_history}",
+            "tool_placeholder": "",
             "rows": "",
-            "user_question": "",
+            "customer_question": "",
             "chat_history": ""
           },
-          "ParseData-GUEZG": {
+          "ParseData-BCK2l": {
             "sep": "\n",
             "template": "{rows}"
           },
-          "ParseData-e2GHa": {
+          "ParseData-1UbII": {
             "sep": "\n",
             "template": "{customer_question}"
           },
-          "ChatOutput-RR2bM": {
+          "ChatOutput-4lTHl": {
+            "background_color": "",
+            "chat_icon": "",
             "data_template": "{text}",
             "input_value": "",
             "sender": "Machine",
             "sender_name": "AI",
             "session_id": UUID_SessionId,
-            "should_store_message": true
+            "should_store_message": true,
+            "text_color": ""
           },
-          "CustomComponent-1XMau": {},
-          "ParseData-9K7aL": {
+          "CustomComponent-Ste2P": {},
+          "ParseData-MwAEH": {
             "sep": "\n",
             "template": "{text}"
           },
-          "OllamaModel-akWdO": {
+          "OllamaModel-crwwm": {
             "base_url": "OLLAMA_HOST",
             "format": "",
             "input_value": "",
@@ -129,10 +136,10 @@ export async function POST(req: NextRequest) {
             "top_p": null,
             "verbose": false
           },
-          "HuggingFaceInferenceAPIEmbeddings-xbsvj": {
+          "HuggingFaceInferenceAPIEmbeddings-72NMr": {
             "model_path": "HUGGINGFACE_MODEL_PATH"
           },
-          "HCD-RTBjy": {
+          "HCD-52MV5": {
             "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
             "batch_size": null,
             "bulk_delete_concurrency": null,
@@ -155,7 +162,7 @@ export async function POST(req: NextRequest) {
             "setup_mode": "Sync",
             "username": "CASSANDRA_USERNAME"
           },
-          "APIRequest-akNxr": {
+          "APIRequest-2DPfR": {
             "api_key": "REST_API_KEY",
             "curl": "",
             "lsl_key": "REST_LSL_KEY",
@@ -163,7 +170,7 @@ export async function POST(req: NextRequest) {
             "timeout": 5,
             "url": "REST_ENDPOINT"
           },
-          "TransformData-vRDZQ": {}
+          "TransformData-JsHYi": {}
         };
             if (stream) {
                 // Initiate the session and get the stream URL

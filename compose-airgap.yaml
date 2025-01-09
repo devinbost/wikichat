@@ -12,11 +12,10 @@ services:
     networks:
       - langflow-network
   langflow:
-    user: "0:0"  # Run as root
     build:
       context: .
       dockerfile: Dockerfile.langflow
-    image: localhost:5000/langflow-sia:v1.1.0
+    image: devinbostds/lfopenshift:v1.6
     ports:
       - "7860:7860"
     depends_on:
@@ -25,7 +24,7 @@ services:
     command: ["python", "-m", "langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
     working_dir: /app
     environment:
-#      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
       - LANGFLOW_LANGCHAIN_CACHE=InMemoryCache
       - LANGFLOW_WORKERS=1
      # - LANGFLOW_BACKEND_ONLY=true

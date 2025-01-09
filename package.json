@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "env-cmd -f .env.production -- next dev",
     "devlocal": "env-cmd -f .env.development -- next dev",
+    "devhelm": "next dev",
     "buildlocal": "env-cmd -f .env.development -- next build",
-    "build": "env-cmd -f .env.production -- next build",
+    "buildhelm": "next build",
+    "build": "next build",
     "start": "env-cmd -f .env.production -- next start",
+    "starthelm": "next start",
     "startlocal": "env-cmd -f .env.development -- next start",
     "seed": "ts-node ./scripts/populateDb.ts",
     "lint": "next lint"
