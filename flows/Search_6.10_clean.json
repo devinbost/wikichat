@@ -109,7 +109,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "from langflow.base.data.utils import IMG_FILE_TYPES, TEXT_FILE_TYPES\nfrom langflow.base.io.chat import ChatComponent\nfrom langflow.inputs import BoolInput\nfrom langflow.io import DropdownInput, FileInput, MessageTextInput, MultilineInput, Output\nfrom langflow.schema.message import Message\nfrom langflow.utils.constants import MESSAGE_SENDER_AI, MESSAGE_SENDER_NAME_USER, MESSAGE_SENDER_USER\n\n\nclass ChatInput(ChatComponent):\n    display_name = \"Chat Input\"\n    description = \"Get chat inputs from the Playground.\"\n    icon = \"MessagesSquare\"\n    name = \"ChatInput\"\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            value=\"\",\n            info=\"Message to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_USER,\n            info=\"Type of sender.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_USER,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        FileInput(\n            name=\"files\",\n            display_name=\"Files\",\n            file_types=TEXT_FILE_TYPES + IMG_FILE_TYPES,\n            info=\"Files to be sent with the message.\",\n            advanced=True,\n            is_list=True,\n        ),\n        MessageTextInput(\n            name=\"background_color\",\n            display_name=\"Background Color\",\n            info=\"The background color of the icon.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"chat_icon\",\n            display_name=\"Icon\",\n            info=\"The icon of the message.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"text_color\",\n            display_name=\"Text Color\",\n            info=\"The text color of the name\",\n            advanced=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"message_response\"),\n    ]\n\n    async def message_response(self) -> Message:\n        background_color = self.background_color\n        text_color = self.text_color\n        icon = self.chat_icon\n\n        message = await Message.create(\n            text=self.input_value,\n            sender=self.sender,\n            sender_name=self.sender_name,\n            session_id=self.session_id,\n            files=self.files,\n            properties={\"background_color\": background_color, \"text_color\": text_color, \"icon\": icon},\n        )\n        if self.session_id and isinstance(message, Message) and self.should_store_message:\n            stored_message = await self.send_message(\n                message,\n            )\n            self.message.value = stored_message\n            message = stored_message\n\n        self.status = message\n        return message\n",
+                "value": "from langflow.base.data.utils import IMG_FILE_TYPES, TEXT_FILE_TYPES\nfrom langflow.base.io.chat import ChatComponent\nfrom langflow.inputs import BoolInput\nfrom langflow.io import (\n    DropdownInput,\n    FileInput,\n    MessageTextInput,\n    MultilineInput,\n    Output,\n)\nfrom langflow.schema.message import Message\nfrom langflow.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_USER,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatInput(ChatComponent):\n    display_name = \"Chat Input\"\n    description = \"Get chat inputs from the Playground.\"\n    icon = \"MessagesSquare\"\n    name = \"ChatInput\"\n    minimized = True\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Text\",\n            value=\"\",\n            info=\"Message to be passed as input.\",\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_USER,\n            info=\"Type of sender.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_USER,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        FileInput(\n            name=\"files\",\n            display_name=\"Files\",\n            file_types=TEXT_FILE_TYPES + IMG_FILE_TYPES,\n            info=\"Files to be sent with the message.\",\n            advanced=True,\n            is_list=True,\n        ),\n        MessageTextInput(\n            name=\"background_color\",\n            display_name=\"Background Color\",\n            info=\"The background color of the icon.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"chat_icon\",\n            display_name=\"Icon\",\n            info=\"The icon of the message.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"text_color\",\n            display_name=\"Text Color\",\n            info=\"The text color of the name\",\n            advanced=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"message_response\"),\n    ]\n\n    async def message_response(self) -> Message:\n        background_color = self.background_color\n        text_color = self.text_color\n        icon = self.chat_icon\n\n        message = await Message.create(\n            text=self.input_value,\n            sender=self.sender,\n            sender_name=self.sender_name,\n            session_id=self.session_id,\n            files=self.files,\n            properties={\n                \"background_color\": background_color,\n                \"text_color\": text_color,\n                \"icon\": icon,\n            },\n        )\n        if self.session_id and isinstance(message, Message) and self.should_store_message:\n            stored_message = await self.send_message(\n                message,\n            )\n            self.message.value = stored_message\n            message = stored_message\n\n        self.status = message\n        return message\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -131,7 +131,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "input_value",
-                "value": "{\"customer_id\":\"8991147774\", \"customer_question\":\"What's my event summary?\"}",
+                "value": "{\"customer_id\":\"8991147774\", \"customer_question\":\"What are my miles?\"}",
                 "display_name": "Text",
                 "advanced": false,
                 "input_types": [
@@ -209,6 +209,7 @@
                 "_input_type": "MessageTextInput"
               },
               "should_store_message": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "list": false,
                 "required": false,
@@ -254,6 +255,7 @@
             ],
             "display_name": "Chat Input",
             "documentation": "",
+            "minimized": true,
             "custom_fields": {},
             "output_types": [],
             "pinned": false,
@@ -287,13 +289,18 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "type": "ChatInput"
         },
         "selected": false,
         "width": 320,
-        "height": 233
+        "height": 233,
+        "measured": {
+          "width": 320,
+          "height": 233
+        }
       },
       {
         "id": "Memory-WyoKI",
@@ -521,7 +528,8 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "Memory-WyoKI",
           "description": "Retrieves stored chat messages from Langflow tables or an external memory.",
@@ -529,7 +537,12 @@
         },
         "selected": false,
         "width": 320,
-        "height": 263
+        "height": 263,
+        "measured": {
+          "width": 320,
+          "height": 263
+        },
+        "dragging": false
       },
       {
         "id": "CustomComponent-tXwcb",
@@ -613,19 +626,23 @@
             ],
             "beta": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "CustomComponent-tXwcb"
         },
         "selected": false,
         "width": 320,
-        "height": 253
+        "height": 253,
+        "measured": {
+          "width": 320,
+          "height": 253
+        }
       },
       {
         "id": "ParseData-FiTWk",
         "type": "genericNode",
         "position": {
-          "x": 1197.8197934618202,
+          "x": 1204.357095213201,
           "y": 97.61375026819576
         },
         "data": {
@@ -759,7 +776,8 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "ParseData-FiTWk",
           "description": "Convert Data into plain text following a specified template.",
@@ -768,7 +786,11 @@
         "selected": false,
         "width": 320,
         "height": 349,
-        "dragging": false
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 349
+        }
       },
       {
         "id": "ParseData-FTkFp",
@@ -851,13 +873,17 @@
             ],
             "beta": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "ParseData-FTkFp"
         },
         "selected": false,
         "width": 320,
-        "height": 195
+        "height": 195,
+        "measured": {
+          "width": 320,
+          "height": 195
+        }
       },
       {
         "id": "CustomComponent-bSuPD",
@@ -921,7 +947,7 @@
             "output_types": [],
             "pinned": false,
             "conditional_paths": [],
-            "frozen": false,
+            "frozen": true,
             "outputs": [
               {
                 "types": [
@@ -984,13 +1010,18 @@
             ],
             "beta": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "CustomComponent-bSuPD"
         },
         "selected": false,
         "width": 320,
-        "height": 407
+        "height": 407,
+        "measured": {
+          "width": 320,
+          "height": 407
+        },
+        "dragging": false
       },
       {
         "id": "CustomComponent-rCGLu",
@@ -1139,13 +1170,17 @@
             "beta": false,
             "edited": true,
             "metadata": {},
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "CustomComponent-rCGLu"
         },
         "selected": false,
         "width": 320,
-        "height": 359
+        "height": 359,
+        "measured": {
+          "width": 320,
+          "height": 359
+        }
       },
       {
         "id": "Prompt-LqFgt",
@@ -1326,16 +1361,21 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "Prompt-LqFgt",
           "description": "Create a prompt template with dynamic variables.",
           "display_name": "Prompt"
         },
-        "selected": true,
+        "selected": false,
         "width": 320,
         "height": 517,
-        "dragging": false
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 517
+        }
       },
       {
         "id": "ParseData-BCK2l",
@@ -1475,7 +1515,8 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "ParseData-BCK2l",
           "description": "Convert Data into plain text following a specified template.",
@@ -1483,7 +1524,12 @@
         },
         "selected": false,
         "width": 320,
-        "height": 349
+        "height": 349,
+        "measured": {
+          "width": 320,
+          "height": 349
+        },
+        "dragging": false
       },
       {
         "id": "ParseData-1UbII",
@@ -1623,7 +1669,8 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "ParseData-1UbII",
           "description": "Convert Data into plain text following a specified template.",
@@ -1631,14 +1678,18 @@
         },
         "selected": false,
         "width": 320,
-        "height": 349
+        "height": 349,
+        "measured": {
+          "width": 320,
+          "height": 349
+        }
       },
       {
         "id": "ChatOutput-4lTHl",
         "type": "genericNode",
         "position": {
-          "x": 7793.114835432891,
-          "y": 851.1202887757801
+          "x": 7741.279977663415,
+          "y": 961.7013186839956
         },
         "data": {
           "type": "ChatOutput",
@@ -1903,7 +1954,11 @@
         "selected": false,
         "width": 320,
         "height": 233,
-        "dragging": false
+        "dragging": false,
+        "measured": {
+          "width": 320,
+          "height": 233
+        }
       },
       {
         "id": "CustomComponent-Ste2P",
@@ -1986,13 +2041,17 @@
             ],
             "beta": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "CustomComponent-Ste2P"
         },
         "selected": false,
         "width": 320,
-        "height": 195
+        "height": 195,
+        "measured": {
+          "width": 320,
+          "height": 195
+        }
       },
       {
         "id": "ParseData-MwAEH",
@@ -2132,7 +2191,8 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "ParseData-MwAEH",
           "description": "Convert Data into plain text following a specified template.",
@@ -2140,14 +2200,18 @@
         },
         "selected": false,
         "width": 320,
-        "height": 349
+        "height": 349,
+        "measured": {
+          "width": 320,
+          "height": 349
+        }
       },
       {
         "id": "OllamaModel-crwwm",
         "type": "genericNode",
         "position": {
-          "x": 7230.591902583377,
-          "y": 931.0557700999472
+          "x": 7189.926162429808,
+          "y": 922.4945616465642
         },
         "data": {
           "type": "OllamaModel",
@@ -2671,7 +2735,8 @@
             "legacy": false,
             "edited": false,
             "metadata": {},
-            "tool_mode": false
+            "tool_mode": false,
+            "lf_version": "1.1.1.dev19"
           },
           "id": "OllamaModel-crwwm",
           "description": "Generate text using Ollama Local LLMs.",
@@ -2679,14 +2744,19 @@
         },
         "selected": false,
         "width": 320,
-        "height": 681
+        "height": 681,
+        "measured": {
+          "width": 320,
+          "height": 681
+        },
+        "dragging": false
       },
       {
         "id": "HuggingFaceInferenceAPIEmbeddings-72NMr",
         "type": "genericNode",
         "position": {
-          "x": 1516.7004349906995,
-          "y": 637.1664407429618
+          "x": 1713.4828689337778,
+          "y": 612.7593171531227
         },
         "data": {
           "type": "HuggingFaceInferenceAPIEmbeddings",
@@ -2763,13 +2833,18 @@
             ],
             "beta": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "HuggingFaceInferenceAPIEmbeddings-72NMr"
         },
         "selected": false,
         "width": 320,
-        "height": 253
+        "height": 253,
+        "measured": {
+          "width": 320,
+          "height": 253
+        },
+        "dragging": false
       },
       {
         "id": "HCD-52MV5",
@@ -3293,7 +3368,7 @@
             "edited": true,
             "metadata": {},
             "tool_mode": false,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "HCD-52MV5",
           "description": "Implementation of Vector Store using Hyper-Converged Database (HCD) with search capabilities",
@@ -3301,14 +3376,19 @@
         },
         "selected": false,
         "width": 320,
-        "height": 761
+        "height": 761,
+        "measured": {
+          "width": 320,
+          "height": 761
+        },
+        "dragging": false
       },
       {
         "id": "APIRequest-2DPfR",
         "type": "genericNode",
         "position": {
-          "x": 4723.4708631589,
-          "y": 1282.8284143620544
+          "x": 4752.84394922827,
+          "y": 1115.229040907415
         },
         "data": {
           "type": "APIRequest",
@@ -3316,6 +3396,7 @@
             "template": {
               "_type": "Component",
               "data_objects": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "list": false,
                 "trace_as_input": true,
@@ -3336,6 +3417,7 @@
                 "_input_type": "DataInput"
               },
               "api_key": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "load_from_db": true,
                 "list": false,
@@ -3359,7 +3441,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "import asyncio\nimport json\nfrom typing import Any, List, Optional\nfrom urllib.parse import parse_qsl, urlencode, urlparse, urlunparse\n\nimport httpx\nfrom loguru import logger\n\nfrom langflow.base.curl.parse import parse_context\nfrom langflow.custom import Component\nfrom langflow.io import DataInput, DropdownInput, IntInput, MessageTextInput, NestedDictInput, Output\nfrom langflow.schema import Data\nfrom langflow.schema.dotdict import dotdict\n\n\nclass APIRequestComponent(Component):\n    display_name = \"API Request\"\n    description = (\n        \"This component allows you to make HTTP requests to one or more URLs. \"\n        \"You can provide headers and body as either dictionaries or Data objects. \"\n        \"Additionally, you can append query parameters to the URLs.\\n\\n\"\n        \"**Note:** Check advanced options for more settings.\"\n    )\n    icon = \"Globe\"\n    name = \"APIRequest\"\n\n    inputs = [\n        StrInput(\n            name=\"url\",\n            display_name=\"URL\",\n            info=\"URL input\",\n        ),\n        MessageTextInput(\n            name=\"curl\",\n            display_name=\"Curl\",\n            info=\"Paste a curl command to populate the fields. This will fill in the dictionary fields for headers and body.\",\n            advanced=False,\n            refresh_button=True,\n        ),\n        DropdownInput(\n            name=\"method\",\n            display_name=\"Method\",\n            options=[\"GET\", \"POST\", \"PATCH\", \"PUT\"],\n            value=\"GET\",\n            info=\"The HTTP method to use (GET, POST, PATCH, PUT).\",\n        ),\n        DataInput(\n            name=\"data_objects\",\n            display_name=\"Data Objects\",\n            info=\"List of transformed Data objects to use as request payloads.\",\n        ),\n        IntInput(\n            name=\"timeout\",\n            display_name=\"Timeout\",\n            value=5,\n            info=\"The timeout to use for the request.\",\n        ),\n        StrInput(\n            name=\"lsl_key\",\n            display_name=\"lsl_key\",\n            info=\"lsl_key for header\",\n        ),\n        StrInput(\n            name=\"api_key\",\n            display_name=\"api_key\",\n            info=\"api_key for header\",\n        )\n    ]\n\n    outputs = [\n        Output(display_name=\"Data\", name=\"data\", method=\"make_requests\"),\n    ]\n\n    def parse_curl(self, curl: str, build_config: dotdict) -> dotdict:\n        try:\n            parsed = parse_context(curl)\n            build_config[\"urls\"][\"value\"] = [parsed.url]\n            build_config[\"method\"][\"value\"] = parsed.method.upper()\n            build_config[\"headers\"][\"value\"] = dict(parsed.headers)\n\n            if parsed.data:\n                try:\n                    json_data = json.loads(parsed.data)\n                    build_config[\"body\"][\"value\"] = json_data\n                except json.JSONDecodeError as e:\n                    logger.error(f\"Error decoding JSON data: {e}\")\n            else:\n                build_config[\"body\"][\"value\"] = {}\n        except Exception as exc:\n            logger.error(f\"Error parsing curl: {exc}\")\n            raise ValueError(f\"Error parsing curl: {exc}\")\n        return build_config\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: Optional[str] = None):\n        if field_name == \"curl\" and field_value:\n            build_config = self.parse_curl(field_value, build_config)\n        return build_config\n\n    async def make_request(\n        self,\n        client: httpx.AsyncClient,\n        method: str,\n        url: str,\n        headers: Optional[dict] = None,\n        body: Optional[dict] = None,\n        timeout: int = 5,\n    ) -> Data:\n        try:\n            response = await client.request(method, url, headers=headers, json=body, timeout=timeout)\n            try:\n                result = response.json()\n            except Exception:\n                result = response.text\n            return Data(\n                data={\n                    \"source\": url,\n                    \"headers\": headers,\n                    \"status_code\": response.status_code,\n                    \"result\": result,\n                },\n            )\n        except httpx.TimeoutException:\n            return Data(\n                data={\n                    \"source\": url,\n                    \"headers\": headers,\n                    \"status_code\": 408,\n                    \"error\": \"Request timed out\",\n                },\n            )\n        except Exception as exc:\n            return Data(\n                data={\n                    \"source\": url,\n                    \"headers\": headers,\n                    \"status_code\": 500,\n                    \"error\": str(exc),\n                },\n            )\n\n    def add_query_params(self, url: str, params: dict) -> str:\n        url_parts = list(urlparse(url))\n        query = dict(parse_qsl(url_parts[4]))\n        query.update(params)\n        url_parts[4] = urlencode(query)\n        return urlunparse(url_parts)\n\n    async def make_requests(self) -> List[Data]:\n        method = self.method\n        url = self.url\n        headers = Data(**{\n                            'api_key': self.api_key,\n                            'lsl_key': self.lsl_key,\n                            'channel_id': 'MRMUI',\n                            'Content-Type': 'application/json'\n                        }).data\n        timeout = self.timeout\n    \n        # Ensure data_objects is a list and access the rows properly\n        if isinstance(self.data_objects, Data):\n            data_rows = self.data_objects.rows  # Access rows in the Data object\n        else:\n            raise TypeError(\"Expected data_objects to be of type Data with a 'rows' attribute\")\n    \n        # Print each data row to verify the contents\n        print(\"HTTP request data objects:\")\n        for data_obj in data_rows:\n            print(f\"data_obj is: {data_obj}\")\n    \n        async with httpx.AsyncClient() as client:\n            results = await asyncio.gather(\n                *[\n                    self.make_request(\n                        client,\n                        method,\n                        self.add_query_params(url, {\"query\": data_obj[\"query\"]}),\n                        headers=headers,\n                        body={\n                            \"mfaType\": \"8\",\n                            \"opCode\": \"0\",\n                            \"customerQuestion\": self.data_objects.customer_question,\n                            \"customerKey\": [self.data_objects.customer_id],\n                            \"queries\": [data_obj[\"query\"]],\n                        },\n                        timeout=timeout,\n                    )\n                    for data_obj in data_rows\n                ]\n            )\n        # Post-process results to match the desired output format\n        formatted_results = []\n        for result in results:\n            # Extract only the required fields from each result's data\n            if \"result\" in result.data and \"response\" in result.data[\"result\"]:\n                response = result.data[\"result\"][\"response\"]\n                customer_question = response.get(\"customer_question\", \"\")\n                data_and_instructions = [\n                    {\n                        \"instruction\": item.get(\"instruction\", \"\"),\n                        \"data\": item.get(\"data\", [])\n                    }\n                    for item in response.get(\"data_and_instructions\", [])\n                ]\n    \n                # Append formatted response\n                formatted_results.append({\n                    \"customer_question\": customer_question,\n                    \"rows\": data_and_instructions\n                })\n    \n        # Set the final formatted output\n        self.status = Data(customer_id=self.data_objects.customer_id, customer_question=self.data_objects.customer_question, rows=formatted_results)\n        return formatted_results",
+                "value": "import asyncio\nimport json\nfrom typing import Any, List, Optional\nfrom urllib.parse import parse_qsl, urlencode, urlparse, urlunparse\n\nimport httpx\nfrom loguru import logger\n\nfrom langflow.base.curl.parse import parse_context\nfrom langflow.custom import Component\nfrom langflow.io import DataInput, DropdownInput, IntInput, MessageTextInput, NestedDictInput, Output\nfrom langflow.schema import Data\nfrom langflow.schema.dotdict import dotdict\n\n\nclass APIRequestComponent(Component):\n    display_name = \"API Request\"\n    description = (\n        \"This component allows you to make HTTP requests to one or more URLs. \"\n        \"You can provide headers and body as either dictionaries or Data objects. \"\n        \"Additionally, you can append query parameters to the URLs.\\n\\n\"\n        \"**Note:** Check advanced options for more settings.\"\n    )\n    icon = \"Globe\"\n    name = \"APIRequest\"\n\n    inputs = [\n        StrInput(\n            name=\"url\",\n            display_name=\"URL\",\n            info=\"URL input\",\n        ),\n        MessageTextInput(\n            name=\"curl\",\n            display_name=\"Curl\",\n            info=\"Paste a curl command to populate the fields. This will fill in the dictionary fields for headers and body.\",\n            advanced=False,\n            refresh_button=True,\n        ),\n        DropdownInput(\n            name=\"method\",\n            display_name=\"Method\",\n            options=[\"GET\", \"POST\", \"PATCH\", \"PUT\"],\n            value=\"GET\",\n            info=\"The HTTP method to use (GET, POST, PATCH, PUT).\",\n        ),\n        DataInput(\n            name=\"data_objects\",\n            display_name=\"Data Objects\",\n            info=\"List of transformed Data objects to use as request payloads.\",\n        ),\n        IntInput(\n            name=\"timeout\",\n            display_name=\"Timeout\",\n            value=5,\n            info=\"The timeout to use for the request.\",\n        ),\n        StrInput(\n            name=\"lsl_key\",\n            display_name=\"lsl_key\",\n            info=\"lsl_key for header\",\n        ),\n        StrInput(\n            name=\"api_key\",\n            display_name=\"api_key\",\n            info=\"api_key for header\",\n        )\n    ]\n\n    outputs = [\n        Output(display_name=\"Data\", name=\"data\", method=\"make_requests\"),\n    ]\n\n    def parse_curl(self, curl: str, build_config: dotdict) -> dotdict:\n        try:\n            parsed = parse_context(curl)\n            build_config[\"urls\"][\"value\"] = [parsed.url]\n            build_config[\"method\"][\"value\"] = parsed.method.upper()\n            build_config[\"headers\"][\"value\"] = dict(parsed.headers)\n\n            if parsed.data:\n                try:\n                    json_data = json.loads(parsed.data)\n                    build_config[\"body\"][\"value\"] = json_data\n                except json.JSONDecodeError as e:\n                    logger.error(f\"Error decoding JSON data: {e}\")\n            else:\n                build_config[\"body\"][\"value\"] = {}\n        except Exception as exc:\n            logger.error(f\"Error parsing curl: {exc}\")\n            raise ValueError(f\"Error parsing curl: {exc}\")\n        return build_config\n\n    def update_build_config(self, build_config: dotdict, field_value: Any, field_name: Optional[str] = None):\n        if field_name == \"curl\" and field_value:\n            build_config = self.parse_curl(field_value, build_config)\n        return build_config\n\n    async def make_request(\n        self,\n        client: httpx.AsyncClient,\n        method: str,\n        url: str,\n        headers: Optional[dict] = None,\n        body: Optional[dict] = None,\n        timeout: int = 5,\n    ) -> Data:\n        try:\n            response = await client.request(method, url, headers=headers, json=body, timeout=timeout)\n            try:\n                result = response.json()\n            except Exception:\n                result = response.text\n            return Data(\n                data={\n                    \"source\": url,\n                    \"headers\": headers,\n                    \"status_code\": response.status_code,\n                    \"result\": result,\n                },\n            )\n        except httpx.TimeoutException:\n            return Data(\n                data={\n                    \"source\": url,\n                    \"headers\": headers,\n                    \"status_code\": 408,\n                    \"error\": \"Request timed out\",\n                },\n            )\n        except Exception as exc:\n            return Data(\n                data={\n                    \"source\": url,\n                    \"headers\": headers,\n                    \"status_code\": 500,\n                    \"error\": str(exc),\n                },\n            )\n\n    def add_query_params(self, url: str, params: dict) -> str:\n        url_parts = list(urlparse(url))\n        query = dict(parse_qsl(url_parts[4]))\n        query.update(params)\n        url_parts[4] = urlencode(query)\n        return urlunparse(url_parts)\n\n    async def make_requests(self) -> List[Data]:\n        method = self.method\n        url = self.url\n        headers = Data(**{\n                            'api_key': self.api_key,\n                            'lsl_key': self.lsl_key,\n                            'channel_id': 'MRMUI',\n                            'Content-Type': 'application/json'\n                        }).data\n        timeout = self.timeout\n    \n        # Ensure data_objects is a list and access the rows properly\n        if isinstance(self.data_objects, Data):\n            data_rows = self.data_objects.rows  # Access rows in the Data object\n        else:\n            raise TypeError(\"Expected data_objects to be of type Data with a 'rows' attribute\")\n    \n        # Print each data row to verify the contents\n        print(\"HTTP request data objects:\")\n        for data_obj in data_rows:\n            print(f\"data_obj is: {data_obj}\")\n    \n        async with httpx.AsyncClient() as client:\n            results = await asyncio.gather(\n                *[\n                    self.make_request(\n                        client,\n                        method,\n                        self.add_query_params(url, {\"query\": data_obj[\"query\"]}),\n                        headers=headers,\n                        body={\n                            \"mfaType\": \"8\",\n                            \"opCode\": \"0\",\n                            \"customerQuestion\": self.data_objects.customer_question,\n                            \"customerKey\": [self.data_objects.customer_id],\n                            \"queries\": [data_obj[\"query\"]],\n                        },\n                        timeout=timeout,\n                    )\n                    for data_obj in data_rows\n                ]\n            )\n        \n        formatted_results = []\n        for data_obj, result in zip(data_rows, results):\n            # Extract only the required fields from each result's data\n            if \"result\" in result.data and \"response\" in result.data[\"result\"]:\n                response = result.data[\"result\"][\"response\"]\n                customer_question = response.get(\"customer_question\", \"\")\n                data_and_instructions = [\n                    {\n                        #\"instruction\": item.get(\"instruction\", \"\"),\n                        \"data\": item.get(\"data\", [])\n                    }\n                    for item in response.get(\"data_and_instructions\", [])\n                ]\n    \n                # Append formatted response\n                formatted_results.append({\n                    \"customer_question\": customer_question,\n                    \"instruction\": data_obj[\"instruction\"],\n                    \"rows\": data_and_instructions\n                })\n    \n        # Set the final formatted output\n        self.status = Data(customer_id=self.data_objects.customer_id, customer_question=self.data_objects.customer_question, rows=formatted_results, raw_rows=data_rows)\n        return formatted_results",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -3371,6 +3453,7 @@
                 "title_case": false
               },
               "curl": {
+                "tool_mode": false,
                 "trace_as_input": true,
                 "trace_as_metadata": true,
                 "load_from_db": false,
@@ -3393,6 +3476,7 @@
                 "_input_type": "MessageTextInput"
               },
               "lsl_key": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "load_from_db": true,
                 "list": false,
@@ -3410,6 +3494,7 @@
                 "_input_type": "StrInput"
               },
               "method": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "options": [
                   "GET",
@@ -3433,6 +3518,7 @@
                 "load_from_db": false
               },
               "timeout": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "list": false,
                 "required": false,
@@ -3449,6 +3535,7 @@
                 "_input_type": "IntInput"
               },
               "url": {
+                "tool_mode": false,
                 "trace_as_metadata": true,
                 "load_from_db": true,
                 "list": false,
@@ -3473,6 +3560,7 @@
             ],
             "display_name": "API Request",
             "documentation": "",
+            "minimized": false,
             "custom_fields": {},
             "output_types": [],
             "pinned": false,
@@ -3485,12 +3573,10 @@
                 ],
                 "selected": "Data",
                 "name": "data",
-                "hidden": null,
                 "display_name": "Data",
                 "method": "make_requests",
                 "value": "__UNDEFINED__",
-                "cache": true,
-                "required_inputs": null
+                "cache": true
               }
             ],
             "field_order": [
@@ -3503,14 +3589,21 @@
               "api_key"
             ],
             "beta": false,
+            "legacy": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "metadata": {},
+            "tool_mode": false
           },
           "id": "APIRequest-2DPfR"
         },
-        "selected": false,
+        "selected": true,
         "width": 320,
-        "height": 864
+        "height": 864,
+        "measured": {
+          "width": 320,
+          "height": 864
+        },
+        "dragging": false
       },
       {
         "id": "TransformData-JsHYi",
@@ -3614,13 +3707,162 @@
             ],
             "beta": false,
             "edited": true,
-            "lf_version": "1.1.0"
+            "lf_version": "1.1.1.dev19"
           },
           "id": "TransformData-JsHYi"
         },
         "selected": false,
         "width": 320,
-        "height": 263
+        "height": 263,
+        "measured": {
+          "width": 320,
+          "height": 263
+        },
+        "dragging": false
+      },
+      {
+        "id": "HuggingFaceInferenceAPIEmbeddings-wQfJC",
+        "type": "genericNode",
+        "position": {
+          "x": 1614.9449178935822,
+          "y": 944.9999999999999
+        },
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "api_key": {
+                "load_from_db": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "api_key",
+                "value": "",
+                "display_name": "API Key",
+                "advanced": true,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Required for non-local inference endpoints. Local inference does not require an API Key.",
+                "title_case": false,
+                "password": true,
+                "type": "str",
+                "_input_type": "SecretStrInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from urllib.parse import urlparse\n\nimport requests\nfrom langchain_community.embeddings.huggingface import HuggingFaceInferenceAPIEmbeddings\nfrom pydantic.v1.types import SecretStr\nfrom tenacity import retry, stop_after_attempt, wait_fixed\n\nfrom langflow.base.embeddings.model import LCEmbeddingsModel\nfrom langflow.field_typing import Embeddings\nfrom langflow.io import MessageTextInput, Output, SecretStrInput\n\n\nclass HuggingFaceInferenceAPIEmbeddingsComponent(LCEmbeddingsModel):\n    display_name = \"HuggingFace Embeddings Inference\"\n    description = \"Generate embeddings using HuggingFace Text Embeddings Inference (TEI)\"\n    documentation = \"https://huggingface.co/docs/text-embeddings-inference/index\"\n    icon = \"HuggingFace\"\n    name = \"HuggingFaceInferenceAPIEmbeddings\"\n\n    inputs = [\n        SecretStrInput(\n            name=\"api_key\",\n            display_name=\"API Key\",\n            advanced=True,\n            info=\"Required for non-local inference endpoints. Local inference does not require an API Key.\",\n        ),\n        MessageTextInput(\n            name=\"inference_endpoint\",\n            display_name=\"Inference Endpoint\",\n            required=True,\n            value=\"https://api-inference.huggingface.co/models/\",\n            info=\"Custom inference endpoint URL.\",\n        ),\n        MessageTextInput(\n            name=\"model_name\",\n            display_name=\"Model Name\",\n            value=\"BAAI/bge-large-en-v1.5\",\n            info=\"The name of the model to use for text embeddings.\",\n        ),\n    ]\n\n    outputs = [\n        Output(display_name=\"Embeddings\", name=\"embeddings\", method=\"build_embeddings\"),\n    ]\n\n    def validate_inference_endpoint(self, inference_endpoint: str) -> bool:\n        parsed_url = urlparse(inference_endpoint)\n        if not all([parsed_url.scheme, parsed_url.netloc]):\n            msg = (\n                f\"Invalid inference endpoint format: '{self.inference_endpoint}'. \"\n                \"Please ensure the URL includes both a scheme (e.g., 'http://' or 'https://') and a domain name. \"\n                \"Example: 'http://localhost:8080' or 'https://api.example.com'\"\n            )\n            raise ValueError(msg)\n\n        try:\n            response = requests.get(f\"{inference_endpoint}/health\", timeout=5)\n        except requests.RequestException as e:\n            msg = (\n                f\"Inference endpoint '{inference_endpoint}' is not responding. \"\n                \"Please ensure the URL is correct and the service is running.\"\n            )\n            raise ValueError(msg) from e\n\n        if response.status_code != requests.codes.ok:\n            msg = f\"HuggingFace health check failed: {response.status_code}\"\n            raise ValueError(msg)\n        # returning True to solve linting error\n        return True\n\n    def get_api_url(self) -> str:\n        if \"huggingface\" in self.inference_endpoint.lower():\n            return f\"{self.inference_endpoint}{self.model_name}\"\n        return self.inference_endpoint\n\n    @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))\n    def create_huggingface_embeddings(\n        self, api_key: SecretStr, api_url: str, model_name: str\n    ) -> HuggingFaceInferenceAPIEmbeddings:\n        return HuggingFaceInferenceAPIEmbeddings(api_key=api_key, api_url=api_url, model_name=model_name)\n\n    def build_embeddings(self) -> Embeddings:\n        api_url = self.get_api_url()\n\n        is_local_url = api_url.startswith((\"http://localhost\", \"http://127.0.0.1\"))\n\n        if not self.api_key and is_local_url:\n            self.validate_inference_endpoint(api_url)\n            api_key = SecretStr(\"DummyAPIKeyForLocalDeployment\")\n        elif not self.api_key:\n            msg = \"API Key is required for non-local inference endpoints\"\n            raise ValueError(msg)\n        else:\n            api_key = SecretStr(self.api_key).get_secret_value()\n\n        try:\n            return self.create_huggingface_embeddings(api_key, api_url, self.model_name)\n        except Exception as e:\n            msg = \"Could not connect to HuggingFace Inference API.\"\n            raise ValueError(msg) from e\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "inference_endpoint": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "inference_endpoint",
+                "value": "https://api-inference.huggingface.co/models/",
+                "display_name": "Inference Endpoint",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Custom inference endpoint URL.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "model_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model_name",
+                "value": "BAAI/bge-large-en-v1.5",
+                "display_name": "Model Name",
+                "advanced": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The name of the model to use for text embeddings.",
+                "title_case": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Generate embeddings using HuggingFace Text Embeddings Inference (TEI)",
+            "icon": "HuggingFace",
+            "base_classes": [
+              "Embeddings"
+            ],
+            "display_name": "HuggingFace Embeddings Inference",
+            "documentation": "https://huggingface.co/docs/text-embeddings-inference/index",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Embeddings"
+                ],
+                "selected": "Embeddings",
+                "name": "embeddings",
+                "display_name": "Embeddings",
+                "method": "build_embeddings",
+                "value": "__UNDEFINED__",
+                "cache": true
+              }
+            ],
+            "field_order": [
+              "api_key",
+              "inference_endpoint",
+              "model_name"
+            ],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false,
+            "category": "embeddings",
+            "key": "HuggingFaceInferenceAPIEmbeddings",
+            "score": 0.01857804455091699
+          },
+          "showNode": true,
+          "type": "HuggingFaceInferenceAPIEmbeddings",
+          "id": "HuggingFaceInferenceAPIEmbeddings-wQfJC"
+        },
+        "selected": false,
+        "measured": {
+          "width": 320,
+          "height": 339
+        },
+        "dragging": false
       }
     ],
     "edges": [
@@ -3650,7 +3892,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "CustomComponent-tXwcb",
@@ -3678,7 +3920,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "CustomComponent-rCGLu",
@@ -3706,7 +3948,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "ParseData-BCK2l",
@@ -3735,7 +3977,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "CustomComponent-rCGLu",
@@ -3763,7 +4005,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "Memory-WyoKI",
@@ -3791,7 +4033,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "CustomComponent-Ste2P",
@@ -3819,7 +4061,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "ParseData-MwAEH",
@@ -3848,7 +4090,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "Prompt-LqFgt",
@@ -3876,7 +4118,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "ran"
+        "className": ""
       },
       {
         "source": "OllamaModel-crwwm",
@@ -3903,8 +4145,8 @@
           }
         },
         "selected": false,
-        "animated": true,
-        "className": "running"
+        "animated": false,
+        "className": ""
       },
       {
         "source": "HuggingFaceInferenceAPIEmbeddings-72NMr",
@@ -3933,7 +4175,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "ParseData-FiTWk",
@@ -3961,7 +4203,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "CustomComponent-tXwcb",
@@ -3989,7 +4231,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "CustomComponent-bSuPD",
@@ -4017,7 +4259,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "APIRequest-2DPfR",
@@ -4045,7 +4287,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "TransformData-JsHYi",
@@ -4073,7 +4315,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "ParseData-FTkFp",
@@ -4101,7 +4343,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "ParseData-1UbII",
@@ -4130,7 +4372,7 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       },
       {
         "source": "HCD-52MV5",
@@ -4158,18 +4400,18 @@
         },
         "selected": false,
         "animated": false,
-        "className": "not-running"
+        "className": ""
       }
     ],
     "viewport": {
-      "x": -1778.0604151312714,
-      "y": -47.41903163781592,
-      "zoom": 0.3358399314368341
+      "x": -1506.681705708123,
+      "y": -297.62008466160734,
+      "zoom": 0.4175910313436368
     }
   },
   "description": "Chain the Words, Master Language!",
-  "name": "Search_6.9",
-  "last_tested_version": "1.1.1.dev11",
+  "name": "Search_6.10_clean",
+  "last_tested_version": "1.1.1.dev19",
   "endpoint_name": "search",
   "is_component": false
 }
