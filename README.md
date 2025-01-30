@@ -4,8 +4,8 @@ This project is a starter for creating a chatbot using Astra DB with Nvidia. It'
 
 ## Features
 
-- **Astra DB Integration**: Store and retrieve data from your Astra DB database with ease.
-- **LangChain.js Integration**: Uses the new Astra DB vectorstore to implement RAG.
+- **Astra DB Integration**: Store and retrieve data from your Astra DB (or DSE/HCD) database with ease with NVIDIA.
+- **LangChain.js Integration**: Uses the new Astra DB (or DSE/HCD) vectorstore to implement RAG.
 - **Customizable**: Modify and extend the chatbot to suit your needs.
 
 ## Getting Started
