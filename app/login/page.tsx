@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { signIn, getCsrfToken } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Spinner from "../../components/Spinner";
-import AirlineIconBlue from "../../components/icons/airline";
 
 const LoginPage = () => {
     const router = useRouter(); // Initialize the useRouter hook
@@ -72,7 +71,6 @@ const LoginPage = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-primary rounded-lg transform rotate-[-10deg] z-0"></div>
                 <div className="bg-gray p-8 rounded-lg shadow-lg relative z-100">
                     <div className="flex items-center justify-center h-[80px] mb-2 rounded-[10px]">
-                        <AirlineIconBlue />
                     </div>
                     <div className="mb-6">
                         <button
