@@ -45,7 +45,7 @@ sudo ./mission-control install --license ds_license.yaml
 # Then, go to Create Cluster. Name it: "nvidia-hcd" (no quotes)
 # Note the datacenter name (default is dc-1). 
 # Set a rack name (can be anything).
-# Check the box at the bottom to Deploy the Data API
+# Check the box at the bottom to Deploy the Data API, and continue.
 
 # Create a superuser:
 # Username: nvidia-hcd-superuser
@@ -285,8 +285,10 @@ helm upgrade --install \
 ## Install Nvidia-powered LangFlow:
 ####
 
-
-# Define the output file name
+##############
+#### STOP: You must first set the environment variables for LangFlow if you want headless communication. Please see the readme for instructions on the variables that must be set.
+#### Otherwise, LangFlow won't be able to communicate with the services without manually setting the variables in the LangFlow UI.
+#### For production, you will want to also mount the filesystem and perform other tasks not provided below. See the LangFlow helm chart for more information on a production deployment.
 OUTPUT_FILE="langflow-nvidia-deployment.yaml"
 
 # Write the YAML content to the file
@@ -318,7 +320,14 @@ spec:
         - name: ARIZE_API_KEY
           value: "$ARIZE_API_KEY"
         - name: ARIZE_COLLECTOR_ENDPOINT
-          value: "https://otlp.arize.com"
+          value: "https://otlp.arize.com"     
+        - . . . (add other environment variables here)
+        - name: LANGFLOW_STORE_ENVIRONMENT_VARIABLES
+          value: "true"
+        - name: LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT
+          value: "HUGGINGFACE_MODEL_PATH,CASSANDRA_CONTACT_POINTS,CASSANDRA_USERNAME,CASSANDRA_PASSWORD,CASSANDRA_DATA_ENDPOINT,CASSANDRA_COLLECTION,REST_API_KEY,REST_LSL_KEY,REST_ENDPOINT,ASTRA_DB_TOKEN,ASTRA_DB_DATABASE_ID,MYSQL_DB,MYSQL_USER,MYSQL_PASSWORD,MYSQL_HOST,OLLAMA_HOST,NVIDIA_LLM_MODEL,NVIDIA_EMBEDDING_MODEL,NVIDIA_LLM_ENDPOINT,NVIDIA_EMBEDDING_ENDPOINT"
+        - COLUMNS=200
+        - LANGFLOW_LOAD_FLOWS_PATH=/app/flows
         ports:
         - containerPort: 7860
           protocol: TCP

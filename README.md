@@ -1,63 +1,101 @@
 # WikiChat
 
-This project is a starter for creating a chatbot using Astra DB. It's designed to be easy to deploy and use, with a focus on performance and usability.
+This project is a starter for creating a chatbot using Astra DB with Nvidia. It's designed to be easy to deploy and use, with a focus on performance and usability.
 
 ## Features
 
 - **Astra DB Integration**: Store and retrieve data from your Astra DB database with ease.
 - **LangChain.js Integration**: Uses the new Astra DB vectorstore to implement RAG.
-- **Easy Deployment**: Deploy your chatbot to Vercel with just a few clicks.
 - **Customizable**: Modify and extend the chatbot to suit your needs.
 
 ## Getting Started
 
 ### Prerequisites
 
-- An Astra DB account. You can [create one here](https://astra.datastax.com/register).
-    - An Astra Vector Database
-- An OpenAI Account and API key.
-- A Cohere Account and API key. Note that due to the large volume of ingested data, you'll need a paid plan.
+- An Vector Database using Astra or DSE
+- A VM with L40S GPUs or better (if using self-managed)
 
 ### Setup
 
+1. Get an NGC key from NVIDIA. This currently requires early access approval.
+2. Get a Mission Control License. 
+3. Follow the instructions in the `nvidia/nvidia-setup.sh` script. (Just open the script and read through it and set the variables as needed.)
+4. Setup the `.env.development` and `.env.production` files. 
+5. For local testing, the docker compose files can be used. But, for the NVIDIA stack, you will want to use the LangFlow k8s objects defined in that nvidia-setup.sh script. After deploying via nvidia-setup.sh script, to start this application, just run:
+`npm run localdev`
+6. The most common issues are related to not having the environment variables setup correctly, such as not having a C* instance setup. After following all the instructions in the `nvidia-setup.sh` script (be sure to read it to the end), you should have mission control setup with a DSE or HCD database. Be sure the IP addresses are provided correctly.
+
+
+
+Run the script in nvidia folder.
+
 1. Clone this repository to your local machine.
 2. Install the dependencies by running `npm install` in your terminal.
-3. Set up the following environment variables in your IDE or `.env` file:
-    - `ASTRA_DB_API_ENDPOINT`: Your Astra DB vector database id **_in a vector-enabled DB_**
-    - `ASTRA_DB_APPLICATION_TOKEN`: The generated app token for your Astra database
-        - To create a new token go to your database's `Connect` tab and click `Generate Token`. (your Application Token begins with `AstraCS:...`)
-    - `OPENAI_API_KEY`: Your OpenAI API key.
-    - `COHERE_API_KEY`: Your Cohere API key for embeddings.
-    - `LANGCHAIN_TRACING_V2` (optional): Set to `true` to enable tracing
-    - `LANGCHAIN_SESSION` (optional): The LangSmith project that will receive traced runs.
-    - `LANGCHAIN_API_KEY` (optional): LangSmith API key
-    - `LANGFLOW_APPLICATION_TOKEN` (required for Astra): Langflow application token. (It should start with AstraCS:)
-    - `FLOW_ID_OR_NAME`: ID of LangFlow flow
-    - `LANGFLOW_ID` (required for Astra): ID of the LangFlow instance
-    - `LANGFLOW_BASE_URL`: e.g. http://127.0.0.1:7860 for local.
+3. Set up the following environment variables in your `.env.production` and `.env.development` files:
+- `LANGFLOW_APPLICATION_TOKEN`: Your LangFlow application token.
+- `LANGFLOW_ID`: (Optional) UUID for LangFlow instance identification.
+- `LANGFLOW_BASE_URL`: Base URL where LangFlow is running, e.g., `http://port.of.langflow:7860`.
 
-    Many of these variables are provided by the code generated in LangFlow, like here: 
-    ![image of Python API example in LangFlow](langflow_api.png)
-    In Astra, the token for LangFlow can be generated on that same screen.
+- `LANGFLOW_LOG_LEVEL`: Log level for LangFlow; set to `debug` for verbose logging.
 
-4. Populate your database by following the instructions [here](https://github.com/datastax/wikichat/blob/main/scripts/README.md)
+- `DEFAULT_ADMIN_EMAIL`: Default admin email for authentication.
+- `DEFAULT_ADMIN_PASSWORD`: Default admin password for authentication, e.g., `"Test1234@#"`.
 
+- `NEXTAUTH_SECRET`: Base64-encoded secret for NextAuth authentication.
+- `AUTH_SECRET`: (Same value as `NEXTAUTH_SECRET`, this will be fixed).
+- `OLLAMA_HOST`: (Optional) URL of the Ollama instance if running via Docker, e.g., `http://ollama:11434`.
+- `NEXTAUTH_URL`: Endpoint where the app is hosted, e.g., `http://localhost:3000`.
+- `HUGGINGFACE_MODEL_PATH`: (Optional) Path to the Hugging Face model, e.g., `/app/huggingface/all-MiniLM-L12-v2`.
+
+- `NVIDIA_LLM_ENDPOINT`: Ensure this is the LLM service where the model is running via NeMo; see `nvidia-setup.sh`. Example: `http://10.12.231.107:8000`.
+- `NVIDIA_EMBEDDING_ENDPOINT`: Ensure this is the LLM service where the model is running via NeMo; see `nvidia-setup.sh`. Example: `http://10.12.231.107:8000`.
+
+- `CASSANDRA_CONTACT_POINTS`: IP address of the Cassandra node provided in the setup script, e.g., `"10.12.146.189"`.
+- `CASSANDRA_USERNAME`: Username for Cassandra; must match what you set up during mission control installation, e.g., `"nvidia-hdc-superuser"`.
+- `CASSANDRA_PASSWORD`: Password for Cassandra; must match what you set up during mission control installation, e.g., `"superuserpass"`.
+- `CASSANDRA_DATA_ENDPOINT`: Cassandra Data API endpoint; must match what was set up during mission control installation, e.g., `"http://10.12.129.101:8181"`.
+- `CASSANDRA_COLLECTION`: Cassandra collection name, e.g., `"instruction"`.
+- `CASSANDRA_DC`: Cassandra data center name, e.g., `"dc-1"`.
+- `DATA_API_PATH`: Version of the Data API, e.g., `"v1"`.
+
+- `INGEST_FLOW_NAME`: Name of the ingest flow, e.g., `"ingest"`.
+- `SEARCH_FLOW_NAME`: Name of the search flow, e.g., `"search"`.
+
+- `REST_API_KEY`: Specific API key for the REST component.
+- `REST_LSL_KEY`: Specific API key for the REST component.
+- `REST_ENDPOINT`: Specific endpoint for the REST API component.
+
+- `ASTRA_DB_TOKEN`: (Optional) Required if using `system="cassandra"` query types.
+- `ASTRA_DB_DATABASE_ID`: (Optional) Required if using `system="cassandra"` query types.
+
+- `MYSQL_DB`: Required if using `system="mysql"` query types. Example: `"MYSQL"`.
+- `MYSQL_USER`: Username for MySQL, e.g., `"root"`.
+- `MYSQL_PASSWORD`: Password for MySQL authentication, e.g., `"Mysql!@#"` (ensure strong security).
+- `MYSQL_HOST`: Hostname or IP of the MySQL server, e.g., `"mysql"`.
+
+- `OPENAI_KEY`: OpenAI API key for backward compatibility with earlier versions, e.g., `"sk-proj-example"`.
+
+- `GOOGLE_CLIENT_ID`: (Optional) Google OAuth client ID for authentication, e.g., `"example.apps.googleusercontent.com"`.
+- `GOOGLE_CLIENT_SECRET`: (Optional) Google OAuth client secret for authentication, e.g., `"example"`.
+
+- `LANGFLOW_SUPERUSER`: Username for the LangFlow superuser, e.g., `"admin"`.
+- `LANGFLOW_SUPERUSER_PASSWORD`: Password for the LangFlow superuser, e.g., `"securepassword"`.
+- `LANGFLOW_SECRET_KEY`: Randomly generated secure key for LangFlow authentication.
+- `LANGFLOW_AUTO_LOGIN`: Set to `True` for automatic login; change to `False` once [PR #4611](https://github.com/langflow-ai/langflow/pull/4611) is merged.
+- `NVIDIA_EMBEDDING_ENDPOINT`: Set to the appropriate endpoint, like: `http://10.23.231.107:8000`
+- `NVIDIA_EMBEDDING_MODEL`: Set to the appropriate embedding model, like: `nvidia/llama-3.2-nv-embedqa-1b-v2`
+- `NVIDIA_LLM_ENDPOINT`: Set to the appropriate endpoint, like: `http://10.244.231.107:8000`. Be sure to not mix up with embedding endpoint.
+- `NVIDIA_LLM_MODEL`: Set to the appropriate model name, like `meta/llama-3.1-8b-instruct`. Be sure it matches what you deployed.
+
+After you've imported LangFlow into your environment, be sure to test the flow. If any variables didn't get picked up, they will need to be fixed, and then you will need to re-export the JSON for the flow and update the tweaks in `/app/api/langflow/route.ts`
 ### Running the Project
 
-To start the development server, run `npm run dev` in your terminal. Open [http://localhost:3000](http://localhost:3000) to view the chatbot in your browser.
-
-## Deployment
-
-You can easily deploy your chatbot to Vercel by clicking the button below:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/devinbost/wikichat&env=ASTRA_DB_API_ENDPOINT,ASTRA_DB_APPLICATION_TOKEN,OPENAI_API_KEY,COHERE_API_KEY)
-
-Remember to set your environment variables to the values obtained when setting up your Astra DB and OpenAI accounts.
+To start the development server, run `npm run devlocal` in your terminal. Open [http://localhost:3000](http://localhost:3000) to view the chatbot in your browser. 
 
 
+-------
 
-
----
+# Legacy deployment (non-NVIDIA, uses OLlama):
 
 ## Initial setup:
 

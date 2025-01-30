@@ -50,179 +50,169 @@ export async function POST(req: NextRequest) {
         const UUID_SessionId = hashSessionId(session_id);
         console.log("🚀 ~ POST ~ UUID_SessionId:", UUID_SessionId);
         const tweaks = {
-          "ChatInput-3pmR2": {
-            "files": "",
-            "background_color": "",
-            "chat_icon": "",
-            "sender": "User",
-            "sender_name": "User",
-            "session_id": UUID_SessionId,
-            "should_store_message": true,
-            "text_color": ""
-          },
-          "Memory-WyoKI": {
-            "n_messages": 100,
-            "order": "Ascending",
-            "sender": "Machine and User",
-            "sender_name": "",
-            "session_id": UUID_SessionId,
-            "template": "{sender_name}: {text}"
-          },
-          "CustomComponent-tXwcb": {
-            "input_value": ""
-          },
-          "ParseData-FiTWk": {
-            "sep": "\n",
-            "template": "{customer_question}"
-          },
-          "ParseData-FTkFp": {},
-          "CustomComponent-bSuPD": {},
-          "CustomComponent-rCGLu": {},
-          "Prompt-LqFgt": {
-            "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, don't answer questions you've already answered in the previous chat context. \n\nCustomer question - THIS is the question you need to answer:\n\n{customer_question}\n\n\n\n\nData and instructions:\n\n{rows}\n\n\n\n\n\nPrevious chat context:\n\n\n{chat_history}",
-            "tool_placeholder": "",
-            "rows": "",
-            "customer_question": "",
-            "chat_history": ""
-          },
-          "ParseData-BCK2l": {
-            "sep": "\n",
-            "template": "{rows}"
-          },
-          "ParseData-1UbII": {
-            "sep": "\n",
-            "template": "{customer_question}"
-          },
-          "ChatOutput-4lTHl": {
-            "background_color": "",
-            "chat_icon": "",
-            "data_template": "{text}",
-            "input_value": "",
-            "sender": "Machine",
-            "sender_name": "AI",
-            "session_id": UUID_SessionId,
-            "should_store_message": true,
-            "text_color": ""
-          },
-          "CustomComponent-Ste2P": {},
-          "ParseData-MwAEH": {
-            "sep": "\n",
-            "template": "{text}"
-          },
-          "OllamaModel-crwwm": {
-            "base_url": "OLLAMA_HOST",
-            "format": "",
-            "input_value": "",
-            "metadata": {},
-            "mirostat": "Disabled",
-            "mirostat_eta": null,
-            "mirostat_tau": null,
-            "model_name": "llama3.1:latest",
-            "num_ctx": null,
-            "num_gpu": null,
-            "num_thread": null,
-            "repeat_last_n": null,
-            "repeat_penalty": null,
-            "stop_tokens": "",
-            "stream": false,
-            "system": "",
-            "system_message": "",
-            "tags": "",
-            "temperature": 0.2,
-            "template": "",
-            "tfs_z": null,
-            "timeout": null,
-            "top_k": null,
-            "top_p": null,
-            "verbose": false
-          },
-          "HuggingFaceInferenceAPIEmbeddings-72NMr": {
-            "model_path": "HUGGINGFACE_MODEL_PATH"
-          },
-          "HCD-52MV5": {
-            "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
-            "batch_size": null,
-            "bulk_delete_concurrency": null,
-            "bulk_insert_batch_concurrency": null,
-            "bulk_insert_overwrite_concurrency": null,
-            "ca_certificate": "",
-            "collection_indexing_policy": "",
-            "collection_name": "CASSANDRA_COLLECTION",
-            "metadata_indexing_exclude": "",
-            "metadata_indexing_include": "",
-            "metric": "",
-            "namespace": "default_namespace",
-            "number_of_results": 4,
-            "password": "CASSANDRA_PASSWORD",
-            "pre_delete_collection": false,
-            "search_filter": {},
-            "search_input": "",
-            "search_score_threshold": 0,
-            "search_type": "Similarity",
-            "setup_mode": "Sync",
-            "username": "CASSANDRA_USERNAME"
-          },
-          "APIRequest-2DPfR": {
-            "api_key": "REST_API_KEY",
-            "curl": "",
-            "lsl_key": "REST_LSL_KEY",
-            "method": "POST",
-            "timeout": 5,
-            "url": "REST_ENDPOINT"
-          },
-          "TransformData-JsHYi": {}
-        };
-            if (stream) {
-                // Initiate the session and get the stream URL
-                const initResponse = await langflowClient.initiateSession(
-                    flowIdOrName,
-                    inputValue,
-                    inputType,
-                    outputType,
-                    UUID_SessionId,
-                    tweaks,
-                    stream,
-                );
+            "ChatInput-PeRl9": {
+              "files": "",
+              "background_color": "",
+              "chat_icon": "",
+              "sender": "User",
+              "sender_name": "User",
+              "session_id": UUID_SessionId,
+              "should_store_message": true,
+              "text_color": ""
+            },
+            "Prompt-4SA8R": {
+                  "input_value": ""
+            },
+            "Prompt-vxAse": {
+                    "sep": "\n",
+                    "template": "{customer_question}"
+            },
+            "Prompt-nZuJ3": {},
+            "Prompt-nBaOu": {},
+            "Prompt-YSOkS": {},
+            "Prompt-rmPYT": {
+                    "api_key": "REST_API_KEY",
+                    "curl": "",
+                    "lsl_key": "REST_LSL_KEY",
+                    "method": "POST",
+                    "timeout": 5,
+                    "url": "REST_ENDPOINT"
+            },
+            "Prompt-BZ5Mz": {},
+            "Prompt-s6Oo2": {
+                    "sep": "\n",
+                    "template": "{rows}"
+            },
+            "Prompt-eQQHx": {
+                    "sep": "\n",
+                    "template": "{instruction_list}"
+            },
+            "Prompt-NtFVj": {
+                    "template": "You're helping a customer support agent with a customer. Please answer the customer's question based ONLY on the provided data and instructions (for interpreting the data) below. Please use the Instructions in the JSON below to interpret the data. If the data retrieved is NULL for a field expected to exist to answer the question, say the data doesn't exist for that question. Otherwise, if you don't know the answer based on the available information, just say you don't know. Also, just answer the Customer Question. \n\nCustomer Question - THIS is the question you need to answer:\n\n{customer_question}\n\n\n\n\nHere are the Instructions for interpreting the data:\n\n{instructions}\n\n\n\n\nHere are the data:\n\n{rows}\n\n\n\n\n\nPrevious chat context:\n\n\n{chat_history}",
+                    "tool_placeholder": "",
+                    "customer_question": "",
+                    "instructions": "",
+                    "rows": "",
+                    "chat_history": ""
+            },
+            "Prompt-eVxor": {
+                    "sep": "\n",
+                    "template": "{customer_question}"
+            },
+            "NVIDIAModelComponent-pWlFg": {
+                    "base_url": "NVIDIA_LLM_ENDPOINT",
+                    "input_value": "",
+                    "max_tokens": null,
+                    "model_name": "NVIDIA_LLM_MODEL",
+                    "nvidia_api_key": "",
+                    "seed": 1,
+                    "stream": false,
+                    "system_message": "",
+                    "temperature": 0.1
+            },
+            "ChatOutput-3vnut": {
+                    "background_color": "",
+                    "chat_icon": "",
+                    "data_template": "{text}",
+                    "input_value": "",
+                    "sender": "Machine",
+                    "sender_name": "AI",
+                    "session_id": UUID_SessionId,
+                    "should_store_message": true,
+                    "text_color": ""
+            },
+            "Memory-QlyoJ": {
+              "n_messages": 100,
+              "order": "Ascending",
+              "sender": "Machine and User",
+              "sender_name": "",
+              "session_id": UUID_SessionId,
+              "template": "{sender_name}: {text}"
+            },
+            "Memory-8qn8a": {},
+            "Memory-jByDU": {
+                    "sep": "\n",
+                    "template": "{text}"
+            },
+            "HCD-k6Yxl": {
+                    "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
+                    "batch_size": null,
+                    "bulk_delete_concurrency": null,
+                    "bulk_insert_batch_concurrency": null,
+                    "bulk_insert_overwrite_concurrency": null,
+                    "ca_certificate": "",
+                    "collection_indexing_policy": "",
+                    "collection_name": "CASSANDRA_COLLECTION",
+                    "metadata_indexing_exclude": "",
+                    "metadata_indexing_include": "",
+                    "metric": "",
+                    "namespace": "default_namespace",
+                    "number_of_results": 4,
+                    "password": "CASSANDRA_PASSWORD",
+                    "pre_delete_collection": false,
+                    "search_filter": {},
+                    "search_query": "",
+                    "search_score_threshold": 0,
+                    "search_type": "Similarity",
+                    "setup_mode": "Sync",
+                    "username": "CASSANDRA_USERNAME"
+            },
+            "NVIDIAEmbeddingsComponent-zavH7": {
+                    "base_url": "NVIDIA_EMBEDDING_ENDPOINT",
+                    "model": "NVIDIA_EMBEDDING_MODEL",
+                    "nvidia_api_key": "",
+                    "temperature": 0.1
+            },
+            "Prompt-igPHB": {
+              "api_endpoint": "CASSANDRA_DATA_ENDPOINT",
+              "collection_name": "CASSANDRA_COLLECTION",
+              "input": "",
+              "nvidia_embedding_endpoint": "NVIDIA_EMBEDDING_ENDPOINT",
+              "password": "CASSANDRA_PASSWORD",
+              "username": "CASSANDRA_USERNAME"
+            },
+        }; //"NVIDIA_MODEL_ENDPOINT",//"NVIDIA_EMBEDDING_ENDPOINT",
+        if (stream) {
+          // === STREAMING LOGIC ===
+          // 1) Directly ask for streaming
+          const responseStream = await langflowClient.initiateSessionStream(
+            flowIdOrName,
+            inputValue,
+            inputType,
+            outputType,
+            UUID_SessionId,
+            tweaks,
+            true  // pass `stream = true` 
+          );
     
-                const streamUrl = initResponse.outputs[0].outputs[0].artifacts.stream_url;
-                const fullStreamUrl = `${process.env.LANGFLOW_BASE_URL}${streamUrl}?session_id=${UUID_SessionId}`;
+          if (!responseStream.ok || !responseStream.body) {
+            throw new Error(`Failed to fetch stream: ${responseStream.statusText}`);
+          }
     
-                // Fetch the streaming response from LangFlow
-                const responseStream = await fetch(fullStreamUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${process.env.LANGFLOW_APPLICATION_TOKEN || ''}`,
-                        // Any other headers required
-                    },
-                });
-    
-                if (!responseStream.ok || !responseStream.body) {
-                    throw new Error(`Failed to fetch stream: ${responseStream.statusText}`);
-                }
-    
-                // Return the streaming response to the client
-                return new NextResponse(responseStream.body, {
-                    headers: {
-                        'Content-Type': 'text/event-stream',
-                        'Cache-Control': 'no-cache',
-                        'Connection': 'keep-alive',
-                    },
-                });
-            } else {
-                // Non-streaming response
-                const response = await langflowClient.runFlow(
-                    flowIdOrName,
-                    inputValue,
-                    inputType,
-                    outputType,
-                    UUID_SessionId,
-                    tweaks,
-                    stream,
-                );
-                return NextResponse.json(response);
-            }
-        } catch (error) {
-            console.error("Error running flow:", error);
-            return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+          // 2) Forward raw ND-JSON lines to the client
+          return new NextResponse(responseStream.body, {
+            headers: {
+              "Content-Type": "text/event-stream",
+              "Cache-Control": "no-cache",
+              "Connection": "keep-alive",
+            },
+          });
+        } else {
+          // === NON-STREAMING LOGIC ===
+          const response = await langflowClient.runFlow(
+            flowIdOrName,
+            inputValue,
+            inputType,
+            outputType,
+            UUID_SessionId,
+            tweaks,
+            false  // no stream
+          );
+          console.log("🚀 ~ POST non-stream ~ response:", response);
+          return NextResponse.json(response);
         }
-}
+      } catch (error) {
+        console.error("Error running flow:", error);
+        return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+      }
+    }

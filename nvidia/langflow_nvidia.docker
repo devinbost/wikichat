@@ -1,0 +1,48 @@
+# Use the official Python image as the base
+FROM python:3.11-slim
+
+# Ensure /bin/bash is used, so we can `source` bashrc for NVM
+SHELL ["/bin/bash", "-c"]
+
+# Environment variables for pipx and NVM
+ENV PIPX_HOME=/root/.local \
+    PIPX_BIN_DIR=/root/.local/bin \
+    PATH=/root/.local/bin:$PATH \
+    NVM_DIR=/root/.nvm
+
+# Replicate the original inline shell script in one RUN statement
+RUN apt-get update && \
+    apt-get install -y \
+        git \
+        pipx \
+        python3-pip \
+        curl \
+        build-essential \
+        sudo && \
+    pipx install uv && \
+    pipx install uvicorn && \
+    pipx ensurepath && \
+    \
+    # Install NVM and Node.js
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && \
+    source $NVM_DIR/nvm.sh && \
+    nvm install 22.12 && \
+    \
+    # Clone the Langflow repo & switch to the NVIDIA branch
+    git clone https://github.com/jeffreyscarpenter/langflow.git langflow-nvidia && \
+    cd langflow-nvidia && \
+    git checkout feat/ds-nvidia-components && \
+    \
+    # Run the make commands from that repo
+    make install_backend && \
+    make install_frontend && \
+    make build_frontend
+
+# Switch into our app directory
+WORKDIR /langflow-nvidia
+
+# Expose the default Langflow port
+EXPOSE 7860
+
+# Finally, start the Uvicorn server
+CMD ["uvicorn", "langflow:app", "--host", "0.0.0.0", "--port", "7860"]

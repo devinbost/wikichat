@@ -143,14 +143,13 @@ export default function Home() {
             }
 
             if (stream) {
+
                 const reader = response.body?.getReader();
                 const decoder = new TextDecoder();
-
                 let buffer = "";
                 let done = false;
 
                 while (!done) {
-                    // Ensure reader is not undefined and properly handle the read result
                     const readResult = await reader?.read();
                     if (readResult) {
                         const { value, done: doneReading } = readResult;
@@ -159,30 +158,26 @@ export default function Home() {
                             buffer += decoder.decode(value, { stream: true });
                             let lines = buffer.split("\n");
                             buffer = lines.pop() || "";
-            
+
                             for (const line of lines) {
-                                if (line.startsWith("data: ")) {
-                                    const data = line.slice(6).trim();
-                                    if (data) {
-                                        try {
-                                            const parsedData = JSON.parse(data);
-                                            if (parsedData.chunk) {
-                                                onUpdate(parsedData.chunk);
-                                            }
-                                        } catch (err) {
-                                            console.error("Failed to parse JSON:", err);
-                                        }
-                                    }
+                                const trimmed = line.trim();
+                                if (!trimmed) continue; // Skip empty lines
+                                try {
+                                const parsed = JSON.parse(trimmed);
+                                // e.g. parsed = { "event": "token", "data": { "chunk": "hello" } }
+                                if (parsed.event === "token") {
+                                    onUpdate(parsed.data.chunk);
+                                } else if (parsed.event === "end") {
+                                    onClose("Stream closed");
+                                }
+                                } catch (err) {
+                                console.error("Failed to parse ND-JSON line:", line, err);
                                 }
                             }
                         }
-                    } else {
-                        // Handle case where readResult is undefined
-                        console.error("Failed to read from stream");
-                        done = true;
                     }
                 }
-                onClose("Stream closed");
+               
             } else {
                 const data = await response.json();
                 setMessages(prevMessages => [...prevMessages, { role: "assistant", content: data.message?.text }]);
