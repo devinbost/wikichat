@@ -92,24 +92,6 @@ const Footer = () => {
             </div>
 
             <div className="flex flex-row flex-wrap justify-center gap-4 mt-4">
-                <Image
-                    src="https://www.singaporeair.com/saar5/images/banner/DestinAsian-Readers-Choice-Awards-2024.svg"
-                    alt="DestinAsian Readers' Choice Awards 2024"
-                    width={153}
-                    height={32}
-                />
-                <Image
-                    src="https://www.singaporeair.com/saar5/images/banner/Skytrax-Best-Cabin-Award-2024.svg"
-                    alt="Skytrax Best Cabin Award 2024"
-                    width={153}
-                    height={32}
-                />
-                <Image
-                    src="https://www.singaporeair.com/saar5/images/banner/Travel-Leisure-USA-Award-2024.svg"
-                    alt="Travel + Leisure USA Award 2024"
-                    width={153}
-                    height={32}
-                />
             </div>
         </footer>
     );

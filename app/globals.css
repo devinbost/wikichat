@@ -22,9 +22,9 @@
         --background-body: var(--white);
         --background-level1: var(--neutral-0);
         --background-level2: var(--neutral-50);
-        --primary: #1d4886; /* Singapore Airlines Blue */
+        --primary: #1d4886; 
         --primary-hover: #16346a; /* Darker shade of primary */
-        --tertiary: #fcb130; /* Singapore Airlines Yellow-Orange */
+        --tertiary: #fcb130; 
         --inverse: var(--white);
 
         --sky: #c2d7fe;

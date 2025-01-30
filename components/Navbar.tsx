@@ -2,7 +2,6 @@ import { Tooltip } from "react-tooltip";
 import { Listbox } from "@headlessui/react";
 import { useState } from "react";
 import { ChevronDown } from "react-bootstrap-icons";
-import AirlineIcon from "./icons/singapore_icon";
 
 interface Props {
     //setConfiguration: (llm: string) => void;
@@ -55,12 +54,11 @@ const Navbar = ({ setCustomer, userName }: Props): JSX.Element => {
 
     return (
         <nav className="flex flex-col gap-3 md:gap-2 rounded-t-3xl bg-primary items-center md:items-start sticky top-0 z-10 p-6 md:px-16 md:pt-6">
-            {/* Singapore Airlines logo */}
             <div className="flex items-center gap-2 md:ml-auto">
                 <h1 className="text-inverse">Hello, {userName}!</h1> {/* Display the user's name */}
             </div>
             <div className="flex gap-2 md:ml-auto md:flex-row">
-                <AirlineIcon/>
+                
                 {/* <Listbox value={selectedLlm} by="value" onChange={handleChange}>
                     <div className="relative">
                         <Listbox.Button className="h-10 px-4 rounded-full inline-flex justify-between gap-2 items-center bg-primary text-inverse hover:bg-primary-hover">
@@ -119,8 +117,6 @@ const Navbar = ({ setCustomer, userName }: Props): JSX.Element => {
                     place="bottom-end"
                     clickable
                     className="max-w-sm md:max-w-2xl rounded-2xl z-30">
-                    Chatting with SingaPore Airlines is a breeze! Simply type your questions or requests in a clear and
-                    concise manner. Responses are sourced from Singapore Airline&apos;s live customer data!
                 </Tooltip>
             </div>
         </nav>
