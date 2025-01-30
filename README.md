@@ -20,15 +20,13 @@ This project is a starter for creating a chatbot using Astra DB with Nvidia. It'
 1. Get an NGC key from NVIDIA. This currently requires early access approval.
 2. Get a Mission Control License. 
 3. Follow the instructions in the `nvidia/nvidia-setup.sh` script. (Just open the script and read through it and set the variables as needed.)
-4. Setup the `.env.development` and `.env.production` files. 
+4. Setup the `.env.development` and `.env.production` files. (More instructions below.)
 5. For local testing, the docker compose files can be used. But, for the NVIDIA stack, you will want to use the LangFlow k8s objects defined in that nvidia-setup.sh script. After deploying via nvidia-setup.sh script, to start this application, just run:
 `npm run localdev`
 6. The most common issues are related to not having the environment variables setup correctly, such as not having a C* instance setup. After following all the instructions in the `nvidia-setup.sh` script (be sure to read it to the end), you should have mission control setup with a DSE or HCD database. Be sure the IP addresses are provided correctly.
+7. Run the script in nvidia folder. (Be sure to read it first - there are comments throughout.)
 
-
-
-Run the script in nvidia folder.
-
+#### Setup variables and additional dependencies
 1. Clone this repository to your local machine.
 2. Install the dependencies by running `npm install` in your terminal.
 3. Set up the following environment variables in your `.env.production` and `.env.development` files:
