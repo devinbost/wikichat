@@ -1,0 +1,8 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#33058B",
+        "titleBar.activeBackground": "#4807C2",
+        "titleBar.activeForeground": "#FBFAFF"
+    },
+    "terminal.integrated.defaultProfile.osx": "zsh"
+}

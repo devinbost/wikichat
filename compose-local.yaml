@@ -1,0 +1,118 @@
+version: "0.4.12"
+
+networks:
+  langflow-network:
+    driver: bridge
+
+services:
+  registry:
+    image: registry:2
+    ports:
+      - "5002:5002"
+    networks:
+      - langflow-network
+  langflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.langflow.local
+    image: devinbostds/lfopenshift:v1.6
+    ports:
+      - "7860:7860"
+    depends_on:
+      - postgres
+      - registry
+    command: ["langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
+    #command: ["python", "-m", "langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
+    working_dir: /app
+    environment:
+      - LANGFLOW_DATABASE_URL=postgresql://langflow:langflow@postgres:5432/langflow
+      - LANGFLOW_LANGCHAIN_CACHE=InMemoryCache
+      - LANGFLOW_WORKERS=1
+#      - LANGFLOW_BACKEND_ONLY=true
+      - LANGFLOW_STORE_ENVIRONMENT_VARIABLES=true
+      - LANGFLOW_VARIABLES_TO_GET_FROM_ENVIRONMENT=HUGGINGFACE_MODEL_PATH,CASSANDRA_CONTACT_POINTS,CASSANDRA_USERNAME,CASSANDRA_PASSWORD,CASSANDRA_DATA_ENDPOINT,CASSANDRA_COLLECTION,REST_API_KEY,REST_LSL_KEY,REST_ENDPOINT,ASTRA_DB_TOKEN,ASTRA_DB_DATABASE_ID,MYSQL_DB,MYSQL_USER,MYSQL_PASSWORD,MYSQL_HOST,OPENAI_KEY,OLLAMA_HOST
+      - COLUMNS=200
+      - LANGFLOW_LOAD_FLOWS_PATH=/app/flows
+    volumes:
+      - ./langflow-tmp/langflow-data:/app/langflow
+      - ./langflow-tmp/langflow-app-data:/app/data
+      - ./huggingface:/app/huggingface
+      - ./.env.development:/app/.env
+      - ./flows:/app/flows
+      - ./langflow-tmp/cache:/app/data/.cache
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - langflow-network
+    env_file:
+      - .env.development 
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: langflow
+      POSTGRES_PASSWORD: langflow
+      POSTGRES_DB: langflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./langflow-tmp/langflow-postgres:/var/lib/postgresql/data
+    networks:
+      - langflow-network
+
+  nextjs-app:
+    environment:
+    - HOST=0.0.0.0
+    - PORT=3000
+    - DEBUG=-next:jsconfig-paths-plugin,next:*
+    - DEFAULT_ADMIN_PASSWORD="Test1234@#"
+    - DEFAULT_ADMIN_EMAIL=superadmin@localhost.com
+    command: ["npm", "run", "devhelm"]
+    build:
+      context: .
+      dockerfile: Dockerfile.app.local
+    image: devinbostds/nextjs-app-sia
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.development
+    depends_on:
+      - langflow
+      - registry
+    networks:
+      - langflow-network
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOME=/root/.ollama
+    volumes:
+      - ./models:/root/.ollama/models
+    networks:
+      - langflow-network
+    entrypoint: ["ollama", "serve"]  
+  # mysql:
+  #   image: mysql:8.0
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: "Mysql!@#"
+  #     MYSQL_DATABASE: "MYSQL"
+  #   volumes:
+  #     - ./mysql-init:/docker-entrypoint-initdb.d
+  #   ports:
+  #     - "3306:3306"
+  #   networks:
+  #     - langflow-network
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+
+volumes:
+  langflow-postgres:
+  langflow-data:

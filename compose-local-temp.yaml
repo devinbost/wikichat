@@ -1,0 +1,24 @@
+version: "0.4.12"
+
+networks:
+  langflow-network:
+    driver: bridge
+
+services:
+  langflow:
+    image: jordanrfrazier/lfopenshift:v1.8
+    ports:
+      - "7860:7860"
+    command: ["langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
+    working_dir: /app
+    environment:
+      - LANGFLOW_LOAD_FLOWS_PATH=/app/flows
+      - COLUMNS=200
+    volumes:
+      - ./langflow-tmp/langflow-data:/app/langflow
+      - ./langflow-tmp/langflow-app-data:/app/data
+      - ./huggingface:/app/huggingface
+      - ./.env.development:/app/.env
+      - ./flows:/app/flows
+    networks:
+      - langflow-network

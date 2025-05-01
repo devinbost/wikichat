@@ -1,0 +1,10 @@
+
+FROM langflowai/langflow-ep:v1.1.1.dev19
+WORKDIR /app
+
+RUN python3 -m venv /app/.venv && \
+    /bin/bash -c "source /app/.venv/bin/activate && pip install -U mysql-connector-python langchain-huggingface langchain pydantic"
+
+EXPOSE 7860
+
+CMD ["langflow", "run", "--env-file", "/app/.env", "--host", "0.0.0.0", "--port", "7860"]
